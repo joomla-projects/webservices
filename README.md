@@ -1,4 +1,6 @@
-webservices
+Webservices
 ===========
 
-Webservices working group repository
+This is a lab for investigating adding a layer of webservices to Joomla
+
+For more details join #webservices channel at https://joomla.slack.com/
