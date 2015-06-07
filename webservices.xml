@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="2.5" method="upgrade">
+    <name>COM_WEBSERVICES</name>
+    <creationDate>April 2015</creationDate>
+    <author>redCOMPONENT</author>
+    <authorEmail>email@redcomponent.com</authorEmail>
+    <authorUrl>www.redcomponent.com</authorUrl>
+    <copyright>Copyright (C) 2008 - 2015 redCOMPONENT.com. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later, see LICENSE.</license>
+    <version>1.0.0</version>
+    <description>COM_WEBSERVICES_DESC</description>
+    <scriptfile>install.php</scriptfile>
+
+    <install folder="component/admin">
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
+            <file driver="mysqli" charset="utf8">sql/install/mysql/install.sql</file>
+            <file driver="mysql" charset="utf8">sql/install/mysql/data.sql</file>
+            <file driver="mysql" charset="utf8">sql/install/mysql/currency.sql</file>
+            <file driver="mysql" charset="utf8">sql/install/mysql/country.sql</file>
+        </sql>
+    </install>
+    <uninstall folder="component/admin">
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
+            <file driver="mysqli" charset="utf8">sql/install/mysql/uninstall.sql</file>
+        </sql>
+    </uninstall>
+    <update folder="component/admin">
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+            <schemapath type="mysqli">sql/updates/mysql</schemapath>
+        </schemas>
+        <php>
+            <path>updates</path>
+        </php>
+    </update>
+
+    <administration>
+        <files folder="component/admin">
+            <folder>controllers</folder>
+            <folder>helpers</folder>
+            <folder>layouts</folder>
+            <folder>models</folder>
+            <folder>sql</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+            <filename>access.xml</filename>
+            <filename>controller.php</filename>
+            <filename>webservices.php</filename>
+        </files>
+        <languages folder="component/admin/language">
+            <language tag="en-GB">en-GB/en-GB.com_webservices.ini</language>
+            <language tag="en-GB">en-GB/en-GB.com_webservices.sys.ini</language>
+        </languages>
+        <menu view="webservices">COM_WEBSERVICES</menu>
+    </administration>
+
+    <!-- Medias -->
+    <media destination="webservices" folder="media/webservices">
+        <folder>webservices</folder>
+        <folder>js</folder>
+    </media>
+</extension>

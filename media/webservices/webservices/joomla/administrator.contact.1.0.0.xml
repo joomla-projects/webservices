@@ -1,0 +1,274 @@
+<?xml version="1.0" ?>
+<!-- Default value for client attribute is site. If client is set to "administrator" then it will only be triggered through administrator call  -->
+<apiservice client="administrator">
+    <name>Contact Webservice</name>
+    <author>redCOMPONENT</author>
+    <copyright>Copyright (C) 2008 - 2015 redCOMPONENT.com. All rights reserved.</copyright>
+    <description>Api HAL configuration for Joomla Administrator Contact component</description>
+    <config>
+        <!-- This will be used for automatic model and table instance in CRUD methods and for Api helper class -->
+        <name>contact</name>
+        <version>1.0.0</version>
+        <!-- authorizationAssetName is used with Joomla authorization when preforming checks against ACL (if not authorized by scope) -->
+        <authorizationAssetName>com_{webserviceName}</authorizationAssetName>
+    </config>
+    <operations>
+        <!-- Documentation can be included from various sources:
+            auto: documentation is auto generated using this XML as template
+            url: documentation will be loaded from fixed url using url="http://www.sample.com"
+            none: documentation will not be included in methods Rels (not recommended)
+             -->
+        <documentation authorizationNeeded="false" source="auto" url=""/>
+
+        <!-- validateData can be set as: none, form, function. Default value is "none". If option function is selected then validateDataFunction attribute will be used -->
+        <!-- validateDataFunction is a function name used to check data before passing it to the operation. Default value is "validate". -->
+        <create authorizationNeeded="true" strictFields="false" authorization="core.create" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="" validateData="form" validateDataFunction="validate" tableName="contact_details">
+            <description><![CDATA[ This operation creates new Contact item. ]]></description>
+            <fields>
+                <field name="name" transform="string" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                <field name="catid" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                <field name="language" transform="string" defaultValue="*" isRequiredField="false" isPrimaryField="false"/>
+                <field name="published" transform="int" defaultValue="1" isRequiredField="false" isPrimaryField="false"/>
+                <description><![CDATA[ Fields listed will be transformed before saving or default value can be assigned. ]]></description>
+            </fields>
+            <resources>
+                <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="{webserviceName}:self" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+            </resources>
+        </create>
+
+        <!-- authorization tag is used to test user authorization against Joomla ACL. Multiple checks can be performed if separated with comma
+             authorizationAssetName can be overridden if you set it here separated by colon (ex. core.admin:com_contact,core.manage:com_contact) authorizationNeeded="false"
+        -->
+        <read>
+            <!-- Api will automatically call getItems if functionName is not specified -->
+            <!-- Api will automatically call ExampleModelElements if modelClassName is not specified -->
+            <!-- dataMode can be model, helper or table. Default is model. If you use "table" then tableName attribute must be set.
+                 If it is set to "helper" it will run operation on web service helper class -->
+            <list authorizationNeeded="true" strictFields="false" authorization="core.admin,core.manage" dataMode="table" optionName="com_contact" modelClassName="contacts" modelClassPath="" isAdminClass="true" functionName="" functionArgs="" validateData="none" validateDataFunction="validate" tableName="contact_details">
+                <description><![CDATA[ This operation lists Contact items. ]]></description>
+                <!-- Enable or disable fields to read. If left empty, all fields will be available -->
+                <!-- isFilterField defines specific fields as filter fields when using dataMode="table". When filtering fields must be in format filter[fieldName] -->
+                <!-- isPrimaryField defines specific fields as primary key fields when using dataMode="table". -->
+                <fields>
+                    <field name="id" transform="int" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="true"/>
+                    <field name="name" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="true" isPrimaryField="false"/>
+                    <field name="published" transform="int" defaultValue="" isRequiredField="false" isFilterField="true" isSearchableField="false" isPrimaryField="false"/>
+                </fields>
+
+                <!-- Resource definition -->
+                <!-- Resources can be grouped with "resourceSpecific" attribute, default value is "rcwsGlobal" -->
+                <resources>
+                    <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+
+                    <!-- meta data -->
+                    <resource displayName="page" transform="int" fieldFormat="{pagination.page}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="pageLimit" transform="int" fieldFormat="{pagination.limit}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="limitstart" transform="int" fieldFormat="{pagination.limitstart}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="totalItems" transform="int" fieldFormat="{pagination.totalItems}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="totalPages" transform="int" fieldFormat="{pagination.totalPages}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+
+                    <!-- _links -->
+                    <resource displayName="{webserviceName}:self" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:first" transform="string" fieldFormat="{webserviceUrlPath}&amp;list[limitstart]=0" displayGroup="_links" linkTitle="Pagination first" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:previous" transform="string" fieldFormat="{webserviceUrlPath}&amp;list[limitstart]={pagination.previous}" displayGroup="_links" linkTitle="Pagination previous" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:next" transform="string" fieldFormat="{webserviceUrlPath}&amp;list[limitstart]={pagination.next}" displayGroup="_links" linkTitle="Pagination next" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:last" transform="string" fieldFormat="{webserviceUrlPath}&amp;list[limitstart]={pagination.last}" displayGroup="_links" linkTitle="Pagination last" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:all" transform="string" fieldFormat="{webserviceUrlPath}&amp;list[limit]=0" displayGroup="_links" linkTitle="Show all items" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:limit" transform="string" fieldFormat="{webserviceUrlPath}&amp;list[limit]={limit}&amp;list[limitstart]={limitstart}" displayGroup="_links" linkTitle="List limit" linkName="" hrefLang="" linkTemplated="true" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:filter" transform="string" fieldFormat="{webserviceUrlPath}&amp;filter[search]={filter_search}" displayGroup="_links" linkTitle="Filter list" linkName="" hrefLang="" linkTemplated="true" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:sort" transform="string" fieldFormat="{webserviceUrlPath}&amp;list[ordering]={filter_order}&amp;list[direction]={filter_order_Dir}" displayGroup="_links" linkTitle="List sort" linkName="" hrefLang="" linkTemplated="true" linkRel="" resourceSpecific="rcwsGlobal"/>
+
+                    <!-- items -->
+                    <resource displayName="id" transform="int" fieldFormat="{id}" displayGroup="" resourceSpecific="listItem"/>
+                    <resource displayName="access" transform="int" fieldFormat="{access}" displayGroup="" resourceSpecific="listItem"/>
+                    <resource displayName="featured" transform="int" fieldFormat="{featured}" displayGroup="" resourceSpecific="listItem"/>
+                    <resource displayName="language" transform="string" fieldFormat="{language}" displayGroup="" resourceSpecific="listItem"/>
+                    <resource displayName="name" transform="string" fieldFormat="{name}" displayGroup="" resourceSpecific="listItem"/>
+                    <resource displayName="ordering" transform="int" fieldFormat="{ordering}" displayGroup="" resourceSpecific="listItem"/>
+                    <resource displayName="{webserviceName}:self" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="listItem">
+                        <description><![CDATA[Link to contact item]]></description>
+                    </resource>
+                </resources>
+            </list>
+            <!-- Api will automatically call getItem if functionName is not specified -->
+            <!-- Api will automatically call ExampleModelElement if modelClassName is not specified -->
+            <item authorizationNeeded="true" strictFields="false" authorization="" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="" validateData="none" validateDataFunction="validate" tableName="contact_details">
+                <description><![CDATA[ This operation displays one Contact item. ]]></description>
+                <fields>
+                    <field name="id" transform="int" defaultValue="" isRequiredField="false" isPrimaryField="true"/>
+                </fields>
+                <resources>
+                    <resource displayName="id" transform="int" fieldFormat="{id}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="name" transform="string" fieldFormat="{name}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="alias" transform="string" fieldFormat="{alias}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="con_position" transform="string" fieldFormat="{con_position}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="address" transform="string" fieldFormat="{address}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="suburb" transform="string" fieldFormat="{suburb}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="state" transform="string" fieldFormat="{state}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="country" transform="string" fieldFormat="{country}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="postcode" transform="string" fieldFormat="{postcode}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="telephone" transform="string" fieldFormat="{telephone}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="fax" transform="string" fieldFormat="{fax}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="misc" transform="string" fieldFormat="{misc}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="image" transform="string" fieldFormat="{image}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="email_to" transform="string" fieldFormat="{email_to}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="default_con" transform="int" fieldFormat="{default_con}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="published" transform="int" fieldFormat="{published}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="checked_out" transform="int" fieldFormat="{checked_out}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="checked_out_time" transform="datetime" fieldFormat="{checked_out_time}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="ordering" transform="int" fieldFormat="{ordering}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="params" transform="json" fieldFormat="{params}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="user_id" transform="int" fieldFormat="{user_id}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="catid" transform="int" fieldFormat="{catid}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="access" transform="int" fieldFormat="{access}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="mobile" transform="string" fieldFormat="{mobile}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="webpage" transform="string" fieldFormat="{webpage}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="sortname1" transform="string" fieldFormat="{sortname1}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="sortname2" transform="string" fieldFormat="{sortname2}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="sortname3" transform="string" fieldFormat="{sortname3}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="language" transform="string" fieldFormat="{language}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="created" transform="datetime" fieldFormat="{created}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="created_by" transform="int" fieldFormat="{created_by}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="modified" transform="datetime" fieldFormat="{modified}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="modified_by" transform="int" fieldFormat="{modified_by}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="metakey" transform="string" fieldFormat="{metakey}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="metadesc" transform="string" fieldFormat="{metadesc}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="metadata" transform="string" fieldFormat="{metadata}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="featured" transform="int" fieldFormat="{featured}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="publish_up" transform="datetime" fieldFormat="{publish_up}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="publish_down" transform="datetime" fieldFormat="{publish_down}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="version" transform="string" fieldFormat="{version}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="hits" transform="int" fieldFormat="{hits}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:self" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:checkout" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}&amp;task=checkout" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:checkin" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}&amp;task=checkin" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:featured" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}&amp;task=featured" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:unfeatured" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}&amp;task=unfeatured" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:publish" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}&amp;task=publish" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:unpublish" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}&amp;task=unpublish" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                </resources>
+            </item>
+        </read>
+        <update authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="save" functionArgs="" validateData="form" validateDataFunction="validate" tableName="contact_details">
+            <description><![CDATA[ This operation updates Contact item. ]]></description>
+            <fields>
+                <field name="id" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                <field name="name" transform="string" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                <field name="catid" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                <field name="language" transform="string" defaultValue="*" isRequiredField="false" isPrimaryField="false"/>
+                <field name="published" transform="int" defaultValue="1" isRequiredField="false" isPrimaryField="false"/>
+                <description><![CDATA[ Fields listed will be transformed before saving or default value can be assigned. ]]></description>
+            </fields>
+            <resources>
+                <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="{webserviceName}:self" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+            </resources>
+        </update>
+        <!-- Primary keys can be multiple if separated by comma, default primary Id is id -->
+        <delete authorizationNeeded="true" strictFields="false" authorization="core.delete" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="form" validateDataFunction="validate" tableName="contact_details">
+            <description><![CDATA[ This operation deletes Contact item(s). Expected data: id of the contact(s). ]]></description>
+            <fields>
+                <field name="id" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                <description><![CDATA[ Fields needed for Delete operation. ]]></description>
+            </fields>
+            <resources>
+                <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+            </resources>
+        </delete>
+        <task>
+            <!-- Each task can be preformed in separate class and system will take this values instead -->
+            <!-- If functionArgs attribute is defined, only arguments defined there will be pulled from posted data and passed to the function. Default is to send all posted data in one array -->
+            <featured useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int},1{value}" validateData="none" validateDataFunction="validate" tableName="">
+                <description><![CDATA[ This task enables you to set specific Contact or Contacts as featured. Expected data: id of the contact. ]]></description>
+                <fields>
+                    <field name="id" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                    <description><![CDATA[ Fields needed for Featured task operation. ]]></description>
+                </fields>
+                <resources>
+                    <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                </resources>
+            </featured>
+            <unfeatured useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="featured" functionArgs="id{int},0{value}" validateData="none" validateDataFunction="validate" tableName="">
+                <description><![CDATA[ This task enables you to set specific Contact or Contacts as unfeatured. Expected data: id of the contact. ]]></description>
+                <fields>
+                    <field name="id" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                </fields>
+                <resources>
+                    <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                </resources>
+            </unfeatured>
+            <publish useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="">
+                <description><![CDATA[ This task enables you to set specific Contact or Contacts as published. Expected data: id of the contact. ]]></description>
+                <fields>
+                    <field name="id" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                </fields>
+                <resources>
+                    <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                </resources>
+            </publish>
+            <unpublish useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="publish" functionArgs="id{int},0{value}" validateData="none" validateDataFunction="validate" tableName="">
+                <description><![CDATA[ This task enables you to set specific Contact or Contacts as unpublished. Expected data: id of the contact. ]]></description>
+                <fields>
+                    <field name="id" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                </fields>
+                <resources>
+                    <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                </resources>
+            </unpublish>
+            <checkin useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="">
+                <description><![CDATA[ This task enables you to check-in currently checked-out Contact item. Expected data: id of the contact. ]]></description>
+                <fields>
+                    <field name="id" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                </fields>
+                <resources>
+                    <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                </resources>
+            </checkin>
+            <checkout useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="">
+                <description><![CDATA[ This task enables you to check-out Contact item. Expected data: id of the contact. ]]></description>
+                <fields>
+                    <field name="id" transform="int" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
+                </fields>
+                <resources>
+                    <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                </resources>
+            </checkout>
+            <!-- If using useOperation you can redirect that task operation to some of the existing ones: create, read, update, delete -->
+            <save useOperation="update" authorizationNeeded="true" strictFields="false" authorization="" dataMode="model" optionName="" modelClassName="" modelClassPath="" isAdminClass="false" functionName="" functionArgs="" validateData="none" validateDataFunction="validate" tableName=""/>
+            <apply useOperation="update" authorizationNeeded="true" strictFields="false" authorization="" dataMode="model" optionName="" modelClassName="" modelClassPath="" isAdminClass="false" functionName="" functionArgs="" validateData="none" validateDataFunction="validate" tableName=""/>
+            <delete useOperation="delete" authorizationNeeded="true" strictFields="false" authorization="" dataMode="model" optionName="" modelClassName="" modelClassPath="" isAdminClass="false" functionName="" functionArgs="" validateData="none" validateDataFunction="validate" tableName=""/>
+        </task>
+    </operations>
+</apiservice>

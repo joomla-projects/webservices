@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="webservices" default="site" basedir=".">
+    <!-- Do initialization stuff -->
+    <target name="site" depends="setup-properties">
+        <if>
+            <equals arg1="${extension}" arg2="" />
+            <then>
+                <fail message="Extension not specified, use -Dextension=EXTENSION" />
+            </then>
+            <else>
+                <phingcall target="webservices" />
+            </else>
+        </if>
+    </target>
+
+	<target name="setup-properties">
+		<property file="build.properties"  override="true"/>
+		<property name="webservices.src" value="./" />
+		<property name="extension" value="${comp.name}" />
+	</target>
+
+    <target name="webservices" description="Copies files to a existing joomla site">
+        <echo message="---------------- || webservices || ----------------"/>
+
+        <!-- Clean old files -->
+        <delete dir="${www.dir}/administrator/components/com_${extension}" quiet="yes" includeemptydirs="true"/>
+        <delete dir="${www.dir}/components/com_${extension}" quiet="yes" includeemptydirs="true"/>
+        <delete dir="${www.dir}/libraries/${extension}" quiet="yes" includeemptydirs="true"/>
+        <delete dir="${www.dir}/media/${extension}" quiet="yes" includeemptydirs="true"/>
+        <delete dir="${www.dir}/plugins/system/${extension}" quiet="yes" includeemptydirs="true"/>
+
+        <!-- Libraries -->
+        <copy todir="${www.dir}/libraries" overwrite="true">
+            <fileset dir="${webservices.src}/libraries">
+                <include name="**" />
+            </fileset>
+        </copy>
+
+        <!-- For discover install we need to place the libraries manifests in the right folder -->
+        <echo message="Copying library manifiest..." />
+        <copy file="${webservices.src}/libraries/${extension}/${extension}.xml"
+              tofile="${www.dir}/administrator/manifests/libraries/${extension}.xml" overwrite="true" />
+
+        <!-- Copy Package Manifest -->
+        <echo message="Copying manifiest..." />
+        <copy file="${webservices.src}/${extension}.xml"
+              tofile="${www.dir}/administrator/components/com_${extension}/${extension}.xml" overwrite="true">
+            <!-- trick to replace extension folders in the manifest-->
+            <filterchain>
+                <replacetokens begintoken="comp" endtoken="/admin">
+                    <token key="onent" value="administrator/components/${extension}"/>
+                </replacetokens>
+                <replacetokens begintoken="comp" endtoken="/site">
+                    <token key="onent" value="components/${extension}"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+        <!-- Language -->
+        <copy todir="${www.dir}/language" overwrite="true">
+            <fileset dir="${webservices.src}/libraries/webservices/language">
+                <include name="**" />
+            </fileset>
+        </copy>
+
+        <!-- Media -->
+        <echo message="Copying media folder " />
+        <copy todir="${www.dir}/media" overwrite="true">
+            <fileset dir="${webservices.src}/media">
+                <include name="**" />
+            </fileset>
+        </copy>
+
+        <!-- Plugins -->
+        <copy todir="${www.dir}/plugins" overwrite="true">
+            <fileset dir="${webservices.src}/plugins">
+                <include name="**" />
+            </fileset>
+        </copy>
+
+        <!-- Plugins - Languages -->
+        <copy todir="${www.dir}/administrator/language" overwrite="true">
+            <fileset dir="${webservices.src}/plugins/system/webservices/language">
+                <include name="**" />
+            </fileset>
+        </copy>
+
+        <!-- Manifest & install script -->
+        <echo message="Copying manifest..."/>
+        <copy file="${webservices.src}/webservices.xml"
+              tofile="${www.dir}/administrator/components/com_webservices/webservices.xml" overwrite="true">
+            <!-- trick to replace extension folders in the manifest-->
+            <filterchain>
+                <replacetokens begintoken="comp" endtoken="/admin">
+                    <token key="onent" value="administrator/components/webservices"/>
+                </replacetokens>
+                <replacetokens begintoken="comp" endtoken="/site">
+                    <token key="onent" value="components/webservices"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+        <!-- Backend component -->
+        <copy todir="${www.dir}/administrator/components/com_webservices" overwrite="true">
+            <fileset dir="${webservices.src}/component/admin">
+                <include name="**"/>
+                <!-- Exclude the manifest to avoid overwriting the previously copied -->
+                <exclude name="webservices.xml"/>
+            </fileset>
+        </copy>
+
+        <!-- Backend languages -->
+        <copy todir="${www.dir}/administrator/language" overwrite="true">
+            <fileset dir="${webservices.src}/component/admin/language">
+                <include name="**"/>
+            </fileset>
+        </copy>
+    </target>
+</project>

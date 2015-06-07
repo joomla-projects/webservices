@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="package" version="3.0" method="upgrade">
+    <name>Webservices package</name>
+    <creationDate>June 2015</creationDate>
+    <author>redCOMPONENT</author>
+    <authorEmail>email@redcomponent.com</authorEmail>
+    <authorUrl>www.redcomponent.com</authorUrl>
+    <copyright>Copyright (C) 2008 - 2015 redCOMPONENT.com. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later, see LICENSE.</license>
+    <packagename>webservices</packagename>
+    <version>1.0.0</version>
+    <description>Webservice package with all plugins and library</description>
+
+    <files folder="packages">
+        <file type="component" id="com_webservices" >com_webservices.zip</file>
+        <file type="library" id="webservices">lib_webservices.zip</file>
+        <file type="plugin" id="webservices" group="system">plg_sys_webservices.zip</file>
+        <file type="plugin" id="redcore_oauth2" group="authentication">plg_aut_redcore_oauth2.zip</file>
+    </files>
+</extension>

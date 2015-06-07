@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==================================================================         -->
+<!-- webservices copier (adding webservices to your extension package)                  -->
+<!-- Use PHING script to copy webservices submodule into your extension             -->
+<!-- To use in your environment do the following steps:                         -->
+<!--    Call this script from your extension packager using:                    -->
+<!--                                                                            -->
+<!--    [...]                                                                   -->
+<!--                                                                            -->
+<!--    ============================================                            -->
+<!--    (DEFAULT)  Target: dist                                                 -->
+<!--    ============================================                            -->
+<!--    <target name="dist" depends="build, copywebservices">                       -->
+<!--    [...]                                                                   -->
+<!--                                                                            -->
+<!--  See the example of this code in use at redSLIDER2 project:                -->
+<!--  https://github.com/redCOMPONENT-COM/redSLIDER2                            -->
+<!-- ==================================================================         -->
+<project name="com_webservices" default="copyframework">
+
+    <!-- ============================================  -->
+    <!-- Create packages folder                        -->
+    <!-- ============================================  -->
+    <target name="copyframework">
+        <echo msg="Copying webservices framework folder to build directory..."/>
+        <echo msg="Copying INSTALLER files to build directory..."/>
+        <copy todir="${webservicestargetdir}">
+            <fileset dir="${webservicespath}/">
+                <include name="webservices.xml"/>
+            </fileset>
+        </copy>
+
+        <echo msg="Copying COMPONENT folder to build directory..."/>
+        <copy todir="${webservicestargetdir}/component">
+            <fileset dir="${webservicespath}/component">
+                <include name="**"/>
+                <exclude name=".*"/>
+            </fileset>
+        </copy>
+
+        <echo msg="Copying MEDIA folder to build directory..."/>
+        <copy todir="${webservicestargetdir}/media">
+            <fileset dir="${webservicespath}/media">
+            <include name="**"/>
+            <exclude name=".*"/>
+            <!-- Excluding files -->
+            <exclude name="**/README.md"/>
+        </fileset>
+        </copy>
+
+        <mkdir dir="${webservicestargetdir}/packages"/>
+        <zip destfile="${webservicestargetdir}/packages/com_webservices.zip">
+            <fileset dir="${webservicestargetdir}">
+                <include name="**"/>
+                <exclude name=".*"/>
+            </fileset>
+        </zip>
+
+        <delete dir="${webservicestargetdir}/component" quiet="yes" includeemptydirs="true"/>
+        <delete dir="${webservicestargetdir}/media" quiet="yes" includeemptydirs="true"/>
+        <delete file="${webservicestargetdir}/webservices.xml" quiet="yes"/>
+
+
+        <copy todir="${webservicestargetdir}">
+            <fileset dir="${webservicespath}/">
+                <include name="pkg_webservices.xml"/>
+            </fileset>
+        </copy>
+
+
+        <echo message="Packaging libraries..."/>
+        <zip destfile="${webservicestargetdir}/packages/lib_webservices.zip">
+            <fileset dir="${webservicespath}/libraries/webservices">
+                <include name="**"/>
+                <exclude name=".*"/>
+            </fileset>
+        </zip>
+
+        <echo msg="Packaging system webservices plugin to build directory..."/>
+        <zip destfile="${webservicestargetdir}/packages/plg_sys_webservices.zip">
+            <fileset dir="${webservicespath}/plugins/system/webservices">
+                <include name="**"/>
+                <exclude name=".*"/>
+            </fileset>
+        </zip>
+        <zip destfile="${webservicestargetdir}/packages/plg_aut_redcore_oauth2.zip">
+            <fileset dir="${webservicespath}/plugins/authentication/redcore_oauth2">
+                <include name="**"/>
+                <exclude name=".*"/>
+            </fileset>
+        </zip>
+    </target>
+</project>
