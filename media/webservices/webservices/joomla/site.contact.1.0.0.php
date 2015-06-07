@@ -16,7 +16,7 @@ defined('JPATH_BASE') or die;
  * @subpackage  Api Helper
  * @since       1.2
  */
-class RApiHalHelperSiteContact
+class JApiHalHelperSiteContact
 {
 	/**
 	 * Checks if operation is allowed from the configuration file
@@ -25,70 +25,70 @@ class RApiHalHelperSiteContact
 	 *
 	 * @throws  RuntimeException
 	 */
-	/* public function isOperationAllowed(RApiHalHal $apiHal){} */
+	/* public function isOperationAllowed(JApiHalHal $apiHal){} */
 
 	/**
 	 * Execute the Api Default Page operation.
 	 *
-	 * @return  mixed  RApi object with information on success, boolean false on failure.
+	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiDefaultPage(RApiHalHal $apiHal){} */
+	/* public function apiDefaultPage(JApiHalHal $apiHal){} */
 
 	/**
 	 * Execute the Api Create operation.
 	 *
-	 * @return  mixed  RApi object with information on success, boolean false on failure.
+	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiCreate(RApiHalHal $apiHal){} */
+	/* public function apiCreate(JApiHalHal $apiHal){} */
 
 	/**
 	 * Execute the Api Read operation.
 	 *
-	 * @return  mixed  RApi object with information on success, boolean false on failure.
+	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiRead(RApiHalHal $apiHal){} */
+	/* public function apiRead(JApiHalHal $apiHal){} */
 
 	/**
 	 * Execute the Api Delete operation.
 	 *
-	 * @return  mixed  RApi object with information on success, boolean false on failure.
+	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiDelete(RApiHalHal $apiHal){} */
+	/* public function apiDelete(JApiHalHal $apiHal){} */
 
 	/**
 	 * Execute the Api Update operation.
 	 *
-	 * @return  mixed  RApi object with information on success, boolean false on failure.
+	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiUpdate(RApiHalHal $apiHal){} */
+	/* public function apiUpdate(JApiHalHal $apiHal){} */
 
 	/**
 	 * Execute the Api Task operation.
 	 *
-	 * @return  mixed  RApi object with information on success, boolean false on failure.
+	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiTask(RApiHalHal $apiHal){} */
+	/* public function apiTask(JApiHalHal $apiHal){} */
 
 	/**
 	 * Execute the Api Documentation operation.
 	 *
-	 * @return  mixed  RApi object with information on success, boolean false on failure.
+	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiDocumentation(RApiHalHal $apiHal){} */
+	/* public function apiDocumentation(JApiHalHal $apiHal){} */
 
 	/**
 	 * Process posted data from json or object to array
@@ -100,7 +100,7 @@ class RApiHalHelperSiteContact
 	 *
 	 * @since   1.2
 	 */
-	/* public function processPostData($data, $configuration, RApiHalHal $apiHal){} */
+	/* public function processPostData($data, $configuration, JApiHalHal $apiHal){} */
 
 	/**
 	 * Set document content for List view
@@ -110,7 +110,7 @@ class RApiHalHelperSiteContact
 	 *
 	 * @return void
 	 */
-	/* public function setForRenderList($items, $configuration, RApiHalHal $apiHal){} */
+	/* public function setForRenderList($items, $configuration, JApiHalHal $apiHal){} */
 
 	/**
 	 * Set document content for Item view
@@ -120,7 +120,7 @@ class RApiHalHelperSiteContact
 	 *
 	 * @return void
 	 */
-	/* public function setForRenderItem($item, $configuration, RApiHalHal $apiHal){} */
+	/* public function setForRenderItem($item, $configuration, JApiHalHal $apiHal){} */
 
 	/**
 	 * Prepares body for response
@@ -131,7 +131,7 @@ class RApiHalHelperSiteContact
 	 *
 	 * @since   1.2
 	 */
-	/* public function prepareBody($message, RApiHalHal $apiHal){} */
+	/* public function prepareBody($message, JApiHalHal $apiHal){} */
 
 	/**
 	 * Load model class for data manipulation
@@ -143,16 +143,16 @@ class RApiHalHelperSiteContact
 	 *
 	 * @since   1.2
 	 */
-	/* public function loadModel($elementName, $configuration, RApiHalHal $apiHal){} */
+	/* public function loadModel($elementName, $configuration, JApiHalHal $apiHal){} */
 
 	/**
 	 * Set Method for Api to be performed
 	 *
-	 * @return  RApi
+	 * @return  JApi
 	 *
 	 * @since   1.2
 	 */
-	/* public function setApiOperation(RApiHalHal $apiHal){} */
+	/* public function setApiOperation(JApiHalHal $apiHal){} */
 
 	/**
 	 * Include library classes
@@ -163,7 +163,7 @@ class RApiHalHelperSiteContact
 	 *
 	 * @since   1.4
 	 */
-	/*public function loadExtensionLibrary($element, RApiHalHal $apiHal){} */
+	/*public function loadExtensionLibrary($element, JApiHalHal $apiHal){} */
 
 	/**
 	 * Validates posted data
@@ -176,7 +176,7 @@ class RApiHalHelperSiteContact
 	 *
 	 * @since   1.3
 	 */
-	/*public function validatePostData($model, $data, $configuration, RApiHalHal $apiHal){} */
+	/*public function validatePostData($model, $data, $configuration, JApiHalHal $apiHal){} */
 
 	/**
 	 * Gets errors from model and places it into Application message queue
@@ -185,5 +185,5 @@ class RApiHalHelperSiteContact
 	 *
 	 * @return void
 	 */
-	/*public function displayErrors($model, RApiHalHal $apiHal)*/
+	/*public function displayErrors($model, JApiHalHal $apiHal)*/
 }

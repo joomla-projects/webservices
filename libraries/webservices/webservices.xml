@@ -13,6 +13,7 @@
 
     <files>
         <folder>api</folder>
+        <folder>layouts</folder>
         <filename>bootstrap.php</filename>
         <filename>webservices.xml</filename>
     </files>

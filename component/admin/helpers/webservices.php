@@ -127,7 +127,7 @@ class WebservicesHelper extends JHelperContent
 			{
 				// There are some errors in the plugins
 				$errors = $objectFile->getErrors();
-				$app->enqueueMessage(JText::sprintf('LIB_REDCORE_ERROR_BEFORE_SAVE', implode('<br />', $errors)), 'error');
+				$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_BEFORE_SAVE', implode('<br />', $errors)), 'error');
 
 				return false;
 			}
@@ -135,7 +135,7 @@ class WebservicesHelper extends JHelperContent
 			if (!JFile::upload($objectFile->tmp_name, $objectFile->filePath))
 			{
 				// Error in upload
-				$app->enqueueMessage(JText::_('LIB_REDCORE_ERROR_UNABLE_TO_UPLOAD_FILE'), 'error');
+				$app->enqueueMessage(JText::_('LIB_WEBSERVICES_ERROR_UNABLE_TO_UPLOAD_FILE'), 'error');
 
 				return false;
 			}
@@ -174,7 +174,7 @@ class WebservicesHelper extends JHelperContent
 
 		if (empty($file['name']))
 		{
-			$app->enqueueMessage(JText::_('LIB_REDCORE_ERROR_WARNFILENAME'), 'error');
+			$app->enqueueMessage(JText::_('LIB_WEBSERVICES_ERROR_WARNFILENAME'), 'error');
 
 			return false;
 		}
@@ -187,7 +187,7 @@ class WebservicesHelper extends JHelperContent
 
 			if (!in_array($format, $allowable))
 			{
-				$app->enqueueMessage(JText::sprintf('LIB_REDCORE_ERROR_WARNFILETYPE', $format, $options['allowedFileExtensions']), 'error');
+				$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_WARNFILETYPE', $format, $options['allowedFileExtensions']), 'error');
 
 				return false;
 			}
@@ -203,7 +203,7 @@ class WebservicesHelper extends JHelperContent
 
 		if ($options['maxFileSize'] != 0 && (int) $file['size'] > $options['maxFileSize'])
 		{
-			$app->enqueueMessage(JText::sprintf('LIB_REDCORE_ERROR_WARNFILETOOLARGE', $file['size'], $options['maxFileSize']), 'error');
+			$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_WARNFILETOOLARGE', $file['size'], $options['maxFileSize']), 'error');
 
 			return false;
 		}
@@ -218,7 +218,7 @@ class WebservicesHelper extends JHelperContent
 			if (strlen($file['mimeTypeName']) && !in_array($file['mimeTypeName'], $validFileTypes))
 			{
 				$app->enqueueMessage(
-					JText::sprintf('LIB_REDCORE_ERROR_WARNINVALID_MIME', $file['mimeTypeName'], $options['allowedMIMETypes']),
+					JText::sprintf('LIB_WEBSERVICES_ERROR_WARNINVALID_MIME', $file['mimeTypeName'], $options['allowedMIMETypes']),
 					'error'
 				);
 
@@ -229,7 +229,7 @@ class WebservicesHelper extends JHelperContent
 		// If we have a name clash, abort the upload
 		if (empty($options['overrideExistingFile']) && JFile::exists($file['filePath']))
 		{
-			$app->enqueueMessage(JText::sprintf('LIB_REDCORE_ERROR_FILE_EXISTS', $file['destinationFileName']), 'error');
+			$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_FILE_EXISTS', $file['destinationFileName']), 'error');
 
 			return false;
 		}

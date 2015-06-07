@@ -16,7 +16,7 @@ defined('JPATH_BASE') or die;
  * @subpackage  Api Helper
  * @since       1.2
  */
-class RApiHalHelperSiteUsers
+class JApiHalHelperSiteUsers
 {
 	/**
 	 * Service for reset password of user when they forgot password.

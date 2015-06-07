@@ -523,7 +523,8 @@ class JApiHalHal extends JApi
 					'soapEnabled' => JBootstrap::getConfig('enable_soap', 0),
 					'print' => isset($dataGet->print)
 				)
-			)
+			),
+			JPATH_WEBSERVICES . '/layouts'
 		);
 
 		return $this;
@@ -1568,6 +1569,11 @@ class JApiHalHal extends JApi
 	{
 		// Get username and password from globals
 		$credentials = JApiHalHelper::getCredentialsFromGlobals();
+
+		if (empty($credentials['username']))
+		{
+			$credentials['username'] = '';
+		}
 
 		return JFactory::getApplication()->login($credentials, array('scopes' => $scopes));
 	}

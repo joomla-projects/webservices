@@ -3,7 +3,7 @@ Webservices
 
 This is a lab for investigating adding a layer of webservices to Joomla
 
-For more details join #webservices channel at https://joomla.slack.com/
+For more details join #webservices channel at https://glip.com/
 
 
 How to install
@@ -31,8 +31,3 @@ Tips
 --- Setup HAL Browser and Chrome POSTMAN for easier REST and HAL navigation ( https://github.com/mikekelly/hal-browser )
 
 --- To get main webservices page visit http://yoursite/index.php?api=Hal
-
-
-
-
-For more details join #webservices channel at https://glip.com/
