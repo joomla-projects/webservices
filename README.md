@@ -35,3 +35,4 @@ Tips
 
 
 
+For more details join #webservices channel at https://glip.com/
