@@ -10,34 +10,6 @@ build.properties
 phing-latest.phar
 .dist
 
-# Build config
-gulp-config.json
-node_modules
-
-# Github pages and Jekyll files
-/_site/
-/Gemfile
-/Gemfile.lock
-
-# phpunit
-tests/unit/phpunit.xml
-
-# Robo
-robo.phar
-
-# LESS Transpiler
-npm-debug.log
-
-# Test related files
-tests/acceptance.suite.yml
-tests/*/*Tester.php
-tests/joomla-cms3*
-tests/_output
-selenium-server-standalone.jar
-codecept.phar
-selenium.log
-selenium-errors.log
-
 # Never ignore
 !.gitignore
 !index.html
