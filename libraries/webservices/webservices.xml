@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="library" method="upgrade" version="2.5">
+    <name>Webservices - Libraries</name>
+    <libraryname>webservices</libraryname>
+    <creationDate>May 2015</creationDate>
+    <author>redCOMPONENT</author>
+    <authorEmail>email@redcomponent.com</authorEmail>
+    <authorUrl>www.redcomponent.com</authorUrl>
+    <copyright>Copyright (C) 2008 - 2015 redCOMPONENT.com. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later, see LICENSE.</license>
+    <version>1.0.0</version>
+    <description>Joomla webservice Libraries</description>
+
+    <files>
+        <folder>api</folder>
+        <folder>layouts</folder>
+        <filename>bootstrap.php</filename>
+        <filename>webservices.xml</filename>
+    </files>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.lib_webservices.ini</language>
+    </languages>
+</extension>

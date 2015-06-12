@@ -1,0 +1,16 @@
+# Temp files
+*.tmp
+*.bak
+*.swp
+*~.nib
+*~
+
+# Phing
+build.properties
+phing-latest.phar
+.dist
+
+# Never ignore
+!.gitignore
+!index.html
+!index.php

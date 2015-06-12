@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="authentication" method="upgrade">
+    <name>PLG_AUTHENTICATION_REDCORE_OAUTH2</name>
+    <author>redCOMPONENT</author>
+    <creationDate>April 2015</creationDate>
+    <copyright>Copyright (C) 2008 - 2015 redCOMPONENT.com. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>email@redcomponent.com</authorEmail>
+    <authorUrl>www.redcomponent.com</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_AUTHENTICATION_REDCORE_OAUTH2_XML_DESCRIPTION</description>
+
+    <files>
+        <filename plugin="redcore_oauth2">redcore_oauth2.php</filename>
+    </files>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_authentication_redcore_oauth2.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_authentication_redcore_oauth2.sys.ini</language>
+    </languages>
+
+    <config>
+        <fields name="params">
+        </fields>
+    </config>
+</extension>
