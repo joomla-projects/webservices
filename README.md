@@ -31,3 +31,15 @@ Tips
 --- Setup HAL Browser and Chrome POSTMAN for easier REST and HAL navigation ( https://github.com/mikekelly/hal-browser )
 
 --- To get main webservices page visit http://yoursite/index.php?api=Hal
+
+
+Documentation for setup
+====
+
+Detailed documentation of redCORE webservices can be found here http://redcomponent-com.github.io/redCORE/?chapters/webservices/overview.md It is planned to change major features in there but for now it is still a valid documentation for it.
+
+
+Documentation for webservices and webservices working group
+====
+
+Documentation for Webservices working group can be found here: https://docs.joomla.org/Web_Services_Working_Group
