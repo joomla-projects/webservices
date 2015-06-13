@@ -10,6 +10,7 @@
 namespace Joomla\Webservices\API\Soap;
 
 use Joomla\Uri\Uri;
+use Joomla\Webservices\Api\Hal\HalHelper;
 
 /**
  * Wsdl class for redCORE webservice
@@ -268,10 +269,10 @@ class Wsdl
 		// @todo add Uri::root() method
 		$wsdlFullPath = Uri::root() . $wsdlPath;
 
-		$client = JApiHalHelper::attributeToString($this->webserviceXml, 'client', 'site');
+		$client = HalHelper::attributeToString($this->webserviceXml, 'client', 'site');
 		$version = !empty($this->webserviceXml->config->version) ? $this->webserviceXml->config->version : '1.0.0';
 		$this->webserviceFullName = $client . '.' . $this->webserviceXml->config->name . '.' . $version;
-		$this->webserviceUrl = JApiHalHelper::buildWebserviceFullUrl($client, $this->webserviceXml->config->name, $version, 'soap');
+		$this->webserviceUrl = HalHelper::buildWebserviceFullUrl($client, $this->webserviceXml->config->name, $version, 'soap');
 
 		// Root of the document
 		$this->wsdl = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><wsdl:definitions'
@@ -314,7 +315,7 @@ class Wsdl
 			// Read list
 			if (isset($this->webserviceXml->operations->read->list))
 			{
-				$filters = JApiHalHelper::getFilterFields($this->webserviceXml->operations->read->list, true, true);
+				$filters = HalHelper::getFilterFields($this->webserviceXml->operations->read->list, true, true);
 
 				if (empty($filters))
 				{
@@ -359,7 +360,7 @@ class Wsdl
 			{
 				// Add read item messages
 				$inputFields = array_merge(
-					JApiHalHelper::getFieldsArray($this->webserviceXml->operations->read->item, true),
+					HalHelper::getFieldsArray($this->webserviceXml->operations->read->item, true),
 					array(array('name' => 'language', 'transform' => 'string'))
 				);
 
@@ -380,7 +381,7 @@ class Wsdl
 			if (isset($this->webserviceXml->operations->create))
 			{
 				// Add create messages
-				$inputFields = JApiHalHelper::getFieldsArray($this->webserviceXml->operations->create);
+				$inputFields = HalHelper::getFieldsArray($this->webserviceXml->operations->create);
 
 				// Add create response messages
 				$outputFields = array(SoapHelper::getResultResource($this->webserviceXml->operations->create));
@@ -392,7 +393,7 @@ class Wsdl
 			if (isset($this->webserviceXml->operations->update))
 			{
 				// Add update messages
-				$inputFields = JApiHalHelper::getFieldsArray($this->webserviceXml->operations->update);
+				$inputFields = HalHelper::getFieldsArray($this->webserviceXml->operations->update);
 
 				// Add update response messages
 				$outputFields = array(SoapHelper::getResultResource($this->webserviceXml->operations->update));
@@ -404,7 +405,7 @@ class Wsdl
 			if (isset($this->webserviceXml->operations->delete))
 			{
 				// Add delete messages
-				$inputFields = JApiHalHelper::getFieldsArray($this->webserviceXml->operations->delete, true);
+				$inputFields = HalHelper::getFieldsArray($this->webserviceXml->operations->delete, true);
 
 				// Add delete response messages
 				$outputFields = array(SoapHelper::getResultResource($this->webserviceXml->operations->delete));
@@ -418,7 +419,7 @@ class Wsdl
 				foreach ($this->webserviceXml->operations->task->children() as $taskName => $task)
 				{
 					// Add task messages
-					$inputFields = JApiHalHelper::getFieldsArray($task);
+					$inputFields = HalHelper::getFieldsArray($task);
 
 					// Add task response messages
 					$outputFields = array(SoapHelper::getResultResource($task));
