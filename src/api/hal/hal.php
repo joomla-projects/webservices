@@ -207,11 +207,11 @@ class Hal extends Api
 			define('JSON_UNESCAPED_SLASHES', 64);
 		}
 		// OAuth2 check
-		if ($this->app->get('webservices_permission_check', 1) == 0)
+		if ($this->app->get('webservices.webservices_permission_check', 1) == 0)
 		{
 			$this->permissionCheck = 'scope';
 		}
-		elseif ($this->app->get('webservices_permission_check', 1) == 1)
+		elseif ($this->app->get('webservices.webservices_permission_check', 1) == 1)
 		{
 			$this->permissionCheck = 'joomla';
 		}
@@ -386,7 +386,7 @@ class Hal extends Api
 			else
 			{
 				// If default page needs authorization to access it
-				if ($this->app->get('webservices_default_page_authorization', 0) == 1 && !$this->loginUser(''))
+				if ($this->app->get('webservices.webservices_default_page_authorization', 0) == 1 && !$this->loginUser(''))
 				{
 					return false;
 				}
@@ -418,7 +418,7 @@ class Hal extends Api
 		if (!empty($messages))
 		{
 			// If we are not in debug mode we will take out everything except errors
-			if ($this->app->get('debug_webservices', 0) == 0)
+			if ($this->app->get('webservices.debug_webservices', 0) == 0)
 			{
 				foreach ($messages as $key => $message)
 				{
@@ -536,7 +536,7 @@ class Hal extends Api
 				'view' => $this,
 				'options' => array (
 					'xml' => $currentConfiguration,
-					'soapEnabled' => $this->app->get('enable_soap', 0),
+					'soapEnabled' => $this->app->get('webservices.enable_soap', 0),
 					'print' => isset($dataGet->print)
 				)
 			),

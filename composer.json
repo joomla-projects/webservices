@@ -16,6 +16,7 @@
         "joomla/registry": "~1.4",
 		"joomla/di": "~1.3",
         "joomla/utilities": "~1.3",
+        "joomla/language": "2.*@dev",
         "psr/log": "~1.0"
     },
     "autoload": {
