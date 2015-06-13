@@ -83,7 +83,7 @@ class Soap extends Api
 	/**
 	 * Set Method for Api to be performed
 	 *
-	 * @return  Api
+	 * @return  $this
 	 *
 	 * @since   1.4
 	 */
@@ -105,7 +105,7 @@ class Soap extends Api
 	/**
 	 * Execute the Api operation.
 	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
+	 * @return  $this
 	 *
 	 * @since   1.4
 	 * @throws  \Exception
@@ -130,7 +130,7 @@ class Soap extends Api
 					$this->triggerFunction('apiWsdl');
 			}
 
-			$messages = JFactory::getApplication()->getMessageQueue();
+			$messages = $this->app->getMessageQueue();
 
 			$executionErrors = ob_get_contents();
 			ob_end_clean();
@@ -354,7 +354,7 @@ class Soap extends Api
 		// We will add this instance of the object as last argument for manipulation in plugin and helper
 		$temp[] = &$this;
 
-		$result = JFactory::getApplication()->triggerEvent('JApiSoapBefore' . $functionName, $temp);
+		$result = $this->app->triggerEvent('JApiSoapBefore' . $functionName, $temp);
 
 		if ($result)
 		{
@@ -364,7 +364,7 @@ class Soap extends Api
 		// Checks if that method exists in helper file and executes it
 		$result = call_user_func_array(array($this, $functionName), $temp);
 
-		JFactory::getApplication()->triggerEvent('JApiSoapAfter' . $functionName, $temp);
+		$this->app->triggerEvent('JApiSoapAfter' . $functionName, $temp);
 
 		return $result;
 	}
