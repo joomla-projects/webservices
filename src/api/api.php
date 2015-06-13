@@ -9,9 +9,9 @@
 
 namespace Joomla\Webservices\Api;
 
-use Joomla\Webservices\Application;
 use Joomla\Input\Input;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\DI\Container;
 
 /**
  * Interface to handle api calls
@@ -49,65 +49,14 @@ class Api extends ApiBase
 	public $startTime;
 
 	/**
-	 * Method to return a JApi instance based on the given options.  There is one global option and then
-	 * the rest are specific to the Api.  The 'api' option defines which JApi class is
-	 * used for, default is 'hal'.
-	 *
-	 * Instances are unique to the given options and new objects are only created when a unique options array is
-	 * passed into the method.  This ensures that we don't end up with unnecessary api resources.
-	 *
-	 * @param   array  $options  Parameters to be passed to the creating api.
-	 *
-	 * @return  Api  Api object.
-	 *
-	 * @since   1.2
-	 * @throws  \RuntimeException
-	 */
-	public static function getInstance($options = array())
-	{
-		// Sanitize the api options.
-		$options['api'] = (isset($options['api'])) ? preg_replace('/[^A-Z0-9_\.-]/i', '', $options['api']) : 'hal';
-
-		// Get the options signature for the api connector.
-		$signature = md5(serialize($options));
-
-		// If we already have a api connector instance for these options then just use that.
-		if (empty(self::$instances[$signature]))
-		{
-			// Derive the class name from the driver.
-			$class = 'JApi' . ucfirst(strtolower($options['api'])) . ucfirst(strtolower($options['api']));
-
-			// If the class still doesn't exist we have nothing left to do but throw an exception.
-			if (!class_exists($class))
-			{
-				throw new \RuntimeException(JText::sprintf('LIB_WEBSERVICES_API_UNABLE_TO_LOAD_API', $options['api']));
-			}
-
-			// Create our new JApi connector based on the options given.
-			try
-			{
-				$instance = new $class($options);
-			}
-			catch (\RuntimeException $e)
-			{
-				throw new \RuntimeException(JText::sprintf('LIB_WEBSERVICES_API_UNABLE_TO_CONNECT_TO_API', $e->getMessage()));
-			}
-
-			// Set the new connector to the global instances based on signature.
-			self::$instances[$signature] = $instance;
-		}
-
-		return self::$instances[$signature];
-	}
-
-	/**
 	 * Method to instantiate the file-based api call.
 	 *
-	 * @param   mixed  $options  Optional custom options to load. JRegistry or array format
+	 * @param   Container  $container  The DIC object
+	 * @param   mixed      $options    Optional custom options to load. JRegistry or array format
 	 *
 	 * @since   1.2
 	 */
-	public function __construct($options = null)
+	public function __construct(Container $container, $options = null)
 	{
 		$this->startTime = microtime(true);
 
@@ -119,6 +68,8 @@ class Api extends ApiBase
 
 		// Load Library language
 		$this->loadExtensionLanguage('lib_joomla', JPATH_ADMINISTRATOR);
+
+		parent::__construct($container);
 	}
 
 	/**
@@ -184,10 +135,10 @@ class Api extends ApiBase
 	 */
 	public function loadExtensionLanguage($option, $path = JPATH_SITE)
 	{
-		// Load common and local language files.
-		$lang = JFactory::getLanguage();
+		/** @var \Joomla\Language\Language $lang */
+		$lang = $this->container->get('Joomla\\Language\\LanguageFactory')->getLanguage();
 
-		// Load language file
+		// Load common and local language files.
 		$lang->load($option, $path, null, false, false)
 		|| $lang->load($option, $path . "/components/$option", null, false, false)
 		|| $lang->load($option, $path, $lang->getDefault(), false, false)
@@ -199,15 +150,16 @@ class Api extends ApiBase
 	/**
 	 * Returns posted data in array format
 	 *
+	 * @param   Container  $container  The DIC object
+	 *
 	 * @return  array
 	 *
 	 * @since   1.2
 	 */
-	public static function getPostedData()
+	public static function getPostedData(Container $container)
 	{
-		// @todo Inject Container object to get access to the application
-		$app = new Application(new \Joomla\DI\Container);
-		$input = $app->input;
+		/** @var \Joomla\Input\Input $input */
+		$input = $container->get('app')->input;
 		$inputData = file_get_contents("php://input");
 
 		if (is_object($inputData))
@@ -247,7 +199,7 @@ class Api extends ApiBase
 			$inputData = $input->post->getArray();
 		}
 
-		// Filter data with JInput default filter
+		// Filter data with Input default filter
 		$postedData = new Input($inputData);
 
 		return $postedData->getArray();

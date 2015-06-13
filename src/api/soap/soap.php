@@ -14,6 +14,7 @@ use Joomla\Webservices\Api\Hal\Hal;
 use Joomla\Webservices\Api\Soap\Operation\Operation;
 use Joomla\Webservices\Api\Soap\Document\Document;
 use Joomla\Uri\Uri;
+use Joomla\DI\Container;
 
 /**
  * Class to represent a SOAP standard object.
@@ -57,14 +58,15 @@ class Soap extends Api
 	/**
 	 * Method to instantiate the file-based api call.
 	 *
-	 * @param   mixed  $options  Optional custom options to load. JRegistry or array format
+	 * @param   Container  $container  The DIC object
+	 * @param   mixed      $options    Optional custom options to load. Registry or array format
 	 *
 	 * @throws  \Exception
 	 * @since   1.4
 	 */
-	public function __construct($options = null)
+	public function __construct(Container $container, $options = null)
 	{
-		parent::__construct($options);
+		parent::__construct($container, $options);
 
 		\JPluginHelper::importPlugin('webservices');
 

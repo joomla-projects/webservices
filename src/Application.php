@@ -11,12 +11,16 @@ namespace Joomla\Webservices;
 
 use Joomla\Application\AbstractWebApplication;
 use Joomla\Application\Web\WebClient;
-use Joomla\Registry\Registry;
 use Joomla\Input\Input;
 
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\DI\ContainerAwareInterface;
+
+use Joomla\Webservices\Api\Api;
+use Joomla\Webservices\Api\ApiInterface;
+use Joomla\Webservices\Api\Soap\SoapHelper;
+use Joomla\Webservices\Api\Hal\HalHelper;
 
 /**
  * Webservices bootstrap class
@@ -69,5 +73,130 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	public function doExecute()
 	{
 		$this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getLanguage()->load('lib_webservices');
+
+		/** @var \Joomla\Language\Text $text */
+		$text = $this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getText();
+
+		$apiName = $this->input->getString('api');
+
+		if ($this->isApiEnabled($apiName))
+		{
+			$input = $this->input;
+
+			if (!empty($apiName))
+			{
+				try
+				{
+					$this->clearHeaders();
+					$webserviceClient = $input->get->getString('webserviceClient', '');
+					$optionName       = $input->get->getString('option', '');
+					$optionName       = strpos($optionName, 'com_') === 0 ? substr($optionName, 4) : $optionName;
+					$viewName         = $input->getString('view', '');
+					$version          = $input->getString('webserviceVersion', '');
+
+					// This is deprecated in favor of Plugin trigger
+					//$token = $input->getString(JBootstrap::getConfig('oauth2_token_param_name', 'access_token'), '');
+					$token   = '';
+					$apiName = ucfirst($apiName);
+					$method  = strtoupper($input->getMethod());
+					$task    = HalHelper::getTask();
+					$data    = Api::getPostedData($this->getContainer());
+					$dataGet = $input->get->getArray();
+
+					if (empty($webserviceClient))
+					{
+						$webserviceClient = $this->isAdmin() ? 'administrator' : 'site';
+					}
+
+					$options = array(
+						'api'               => $apiName,
+						'optionName'        => $optionName,
+						'viewName'          => $viewName,
+						'webserviceVersion' => $version,
+						'webserviceClient'  => $webserviceClient,
+						'method'            => $method,
+						'task'              => $task,
+						'data'              => $data,
+						'dataGet'           => $dataGet,
+						'accessToken'       => $token,
+						'format'            => $input->getString('format', $this->get('webservices_default_format', 'json')),
+						'id'                => $input->getString('id', ''),
+						'absoluteHrefs'     => $input->get->getBool('absoluteHrefs', true),
+					);
+
+					$apiClass = 'Joomla\\Webservices\\Api\\' . $apiName . '\\' . $apiName;
+
+					if (!class_exists($apiClass) || !($apiClass instanceof ApiInterface))
+					{
+						throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_LOAD_API', $options['api']));
+					}
+
+					try
+					{
+						/** @var \Joomla\Webservices\Api\ApiBase $api */
+						$api = new $apiClass($this->getContainer(), $options);
+					}
+					catch (\RuntimeException $e)
+					{
+						throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_CONNECT_TO_API', $e->getMessage()));
+					}
+
+					// Run the api task
+					$api->execute();
+
+					// Display output
+					$api->render();
+				}
+				catch (\Exception $e)
+				{
+					$code = $e->getCode() > 0 ? $e->getCode() : 500;
+
+					// Set the server response code.
+					$this->header('Status: ' . $code, true, $code);
+
+					if (strtolower($apiName) == 'soap')
+					{
+						$this->setBody(SoapHelper::createSoapFaultResponse($e->getMessage()));
+					}
+					else
+					{
+						// Check for defined constants
+						if (!defined('JSON_UNESCAPED_SLASHES'))
+						{
+							define('JSON_UNESCAPED_SLASHES', 64);
+						}
+
+						// An exception has been caught, echo the message and exit.
+						$this->setBody(json_encode(array('message' => $e->getMessage(), 'code' => $e->getCode(), 'type' => get_class($e)), JSON_UNESCAPED_SLASHES));
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks if given api name is currently install and enabled on this server
+	 *
+	 * @param   string  $apiName  Api name
+	 *
+	 * @return bool
+	 */
+	private function isApiEnabled($apiName)
+	{
+		$apiName = strtolower($apiName);
+
+		return ($this->get('enable_webservices', 0) == 1 && $apiName == 'hal')
+		|| ($this->get('enable_soap', 0) == 1 && $apiName == 'soap');
+	}
+
+	/**
+	 * Checks whether we are in the site or admin of the Joomla CMS.
+	 *
+	 * @return  bool
+	 * @todo    Implement a check here
+	 */
+	public function isAdmin()
+	{
+		return true;
 	}
 }

@@ -15,7 +15,11 @@ use Joomla\Webservices\Api\Hal\Document\Link;
 use Joomla\Webservices\Api\Hal\Document\Document;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 use Joomla\Webservices\Application;
+
+
 use Joomla\Utilities\ArrayHelper;
+use Joomla\DI\Container;
+use Joomla\Language\Text;
 
 /**
  * Class to represent a HAL standard object.
@@ -139,23 +143,35 @@ class Hal extends Api
 	public $permissionCheck = 'joomla';
 
 	/**
-	 * @var    Application  Application Object
+	 * Application Object
+	 *
+	 * @var    Application
 	 * @since  __DEPLOY_VERSION__
-	 * @todo   Need to populate this in some way (HINT: Through the container!)
 	 */
 	private $app = null;
 
 	/**
+	 * The text translation object
+	 *
+	 * @var    Text
+	 * @since  __DELPOY_VERSION__
+	 */
+	private $text = null;
+
+	/**
 	 * Method to instantiate the file-based api call.
 	 *
-	 * @param   mixed  $options  Optional custom options to load. JRegistry or array format
+	 * @param   Container  $container  The DIC object
+	 * @param   mixed      $options    Optional custom options to load. Registry or array format
 	 *
 	 * @throws  \Exception
 	 * @since   1.2
 	 */
-	public function __construct($options = null)
+	public function __construct(Container $container, $options = null)
 	{
-		parent::__construct($options);
+		parent::__construct($container, $options);
+
+		$this->text = $this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getText();
 
 		\JPluginHelper::importPlugin('webservices');
 
@@ -175,12 +191,12 @@ class Hal extends Api
 
 			if (empty($this->webservice))
 			{
-				throw new \Exception(JText::sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_NOT_INSTALLED', $this->webserviceName, $this->webserviceVersion));
+				throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_NOT_INSTALLED', $this->webserviceName, $this->webserviceVersion));
 			}
 
 			if (empty($this->webservice['state']))
 			{
-				throw new \Exception(JText::sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_UNPUBLISHED', $this->webserviceName, $this->webserviceVersion));
+				throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_UNPUBLISHED', $this->webserviceName, $this->webserviceVersion));
 			}
 
 			$this->webservicePath = $this->webservice['path'];
@@ -455,7 +471,7 @@ class Hal extends Api
 		// Add basic hypermedia links.
 		$this->hal->setLink($documentationCurieAdmin, false, true);
 		$this->hal->setLink($documentationCurieSite, false, true);
-		$this->hal->setLink(new Link(Uri::base(), 'base', JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
+		$this->hal->setLink(new Link(Uri::base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
 
 		$webservices = HalHelper::getInstalledWebservices();
 
@@ -1031,7 +1047,7 @@ class Hal extends Api
 					$resource['description'] = $resourceXML->description;
 				}
 
-				$resource = JApiHalDocumentResource::defaultResourceField($resource);
+				$resource = Resource::defaultResourceField($resource);
 				$resourceName = $resource['displayName'];
 				$resourceSpecific = $resource['resourceSpecific'];
 
@@ -1114,7 +1130,7 @@ class Hal extends Api
 			// 404 => 'Not found'
 			$this->setStatusCode(404);
 
-			throw new \Exception(JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_NO_CONTENT'), 404);
+			throw new \Exception($this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_NO_CONTENT'), 404);
 		}
 	}
 
@@ -1351,7 +1367,7 @@ class Hal extends Api
 				return $validData;
 			}
 
-			$this->app->enqueueMessage(JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_FUNCTION_DONT_EXIST'), 'error');
+			$this->app->enqueueMessage($this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_FUNCTION_DONT_EXIST'), 'error');
 
 			return false;
 		}
@@ -1367,7 +1383,7 @@ class Hal extends Api
 				return $result;
 			}
 
-			$this->app->enqueueMessage(JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_FUNCTION_DONT_EXIST'), 'error');
+			$this->app->enqueueMessage($this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_FUNCTION_DONT_EXIST'), 'error');
 
 			return false;
 		}
@@ -1396,7 +1412,7 @@ class Hal extends Api
 					if (is_null($data[(string) $field['name']]) || $data[(string) $field['name']] == '')
 					{
 						$this->app->enqueueMessage(
-							JText::sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', (string) $field['name']), 'error'
+							$this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', (string) $field['name']), 'error'
 						);
 
 						return false;
@@ -1420,7 +1436,7 @@ class Hal extends Api
 		// Check if webservice is published
 		if (!HalHelper::isPublishedWebservice($this->client, $this->webserviceName, $this->webserviceVersion) && !empty($this->webserviceName))
 		{
-			throw new \Exception(JText::sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_IS_UNPUBLISHED', $this->webserviceName));
+			throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_IS_UNPUBLISHED', $this->webserviceName));
 		}
 
 		// Check for allowed operations
@@ -1647,7 +1663,7 @@ class Hal extends Api
 
 		if (empty($tableName))
 		{
-			throw new \Exception(JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_TABLE_NAME_NOT_SET'));
+			throw new \Exception($this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_TABLE_NAME_NOT_SET'));
 		}
 
 		$context = $this->webserviceName . '.' . $this->webserviceVersion;
