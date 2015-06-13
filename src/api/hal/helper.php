@@ -13,6 +13,8 @@ use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\Uri\Uri;
+use Joomla\Language\Text;
+use Joomla\Database\DatabaseDriver;
 
 /**
  * Interface to handle api calls
@@ -83,37 +85,39 @@ class HalHelper
 	/**
 	 * Get Default scopes for all webservices
 	 *
+	 * @param   Text  $text  The language text object for translations
+	 *
 	 * @return  array
 	 *
 	 * @since   1.2
 	 */
-	public static function getDefaultScopes()
+	public static function getDefaultScopes($text)
 	{
 		return array(
 			array('scope' => 'site.create',
-				'scopeDisplayName' => JText::_('JSITE') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_CREATE')),
+				'scopeDisplayName' => $text->translate('JSITE') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_CREATE')),
 			array('scope' => 'site.read',
-				'scopeDisplayName' => JText::_('JSITE') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_READ')),
+				'scopeDisplayName' => $text->translate('JSITE') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_READ')),
 			array('scope' => 'site.update',
-				'scopeDisplayName' => JText::_('JSITE') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_UPDATE')),
+				'scopeDisplayName' => $text->translate('JSITE') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_UPDATE')),
 			array('scope' => 'site.delete',
-				'scopeDisplayName' => JText::_('JSITE') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DELETE')),
+				'scopeDisplayName' => $text->translate('JSITE') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DELETE')),
 			array('scope' => 'site.task',
-				'scopeDisplayName' => JText::_('JSITE') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_TASKS')),
+				'scopeDisplayName' => $text->translate('JSITE') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_TASKS')),
 			array('scope' => 'site.documentation',
-				'scopeDisplayName' => JText::_('JSITE') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DOCUMENTATION')),
+				'scopeDisplayName' => $text->translate('JSITE') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DOCUMENTATION')),
 			array('scope' => 'administrator.create',
-				'scopeDisplayName' => JText::_('JADMINISTRATOR') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_CREATE')),
+				'scopeDisplayName' => $text->translate('JADMINISTRATOR') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_CREATE')),
 			array('scope' => 'administrator.read',
-				'scopeDisplayName' => JText::_('JADMINISTRATOR') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_READ')),
+				'scopeDisplayName' => $text->translate('JADMINISTRATOR') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_READ')),
 			array('scope' => 'administrator.update',
-				'scopeDisplayName' => JText::_('JADMINISTRATOR') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_UPDATE')),
+				'scopeDisplayName' => $text->translate('JADMINISTRATOR') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_UPDATE')),
 			array('scope' => 'administrator.delete',
-				'scopeDisplayName' => JText::_('JADMINISTRATOR') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DELETE')),
+				'scopeDisplayName' => $text->translate('JADMINISTRATOR') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DELETE')),
 			array('scope' => 'administrator.task',
-				'scopeDisplayName' => JText::_('JADMINISTRATOR') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_TASKS')),
+				'scopeDisplayName' => $text->translate('JADMINISTRATOR') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_TASKS')),
 			array('scope' => 'administrator.documentation',
-				'scopeDisplayName' => JText::_('JADMINISTRATOR') . ' - ' . JText::_('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DOCUMENTATION')),
+				'scopeDisplayName' => $text->translate('JADMINISTRATOR') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DOCUMENTATION')),
 		);
 	}
 
@@ -377,6 +381,7 @@ class HalHelper
 	 * Load configuration file and set all Api parameters
 	 *
 	 * @param   array   $webserviceName  Name of the webservice file
+	 * @param   Text    $text            The text object
 	 * @param   string  $version         Suffixes for loading of webservice configuration file
 	 * @param   string  $extension       File extension name
 	 * @param   string  $path            Path to webservice files
@@ -387,14 +392,14 @@ class HalHelper
 	 * @since   1.2
 	 * @throws  \Exception
 	 */
-	public static function loadWebserviceConfiguration($webserviceName, $version = '', $extension = 'xml', $path = '', $client = '')
+	public static function loadWebserviceConfiguration($webserviceName, Text $text, $version = '', $extension = 'xml', $path = '', $client = '')
 	{
 		// Check possible overrides, and build the full path to api file
 		$configurationFullPath = self::getWebserviceFile($client, strtolower($webserviceName), $version, $extension, $path);
 
 		if (!is_readable($configurationFullPath))
 		{
-			throw new \Exception(JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_CONFIGURATION_FILE_UNREADABLE'));
+			throw new \Exception($text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_CONFIGURATION_FILE_UNREADABLE'));
 		}
 
 		$content = @file_get_contents($configurationFullPath);
@@ -456,14 +461,15 @@ class HalHelper
 	/**
 	 * Get list of all webservices from webservices parameters
 	 *
+	 * @param   DatabaseDriver  $db  The database driver object
+	 *
 	 * @return  array  Array or table with columns columns
 	 */
-	public static function getInstalledWebservices()
+	public static function getInstalledWebservices(DatabaseDriver $db)
 	{
 		if (!isset(self::$installedWebservices))
 		{
 			self::$installedWebservices = array();
-			$db = JFactory::getDbo();
 
 			$query = $db->getQuery(true)
 				->select('*')
@@ -488,16 +494,17 @@ class HalHelper
 	/**
 	 * Get installed webservice options
 	 *
-	 * @param   string  $client          Client
-	 * @param   string  $webserviceName  Webservice Name
-	 * @param   string  $version         Webservice version
+	 * @param   string          $client          Client
+	 * @param   string          $webserviceName  Webservice Name
+	 * @param   string          $version         Webservice version
+	 * @param   DatabaseDriver  $db              The database driver object
 	 *
 	 * @return  array  Array of webservice options
 	 */
-	public static function getInstalledWebservice($client, $webserviceName, $version)
+	public static function getInstalledWebservice($client, $webserviceName, $version, DatabaseDriver $db)
 	{
 		// Initialise Installed webservices
-		$webservices = self::getInstalledWebservices();
+		$webservices = self::getInstalledWebservices($db);
 
 		if (!empty($webservices[$client][$webserviceName][$version]))
 		{
@@ -510,21 +517,22 @@ class HalHelper
 	/**
 	 * Checks if specific Webservice is installed and active
 	 *
-	 * @param   string  $client          Client
-	 * @param   string  $webserviceName  Webservice Name
-	 * @param   string  $version         Webservice version
+	 * @param   string          $client          Client
+	 * @param   string          $webserviceName  Webservice Name
+	 * @param   string          $version         Webservice version
+	 * @param   DatabaseDriver  $db              The database driver object
 	 *
 	 * @return  array  Array or table with columns columns
 	 */
-	public static function isPublishedWebservice($client, $webserviceName, $version)
+	public static function isPublishedWebservice($client, $webserviceName, $version, DatabaseDriver $db)
 	{
-		$installedWebservices = self::getInstalledWebservices();
+		$installedWebservices = self::getInstalledWebservices($db);
 
 		if (!empty($installedWebservices))
 		{
 			if (empty($version))
 			{
-				$version = self::getNewestWebserviceVersion($client, $webserviceName);
+				$version = self::getNewestWebserviceVersion($client, $webserviceName, $db);
 			}
 
 			$webservice = $installedWebservices[$client][$webserviceName][$version];
@@ -538,14 +546,15 @@ class HalHelper
 	/**
 	 * Checks if specific Webservice is installed and active
 	 *
-	 * @param   string  $client          Client
-	 * @param   string  $webserviceName  Webservice Name
+	 * @param   string          $client          Client
+	 * @param   string          $webserviceName  Webservice Name
+	 * @param   DatabaseDriver  $db              The database driver object
 	 *
 	 * @return  array  Array or table with columns columns
 	 */
-	public static function getNewestWebserviceVersion($client, $webserviceName)
+	public static function getNewestWebserviceVersion($client, $webserviceName, DatabaseDriver $db)
 	{
-		$installedWebservices = self::getInstalledWebservices();
+		$installedWebservices = self::getInstalledWebservices($db);
 
 		if (!empty($installedWebservices) && isset($installedWebservices[$client][$webserviceName]))
 		{
@@ -574,19 +583,21 @@ class HalHelper
 	/**
 	 * Returns Scopes of the webservice
 	 *
-	 * @param   array  $filterScopes  Scopes that will be used as a filter
+	 * @param   Text            $text          The language text object for translations
+	 * @param   array           $filterScopes  Scopes that will be used as a filter
+	 * @param   DatabaseDriver  $db            The database driver object
 	 *
 	 * @return  array
 	 */
-	public static function getWebserviceScopes($filterScopes = array())
+	public static function getWebserviceScopes(Text $text, $filterScopes = array(), DatabaseDriver $db)
 	{
 		$options = array();
-		$installedWebservices = self::getInstalledWebservices();
+		$installedWebservices = self::getInstalledWebservices($db);
 
 		if (empty($filterScopes))
 		{
 			// Options for all webservices
-			$options[JText::_('COM_WEBSERVICES_OAUTH_CLIENTS_SCOPES_ALL_WEBSERVICES')] = self::getDefaultScopes();
+			$options[$text->translate('COM_WEBSERVICES_OAUTH_CLIENTS_SCOPES_ALL_WEBSERVICES')] = self::getDefaultScopes($text);
 		}
 
 		if (!empty($installedWebservices))
@@ -597,7 +608,7 @@ class HalHelper
 				{
 					foreach ($webserviceVersions as $version => $webservice)
 					{
-						$webserviceDisplayName = JText::_('J' . $webserviceClient) . ' '
+						$webserviceDisplayName = $text->translate('J' . $webserviceClient) . ' '
 							. (!empty($webservice['title']) ? $webservice['title'] : $webserviceName);
 
 						if (!empty($webservice['scopes']))

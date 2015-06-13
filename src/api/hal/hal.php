@@ -162,7 +162,7 @@ class Hal extends Api
 	{
 		parent::__construct($container, $options);
 
-		$this->text = $this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getText();
+		$this->text = $container->get('Joomla\\Language\\LanguageFactory')->getText();
 
 		\JPluginHelper::importPlugin('webservices');
 
@@ -175,10 +175,10 @@ class Hal extends Api
 		{
 			if (empty($this->webserviceVersion))
 			{
-				$this->webserviceVersion = HalHelper::getNewestWebserviceVersion($this->client, $this->webserviceName);
+				$this->webserviceVersion = HalHelper::getNewestWebserviceVersion($this->client, $this->webserviceName, $container->get('db'));
 			}
 
-			$this->webservice = HalHelper::getInstalledWebservice($this->client, $this->webserviceName, $this->webserviceVersion);
+			$this->webservice = HalHelper::getInstalledWebservice($this->client, $this->webserviceName, $this->webserviceVersion, $container->get('db'));
 
 			if (empty($this->webservice))
 			{
@@ -192,7 +192,7 @@ class Hal extends Api
 
 			$this->webservicePath = $this->webservice['path'];
 			$this->configuration = HalHelper::loadWebserviceConfiguration(
-				$this->webserviceName, $this->webserviceVersion, 'xml', $this->webservicePath, $this->client
+				$this->webserviceName, $this->text, $this->webserviceVersion, 'xml', $this->webservicePath, $this->client
 			);
 
 			// Set option and view name
@@ -464,7 +464,7 @@ class Hal extends Api
 		$this->hal->setLink($documentationCurieSite, false, true);
 		$this->hal->setLink(new Link(Uri::base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
 
-		$webservices = HalHelper::getInstalledWebservices();
+		$webservices = HalHelper::getInstalledWebservices($this->container->get('db'));
 
 		if (!empty($webservices))
 		{
@@ -1425,7 +1425,7 @@ class Hal extends Api
 	public function isOperationAllowed()
 	{
 		// Check if webservice is published
-		if (!HalHelper::isPublishedWebservice($this->client, $this->webserviceName, $this->webserviceVersion) && !empty($this->webserviceName))
+		if (!HalHelper::isPublishedWebservice($this->client, $this->webserviceName, $this->webserviceVersion, $this->container->get('db')) && !empty($this->webserviceName))
 		{
 			throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_IS_UNPUBLISHED', $this->webserviceName));
 		}
@@ -1931,7 +1931,10 @@ class Hal extends Api
 			{
 				if ($errors[$i] instanceof \Exception)
 				{
-					$this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+					/** @var \Exception $exception */
+					$exception = $errors[$i];
+
+					$this->app->enqueueMessage($exception->getMessage(), 'warning');
 				}
 				else
 				{
@@ -2094,8 +2097,8 @@ class Hal extends Api
 			return $classNames[$fieldType];
 		}
 
-		// Construct the name of the class to do the transform (default is JApiHalTransformString).
-		$className = 'JApiHalTransform' . ucfirst($fieldType);
+		// Construct the name of the class to do the transform (default is \\Joomla\\Webservices\\Api\\Hal\\Transform\\TransformString).
+		$className = '\\Joomla\\Webservices\\Api\\Hal\\Transform\\Transform' . ucfirst($fieldType);
 
 		if (class_exists($className))
 		{
