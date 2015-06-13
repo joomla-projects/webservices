@@ -12,6 +12,7 @@ namespace Joomla\Webservices;
 use Joomla\Application\AbstractWebApplication;
 use Joomla\Application\Web\WebClient;
 use Joomla\Input\Input;
+use Joomla\Session\Session;
 
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
@@ -34,6 +35,22 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	use ContainerAwareTrait;
 
 	/**
+	 * The session object
+	 *
+	 * @var    Session
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $session;
+
+	/**
+	 * The application message queue.
+	 *
+	 * @var    array
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $messageQueue = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @param   Container  $container  DI Container
@@ -44,7 +61,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 *                                 client object.  If the argument is a Web\WebClient object that object will become
 	 *                                 the application's client object, otherwise a default client object is created.
 	 *
-	 * @since   1.0
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function __construct(Container $container, Input $input = null, WebClient $client = null)
 	{
@@ -59,6 +76,8 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 			->set('Joomla\\Input\\Input', $this->input)
 			->set('Joomla\\DI\\Container', $container);
 
+		$this->session = $container->get('session')->initialise($this->input, $container->get('Joomla\\Event\\Dispatcher'));
+
 		$this->setContainer($container);
 	}
 
@@ -68,7 +87,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 *
 	 * @return  void
 	 *
-	 * @since   1.0
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function doExecute()
 	{
@@ -179,7 +198,8 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 *
 	 * @param   string  $apiName  Api name
 	 *
-	 * @return bool
+	 * @return  bool
+	 * @since   __DEPLOY_VERSION__
 	 */
 	private function isApiEnabled($apiName)
 	{
@@ -198,5 +218,79 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	public function isAdmin()
 	{
 		return true;
+	}
+
+	/**
+	 * Enqueue a system message.
+	 *
+	 * @param   string  $msg   The message to enqueue.
+	 * @param   string  $type  The message type. Default is message.
+	 *
+	 * @return  void
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function enqueueMessage($msg, $type = 'message')
+	{
+		// Don't add empty messages.
+		if (!strlen($msg))
+		{
+			return;
+		}
+
+		// For empty queue, if messages exists in the session, enqueue them first.
+		$this->getMessageQueue();
+
+		// Enqueue the message.
+		$this->messageQueue[] = array('message' => $msg, 'type' => strtolower($type));
+	}
+
+	/**
+	 * Get the system message queue.
+	 *
+	 * @return  array  The system message queue.
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function getMessageQueue()
+	{
+		// For empty queue, if messages exists in the session, enqueue them.
+		if (!count($this->messageQueue))
+		{
+			$session = $this->session;
+			$sessionQueue = $session->get('application.queue');
+
+			// Check if we have any messages in the session from a previous page
+			if (count($sessionQueue))
+			{
+				$this->messageQueue = $sessionQueue;
+				$session->set('application.queue', null);
+			}
+		}
+
+		return $this->messageQueue;
+	}
+
+	/**
+	 * Redirect to another URL overriden to ensure all messages are enqueued into the session
+	 *
+	 * @param   string   $url    The URL to redirect to. Can only be http/https URL
+	 * @param   boolean  $moved  True if the page is 301 Permanently Moved, otherwise 303 See Other is assumed.
+	 *
+	 * @return  void
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function redirect($url, $moved = false)
+	{
+		// Persist messages if they exist.
+		if (count($this->messageQueue))
+		{
+			$session = $this->session;
+			$session->set('application.queue', $this->messageQueue);
+		}
+
+		// Hand over processing to the parent now
+		parent::redirect($url, $moved);
 	}
 }
