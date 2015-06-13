@@ -10,6 +10,7 @@
 namespace Joomla\Webservices\Api;
 
 use Joomla\Registry\Registry;
+use Joomla\DI\Container;
 
 /**
  * Interface to handle api calls
@@ -47,6 +48,14 @@ abstract class ApiBase implements ApiInterface
 	 * @since  1.2
 	 */
 	public $statusText = '';
+
+	/**
+	 * The DIC object
+	 *
+	 * @var    Container
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $container;
 
 	/**
 	 * Standard status codes for RESTfull api
@@ -99,11 +108,23 @@ abstract class ApiBase implements ApiInterface
 	);
 
 	/**
+	 * Constructor.
+	 *
+	 * @param   Container  $container  The DIC object
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function __construct(Container $container)
+	{
+		$this->container = $container;
+	}
+
+	/**
 	 * Set the options
 	 *
 	 * @param   mixed  $options  Array / JRegistry object with the options to load
 	 *
-	 * @return  JApiBase      An instance of itself for chaining
+	 * @return  $this
 	 */
 	public function setOptions($options = null)
 	{
