@@ -5,6 +5,14 @@
 *~.nib
 *~
 
+# IDE & System Related Files #
+.buildpath
+.project
+.settings
+.DS_Store
+.idea
+
+
 # Phing
 build.properties
 phing-latest.phar
