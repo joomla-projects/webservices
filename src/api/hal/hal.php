@@ -14,7 +14,6 @@ use Joomla\Webservices\Api\Hal\Document\Resource;
 use Joomla\Webservices\Api\Hal\Document\Link;
 use Joomla\Webservices\Api\Hal\Document\Document;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
-use Joomla\Webservices\Application;
 
 
 use Joomla\Utilities\ArrayHelper;
@@ -141,14 +140,6 @@ class Hal extends Api
 	 * @since  1.4
 	 */
 	public $permissionCheck = 'joomla';
-
-	/**
-	 * Application Object
-	 *
-	 * @var    Application
-	 * @since  __DEPLOY_VERSION__
-	 */
-	private $app = null;
 
 	/**
 	 * The text translation object

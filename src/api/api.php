@@ -12,6 +12,7 @@ namespace Joomla\Webservices\Api;
 use Joomla\Input\Input;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\DI\Container;
+use Joomla\Webservices\Application;
 
 /**
  * Interface to handle api calls
@@ -49,6 +50,14 @@ class Api extends ApiBase
 	public $startTime;
 
 	/**
+	 * Application Object
+	 *
+	 * @var    Application
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $app = null;
+
+	/**
 	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object
@@ -59,6 +68,8 @@ class Api extends ApiBase
 	public function __construct(Container $container, $options = null)
 	{
 		$this->startTime = microtime(true);
+
+		$this->app = $container->get('app');
 
 		// Initialise / Load options
 		$this->setOptions($options);

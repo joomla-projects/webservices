@@ -153,7 +153,7 @@ abstract class ApiBase implements ApiInterface
 	 * @param   string  $text        Text to replace default api message
 	 *
 	 * @throws  \Exception
-	 * @return  JApiBase      An instance of itself for chaining
+	 * @return  $this
 	 */
 	public function setStatusCode($statusCode, $text = null)
 	{
@@ -162,7 +162,7 @@ abstract class ApiBase implements ApiInterface
 
 		if ($this->isInvalid())
 		{
-			throw new \Exception(JText::sprintf('LIB_WEBSERVICES_API_STATUS_CODE_INVALID', $statusCode));
+			throw new \Exception($this->container->get('Joomla\\Language\\LanguageFactory')->getText()->sprintf('LIB_WEBSERVICES_API_STATUS_CODE_INVALID', $statusCode));
 		}
 
 		return $this;
@@ -183,7 +183,7 @@ abstract class ApiBase implements ApiInterface
 	/**
 	 * Get the options
 	 *
-	 * @return  JRegistry  Object with the options
+	 * @return  Registry  Object with the options
 	 *
 	 * @since   1.2
 	 */
@@ -204,7 +204,7 @@ abstract class ApiBase implements ApiInterface
 	 * @param   string  $key    Key on which to store the option
 	 * @param   mixed   $value  Value of the option
 	 *
-	 * @return  JApiBase  Object with the options
+	 * @return  $this
 	 *
 	 * @since   1.2
 	 */
@@ -219,7 +219,7 @@ abstract class ApiBase implements ApiInterface
 	/**
 	 * Function to empty all the options
 	 *
-	 * @return  JApiBase  Instance of $this to allow chaining.
+	 * @return  $this
 	 *
 	 * @since   1.2
 	 */
