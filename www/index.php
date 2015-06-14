@@ -21,7 +21,7 @@ if (!file_exists(JPATH_ROOT . '/vendor/autoload.php'))
 	exit;
 }
 
-require JPATH_ROOT . '/vendor/autoload.php';
+require JPATH_API . '/vendor/autoload.php';
 
 // Wrap in a try/catch so we can display an error if need be
 try
