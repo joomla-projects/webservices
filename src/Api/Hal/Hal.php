@@ -10,9 +10,9 @@
 namespace Joomla\Webservices\Api\Hal;
 
 use Joomla\Webservices\Api\Api;
-use Joomla\Webservices\Api\Hal\Document\Resource;
-use Joomla\Webservices\Api\Hal\Document\Link;
-use Joomla\Webservices\Api\Hal\Document\Document;
+use Joomla\Webservices\Api\Hal\Renderer\Resource;
+use Joomla\Webservices\Api\Hal\Renderer\Link;
+use Joomla\Webservices\Api\Hal\Renderer\Document;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 
 
@@ -1153,7 +1153,7 @@ class Hal extends Api
 		if ($format == 'doc')
 		{
 			// This is already in HTML format
-			echo $this->documentation;
+			$this->app->setBody($this->documentation);
 		}
 		else
 		{
@@ -1162,18 +1162,18 @@ class Hal extends Api
 				'documentFormat' => $format,
 				'uriParams' => $this->uriParams,
 			);
-			$halDocument = new Document($documentOptions);
+			$halDocument = new Document($this->container, $documentOptions);
 
 			$body = $this->getBody();
 			$body = $this->triggerFunction('prepareBody', $body);
 
 			// Push results into the document.
-			$halDocument
-				->setHal($this)
-				->setBuffer($body)
-				->render(false);
-
-			JFactory::$document= $halDocument;
+			$this->app->setBody(
+				$halDocument
+					->setHal($this)
+					->setBuffer($body)
+					->render(false)
+			);
 		}
 	}
 

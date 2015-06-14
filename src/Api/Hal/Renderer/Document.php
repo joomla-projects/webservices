@@ -7,11 +7,12 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Hal\Document;
+namespace Joomla\Webservices\Api\Hal\Renderer;
 
 use Joomla\Webservices\Api\Hal\Hal;
-use Joomla\Webservices\Application;
+use Joomla\Webservices\Renderer\Document as JDocument;
 
+use Joomla\DI\Container;
 use Joomla\Uri\Uri;
 
 /**
@@ -22,7 +23,7 @@ use Joomla\Uri\Uri;
  * @see         http://stateless.co/hal_specification.html
  * @since       1.2
  */
-class Document extends \JDocument
+class Document extends JDocument
 {
 	/**
 	 * Document name
@@ -49,22 +50,16 @@ class Document extends \JDocument
 	public $hal = null;
 
 	/**
-	 * @var    Application  Application Object
-	 * @since  __DEPLOY_VERSION__
-	 * @todo   Need to populate this in some way (HINT: Through the container!)
-	 */
-	private $app = null;
-
-	/**
 	 * Class constructor
 	 *
-	 * @param   array  $options  Associative array of options
+	 * @param   Container  $container  The DIC object
+	 * @param   array      $options    Associative array of options
 	 *
 	 * @since  1.2
 	 */
-	public function __construct($options = array())
+	public function __construct(Container $container, $options = array())
 	{
-		parent::__construct($options);
+		parent::__construct($container, $options);
 
 		$this->documentFormat = $options['documentFormat'];
 
@@ -115,7 +110,7 @@ class Document extends \JDocument
 		$this->app->sendHeaders();
 
 		// Get the HAL object from the buffer.
-		/* @var $hal \Joomla\Webservices\Api\Hal\Document\Resource */
+		/* @var $hal \Joomla\Webservices\Api\Hal\Renderer\Resource */
 		$hal = $this->getBuffer();
 
 		// If required, change relative links to absolute.
@@ -171,7 +166,7 @@ class Document extends \JDocument
 	 *
 	 * @return  void
 	 */
-	protected function relToAbs($hal, $absoluteHrefs)
+	protected function relToAbs(Resource $hal, $absoluteHrefs)
 	{
 		if ($links = $hal->getLinks())
 		{
@@ -181,6 +176,7 @@ class Document extends \JDocument
 			{
 				if (is_array($link))
 				{
+					/* @var $arrayLink Link */
 					foreach ($link as $group => $arrayLink)
 					{
 						$href = $arrayLink->getHref();
@@ -240,7 +236,7 @@ class Document extends \JDocument
 			$href = rtrim(Uri::base(), '/') . $href;
 		}
 
-		/** @todo Implement Uri::getInstance() **/
+		/** @var \Joomla\Uri\Uri $uri */
 		$uri = Uri::getInstance($href);
 
 		if (!empty($this->uriParams))
