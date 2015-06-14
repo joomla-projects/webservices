@@ -76,7 +76,9 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 			->set('Joomla\\Input\\Input', $this->input)
 			->set('Joomla\\DI\\Container', $container);
 
-		$this->session = $container->get('session')->initialise($this->input, $container->get('Joomla\\Event\\Dispatcher'));
+		$session = $container->get('session');
+		$session->initialise($this->input, $container->get('Joomla\\Event\\Dispatcher'));
+		$this->session = $session;
 
 		$this->setContainer($container);
 	}
@@ -257,14 +259,13 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 		// For empty queue, if messages exists in the session, enqueue them.
 		if (!count($this->messageQueue))
 		{
-			$session = $this->session;
-			$sessionQueue = $session->get('application.queue');
+			$sessionQueue = $this->session->get('application.queue');
 
 			// Check if we have any messages in the session from a previous page
 			if (count($sessionQueue))
 			{
 				$this->messageQueue = $sessionQueue;
-				$session->set('application.queue', null);
+				$this->session->set('application.queue', null);
 			}
 		}
 
@@ -286,8 +287,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 		// Persist messages if they exist.
 		if (count($this->messageQueue))
 		{
-			$session = $this->session;
-			$session->set('application.queue', $this->messageQueue);
+			$this->session->set('application.queue', $this->messageQueue);
 		}
 
 		// Hand over processing to the parent now

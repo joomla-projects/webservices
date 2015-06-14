@@ -8,8 +8,8 @@
     "debug"    : false
   },
   "webservices": {
-    "enable_webservices" : 0,
-    "webservices_default_format" : "json",
+    "enable_webservices" : 1,
+    "webservices_default_format" : "hal",
     "webservices_default_page_authorization": 0,
     "webservices_permission_check" : 1,
     "debug_webservices" : 0,
@@ -19,5 +19,5 @@
     "basedir" : "",
     "default" : "en-GB"
   },
-  "errorReporting": 0
+  "errorReporting": -1
 }

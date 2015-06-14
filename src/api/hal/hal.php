@@ -19,6 +19,7 @@ use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\DI\Container;
 use Joomla\Language\Text;
+use Joomla\Event\Event;
 
 /**
  * Class to represent a HAL standard object.
@@ -163,9 +164,6 @@ class Hal extends Api
 		parent::__construct($container, $options);
 
 		$this->text = $container->get('Joomla\\Language\\LanguageFactory')->getText();
-
-		\JPluginHelper::importPlugin('webservices');
-
 		$this->setWebserviceName();
 		$this->client = $this->options->get('webserviceClient', 'site');
 		$this->webserviceVersion = $this->options->get('webserviceVersion', '');
@@ -2167,7 +2165,8 @@ class Hal extends Api
 		// We will add this instance of the object as last argument for manipulation in plugin and helper
 		$temp[] = &$this;
 
-		$result = $this->app->triggerEvent('JApiHalBefore' . $functionName, $temp);
+		$event = new Event('JApiHalBefore' . $functionName, $temp);
+		$result = $this->container->get('Joomla\\Event\\Dispatcher')->triggerEvent($event);
 
 		if ($result)
 		{
