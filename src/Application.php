@@ -19,7 +19,6 @@ use Joomla\DI\ContainerAwareTrait;
 use Joomla\DI\ContainerAwareInterface;
 
 use Joomla\Webservices\Api\Api;
-use Joomla\Webservices\Api\ApiInterface;
 use Joomla\Webservices\Api\Soap\SoapHelper;
 use Joomla\Webservices\Api\Hal\HalHelper;
 
