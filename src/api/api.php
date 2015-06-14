@@ -60,6 +60,14 @@ class Api extends ApiBase implements DispatcherAwareInterface
 	protected $app = null;
 
 	/**
+	 * Event Dispatcher Object
+	 *
+	 * @var    DispatcherInterface
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $dispatcher = null;
+
+	/**
 	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object

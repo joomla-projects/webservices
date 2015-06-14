@@ -1519,9 +1519,9 @@ class Hal extends Api
 		}
 
 		$authorized = false;
-		$this->app->triggerEvent('JApiHalPermissionCheck',
-			array($scopes, $this->options, $this->permissionCheck, &$authorized)
-		);
+
+		$event = new Event('JApiHalPermissionCheck', array($scopes, $this->options, $this->permissionCheck, $authorized));
+		$result = $this->dispatcher->triggerEvent($event);
 
 		if ($authorized)
 		{
@@ -2166,7 +2166,7 @@ class Hal extends Api
 		$temp[] = &$this;
 
 		$event = new Event('JApiHalBefore' . $functionName, $temp);
-		$result = $this->container->get('Joomla\\Event\\Dispatcher')->triggerEvent($event);
+		$result = $this->dispatcher->triggerEvent($event);
 
 		if ($result)
 		{
@@ -2183,7 +2183,8 @@ class Hal extends Api
 			$result = call_user_func_array(array($this, $functionName), $temp);
 		}
 
-		$this->app->triggerEvent('JApiHalAfter' . $functionName, $temp);
+		$event = new Event('JApiHalAfter' . $functionName, $temp);
+		$result = $this->dispatcher->triggerEvent($event);
 
 		return $result;
 	}

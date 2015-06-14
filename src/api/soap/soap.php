@@ -15,6 +15,7 @@ use Joomla\Webservices\Api\Soap\Operation\Operation;
 use Joomla\Webservices\Api\Soap\Document\Document;
 use Joomla\Uri\Uri;
 use Joomla\DI\Container;
+use Joomla\Event\Event;
 
 /**
  * Class to represent a SOAP standard object.
@@ -68,9 +69,7 @@ class Soap extends Api
 	{
 		parent::__construct($container, $options);
 
-		\JPluginHelper::importPlugin('webservices');
-
-		$this->webservice = new Hal($options);
+		$this->webservice = new Hal($container, $options);
 		$this->webservice->authorizationCheck = 'joomla';
 
 		// Init Environment
@@ -354,7 +353,8 @@ class Soap extends Api
 		// We will add this instance of the object as last argument for manipulation in plugin and helper
 		$temp[] = &$this;
 
-		$result = $this->app->triggerEvent('JApiSoapBefore' . $functionName, $temp);
+		$event = new Event('JApiSoapBefore' . $functionName, $temp);
+		$result = $this->dispatcher->triggerEvent($event);
 
 		if ($result)
 		{
@@ -364,7 +364,8 @@ class Soap extends Api
 		// Checks if that method exists in helper file and executes it
 		$result = call_user_func_array(array($this, $functionName), $temp);
 
-		$this->app->triggerEvent('JApiSoapAfter' . $functionName, $temp);
+		$event = new Event('JApiSoapAfter' . $functionName, $temp);
+		$result = $this->dispatcher->triggerEvent($event);
 
 		return $result;
 	}
