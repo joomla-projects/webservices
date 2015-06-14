@@ -194,7 +194,7 @@ class Soap extends Api
 	{
 		try
 		{
-			$content = @file_get_contents(JPATH_SITE . '/' . $this->wsdlPath);
+			$content = @file_get_contents(JPATH_ROOT . '/' . $this->wsdlPath);
 
 			if (is_string($content))
 			{
@@ -202,7 +202,7 @@ class Soap extends Api
 			}
 			else
 			{
-				unlink(JPATH_SITE . '/' . $this->wsdlPath);
+				unlink(JPATH_ROOT . '/' . $this->wsdlPath);
 				$this->checkWSDL();
 
 				return $this->apiWsdl();
@@ -210,7 +210,7 @@ class Soap extends Api
 		}
 		catch (\Exception $e)
 		{
-			unlink(JPATH_SITE . '/' . $this->wsdlPath);
+			unlink(JPATH_ROOT . '/' . $this->wsdlPath);
 			$this->checkWSDL();
 
 			return $this->apiWsdl();
@@ -239,7 +239,7 @@ class Soap extends Api
 				$this->webservice->webservicePath
 			);
 
-			if (is_readable(JPATH_SITE . '/' . $this->wsdlPath))
+			if (is_readable(JPATH_ROOT . '/' . $this->wsdlPath))
 			{
 				return $this->wsdlPath;
 			}
@@ -250,7 +250,7 @@ class Soap extends Api
 
 		// Something went wrong, we are going to generate it on the fly
 		$this->wsdl = SoapHelper::generateWsdl($this->webservice->configuration, $this->wsdlPath);
-		$this->wsdl->asXML(JPATH_SITE . '/' . $this->wsdlPath);
+		$this->wsdl->asXML(JPATH_ROOT . '/' . $this->wsdlPath);
 
 		return $this->wsdlPath;
 	}
