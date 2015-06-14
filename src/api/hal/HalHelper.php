@@ -9,12 +9,15 @@
 
 namespace Joomla\Webservices\Api\Hal;
 
+use Joomla\Input\Input;
+
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\Uri\Uri;
 use Joomla\Language\Text;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Filter\InputFilter;
 
 /**
  * Interface to handle api calls
@@ -168,16 +171,18 @@ class HalHelper
 	/**
 	 * Method to get Task from request
 	 *
+	 * @param   Input  $input  The input object
+	 *
 	 * @return  string Task name
 	 *
 	 * @since   1.2
 	 */
-	public static function getTask()
+	public static function getTask(Input $input)
 	{
-		$command  = JFactory::getApplication()->input->get('task', '');
+		$command  = $input->get('task', '');
 
 		// Check for array format.
-		$filter = JFilterInput::getInstance();
+		$filter = new InputFilter;
 
 		if (is_array($command))
 		{

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "65f6324545e4f8221c3faa7dfc032c18",
+    "hash": "344a36e95adfa04cc415a4dbdaabc23e",
     "packages": [
         {
             "name": "joomla/application",

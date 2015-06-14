@@ -118,7 +118,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 					$token   = '';
 					$apiName = ucfirst($apiName);
 					$method  = strtoupper($input->getMethod());
-					$task    = HalHelper::getTask();
+					$task    = HalHelper::getTask($this->input);
 					$data    = Api::getPostedData($this->getContainer());
 					$dataGet = $input->get->getArray();
 
@@ -145,7 +145,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 
 					$apiClass = 'Joomla\\Webservices\\Api\\' . $apiName . '\\' . $apiName;
 
-					if (!class_exists($apiClass) || !($apiClass instanceof ApiInterface))
+					if (!class_exists($apiClass))
 					{
 						throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_LOAD_API', $options['api']));
 					}
