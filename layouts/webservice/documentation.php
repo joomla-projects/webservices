@@ -118,7 +118,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 										'soapEnabled' => $soapEnabled,
 									)
 								),
-								JPATH_WEBSERVICES . '/layouts'
+								JPATH_TEMPLATES
 							);?>
 							<br />
 						<?php endif;
@@ -136,7 +136,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 										'soapEnabled' => $soapEnabled,
 									)
 								),
-								JPATH_WEBSERVICES . '/layouts'
+								JPATH_TEMPLATES
 							);?>
 							<br />
 						<?php endif;
@@ -155,7 +155,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 										'soapEnabled' => $soapEnabled,
 									)
 								),
-								JPATH_WEBSERVICES . '/layouts'
+								JPATH_TEMPLATES
 							);?>
 							<br />
 						<?php endforeach;
@@ -172,7 +172,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 										'soapEnabled' => $soapEnabled,
 									)
 								),
-								JPATH_WEBSERVICES . '/layouts'
+								JPATH_TEMPLATES
 							);?>
 						<br />
 					<?php endif; ?>

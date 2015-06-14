@@ -545,7 +545,7 @@ class Hal extends Api
 					'print' => isset($dataGet->print)
 				)
 			),
-			JPATH_WEBSERVICES . '/layouts'
+			JPATH_TEMPLATES
 		);
 
 		return $this;
