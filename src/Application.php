@@ -205,8 +205,8 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	{
 		$apiName = strtolower($apiName);
 
-		return ($this->get('enable_webservices', 0) == 1 && $apiName == 'hal')
-		|| ($this->get('enable_soap', 0) == 1 && $apiName == 'soap');
+		return ($this->get('webservices.enable_webservices', 0) == 1 && $apiName == 'hal')
+		|| ($this->get('webservices.enable_soap', 0) == 1 && $apiName == 'soap');
 	}
 
 	/**
