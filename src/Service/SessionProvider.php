@@ -11,6 +11,7 @@ namespace Joomla\Webservices\Service;
 
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use Joomla\Session\Session;
 use Joomla\Session\Handler\FilesystemHandler;
 use Joomla\Session\Storage\NativeStorage;
 
