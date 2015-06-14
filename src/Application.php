@@ -92,10 +92,10 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 */
 	public function doExecute()
 	{
-		$this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getLanguage()->load('lib_webservices');
-
-		/** @var \Joomla\Language\Text $text */
-		$text = $this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getText();
+		/** @var \Joomla\Language\LanguageFactory $languageFactory */
+		$languageFactory = $this->getContainer()->get('Joomla\\Language\\LanguageFactory');
+		$languageFactory->getLanguage()->load('lib_webservices');
+		$text = $languageFactory->getText();
 
 		$apiName = $this->input->getString('api');
 

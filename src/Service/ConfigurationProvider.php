@@ -37,7 +37,7 @@ class ConfigurationProvider implements ServiceProviderInterface
 	public function __construct()
 	{
 		// Set the configuration file path for the application.
-		$file = JPATH_ROOT . '/config.json';
+		$file = JPATH_API . '/config.json';
 
 		// Verify the configuration exists and is readable.
 		if (!is_readable($file))
@@ -54,7 +54,7 @@ class ConfigurationProvider implements ServiceProviderInterface
 		}
 
 		$this->config = (new Registry)->loadObject($configObject);
-		$this->config->set('language.basedir', JPATH_ROOT . '/src/language/');
+		$this->config->set('language.basedir', JPATH_API . '/src/language/');
 	}
 
 	/**
