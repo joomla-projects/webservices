@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Hal\Document;
+namespace Joomla\Webservices\Api\Hal\Renderer;
 
 /**
  * Object to represent a hypermedia link in HAL.

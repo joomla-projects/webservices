@@ -7,11 +7,11 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Soap\Document;
+namespace Joomla\Webservices\Api\Soap\Renderer;
 
 use Joomla\Webservices\Api\Soap\Soap;
-use Joomla\Webservices\Application;
-
+use Joomla\Webservices\Renderer\Document as JDocument;
+use Joomla\DI\Container;
 
 /**
  * ApiDocumentSoap class, provides an easy interface to parse and display XML output
@@ -20,7 +20,7 @@ use Joomla\Webservices\Application;
  * @subpackage  Document
  * @since       1.4
  */
-class Document extends \JDocument
+class Document extends JDocument
 {
 	/**
 	 * Document name
@@ -53,23 +53,17 @@ class Document extends \JDocument
 	public $soap = null;
 
 	/**
-	 * @var    Application  Application Object
-	 * @since  __DEPLOY_VERSION__
-	 * @todo   Need to populate this in some way (HINT: Through the container!)
-	 */
-	private $app = null;
-
-	/**
 	 * Class constructor
 	 *
+	 * @param   Container  $container  The DIC object
 	 * @param   array   $options   Associative array of options
 	 * @param   string  $mimeType  Document type
 	 *
 	 * @since  1.4
 	 */
-	public function __construct($options = array(), $mimeType = 'soap+xml')
+	public function __construct(Container $container, $options = array(), $mimeType = 'soap+xml')
 	{
-		parent::__construct($options);
+		parent::__construct($container, $options);
 
 		$this->documentFormat = $options['documentFormat'];
 

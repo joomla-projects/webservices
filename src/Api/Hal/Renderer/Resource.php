@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Hal\Document;
+namespace Joomla\Webservices\Api\Hal\Renderer;
 
 /**
  * Object to represent a hypermedia resource in HAL.
@@ -337,7 +337,7 @@ class Resource extends Base
 		}
 		else
 		{
-			/** @var \Joomla\Webservices\Api\Hal\Document\Link $link */
+			/** @var \Joomla\Webservices\Api\Hal\Renderer\Link $link */
 			foreach ($links as $link)
 			{
 				$result[] = $link->toArray();
