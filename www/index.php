@@ -9,6 +9,7 @@
 
 // Application constants
 define('JPATH_ROOT',      dirname(__DIR__));
+define('JPATH_API',      dirname(__DIR__));
 define('JPATH_TEMPLATES', JPATH_ROOT . '/templates');
 define('JPATH_WEBSERVICES', JPATH_ROOT . '/src/webservices/bootstrap.php');
 
