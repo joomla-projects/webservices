@@ -233,7 +233,7 @@ class Link extends Base
 	}
 
 	/**
-	 * Converts current JApiHalDocumentLink object to Array
+	 * Converts current Link object to Array
 	 *
 	 * @return array
 	 */

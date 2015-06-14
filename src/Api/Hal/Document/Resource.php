@@ -337,6 +337,7 @@ class Resource extends Base
 		}
 		else
 		{
+			/** @var \Joomla\Webservices\Api\Hal\Document\Link $link */
 			foreach ($links as $link)
 			{
 				$result[] = $link->toArray();
