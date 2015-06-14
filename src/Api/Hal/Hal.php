@@ -1162,16 +1162,18 @@ class Hal extends Api
 				'documentFormat' => $format,
 				'uriParams' => $this->uriParams,
 			);
-			JFactory::$document = new Document($documentOptions);
+			$halDocument = new Document($documentOptions);
 
 			$body = $this->getBody();
 			$body = $this->triggerFunction('prepareBody', $body);
 
 			// Push results into the document.
-			JFactory::$document
+			$halDocument
 				->setHal($this)
 				->setBuffer($body)
 				->render(false);
+
+			JFactory::$document= $halDocument;
 		}
 	}
 
