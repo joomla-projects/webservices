@@ -13,6 +13,8 @@ use Joomla\Input\Input;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\DI\Container;
 use Joomla\Webservices\Application;
+use Joomla\Event\DispatcherAwareInterface;
+use Joomla\Event\DispatcherInterface;
 
 /**
  * Interface to handle api calls
@@ -21,7 +23,7 @@ use Joomla\Webservices\Application;
  * @subpackage  Api
  * @since       1.2
  */
-class Api extends ApiBase
+class Api extends ApiBase implements DispatcherAwareInterface
 {
 	/**
 	 * @var    array  JApi instances container.
@@ -77,10 +79,26 @@ class Api extends ApiBase
 		// Main properties
 		$this->setApi($this->options->get('api', 'hal'));
 
-		// Load Library language
-		$this->loadExtensionLanguage('lib_joomla', JPATH_ADMINISTRATOR);
+		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
 
 		parent::__construct($container);
+
+		// Load Library language
+		$this->loadExtensionLanguage('lib_joomla', JPATH_ADMINISTRATOR);
+	}
+
+	/**
+	 * Set the dispatcher to use.
+	 *
+	 * @param   DispatcherInterface  $dispatcher  The dispatcher to use.
+	 *
+	 * @return  DispatcherAwareInterface  This method is chainable.
+	 *
+	 * @since   1.0
+	 */
+	public function setDispatcher(DispatcherInterface $dispatcher)
+	{
+		$this->dispatcher = $dispatcher;
 	}
 
 	/**
