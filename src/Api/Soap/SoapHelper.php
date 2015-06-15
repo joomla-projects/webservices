@@ -102,6 +102,7 @@ class SoapHelper
 					$transformClass = '\\Joomla\\Webservices\\Api\\Soap\\Transform\\TransformBase';
 				}
 
+				/** @var \Joomla\Webservices\Api\Soap\Transform\TransformInterface $transform */
 				$transform = new $transformClass;
 				$transform->wsdlField(
 					$field, $sequence, $typeSchema,
