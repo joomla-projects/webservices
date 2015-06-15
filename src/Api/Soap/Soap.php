@@ -12,8 +12,8 @@ namespace Joomla\Webservices\Api\Soap;
 use Joomla\Webservices\Api\Api;
 use Joomla\Webservices\Api\Hal\Hal;
 use Joomla\Webservices\Api\Soap\Operation\Operation;
-use Joomla\Webservices\Api\Soap\Renderer\Document;
-use Joomla\Uri\Uri;
+use Joomla\Webservices\Api\Soap\Document\Document;
+use Joomla\Webservices\Uri\Uri;
 use Joomla\DI\Container;
 use Joomla\Event\Event;
 
@@ -164,8 +164,8 @@ class Soap extends Api
 	 */
 	public function apiSoap()
 	{
-		// @todo implement Uri::root()
-		$wsdl = Uri::root() . $this->wsdlPath;
+		$uri = Uri::getInstance();
+		$wsdl = $uri->root() . $this->wsdlPath;
 		$params = array(
 			'uri' => $wsdl,
 			'soap_version' => SOAP_1_2,
@@ -193,7 +193,7 @@ class Soap extends Api
 	{
 		try
 		{
-			$content = @file_get_contents(JPATH_SITE . '/' . $this->wsdlPath);
+			$content = @file_get_contents(JPATH_ROOT . '/' . $this->wsdlPath);
 
 			if (is_string($content))
 			{
@@ -201,7 +201,7 @@ class Soap extends Api
 			}
 			else
 			{
-				unlink(JPATH_SITE . '/' . $this->wsdlPath);
+				unlink(JPATH_ROOT . '/' . $this->wsdlPath);
 				$this->checkWSDL();
 
 				return $this->apiWsdl();
@@ -209,7 +209,7 @@ class Soap extends Api
 		}
 		catch (\Exception $e)
 		{
-			unlink(JPATH_SITE . '/' . $this->wsdlPath);
+			unlink(JPATH_ROOT . '/' . $this->wsdlPath);
 			$this->checkWSDL();
 
 			return $this->apiWsdl();
@@ -238,7 +238,7 @@ class Soap extends Api
 				$this->webservice->webservicePath
 			);
 
-			if (is_readable(JPATH_SITE . '/' . $this->wsdlPath))
+			if (is_readable(JPATH_ROOT . '/' . $this->wsdlPath))
 			{
 				return $this->wsdlPath;
 			}
@@ -249,7 +249,7 @@ class Soap extends Api
 
 		// Something went wrong, we are going to generate it on the fly
 		$this->wsdl = SoapHelper::generateWsdl($this->webservice->configuration, $this->wsdlPath);
-		$this->wsdl->asXML(JPATH_SITE . '/' . $this->wsdlPath);
+		$this->wsdl->asXML(JPATH_ROOT . '/' . $this->wsdlPath);
 
 		return $this->wsdlPath;
 	}
@@ -291,16 +291,14 @@ class Soap extends Api
 			}
 		}
 
-		$soapDocument = new Document($this->container, $documentOptions, ($this->operation == 'wsdl' ? 'xml' : 'soap+xml'));
+		JFactory::$document = new Document($documentOptions, ($this->operation == 'wsdl' ? 'xml' : 'soap+xml'));
 		$body = $this->triggerFunction('prepareBody', $body);
 
 		// Push results into the document.
-		$this->app->setBody(
-			$soapDocument
-				->setApiObject($this)
-				->setBuffer($body)
-				->render(false)
-		);
+		JFactory::$document
+			->setApiObject($this)
+			->setBuffer($body)
+			->render(false);
 	}
 
 	/**

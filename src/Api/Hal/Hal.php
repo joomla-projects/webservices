@@ -21,7 +21,7 @@ use Joomla\DI\Container;
 use Joomla\Language\Text;
 use Joomla\Event\Event;
 use Joomla\Event\EventImmutable;
-use Joomla\Uri\Uri;
+use Joomla\Webservices\Uri\Uri;
 
 /**
  * Class to represent a HAL standard object.
@@ -462,7 +462,9 @@ class Hal extends Api
 		// Add basic hypermedia links.
 		$this->hal->setLink($documentationCurieAdmin, false, true);
 		$this->hal->setLink($documentationCurieSite, false, true);
-		$this->hal->setLink(new Link(Uri::base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
+
+		$uri = Uri::getInstance();
+		$this->hal->setLink(new Link($uri->base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
 
 		$webservices = HalHelper::getInstalledWebservices($this->container->get('db'));
 

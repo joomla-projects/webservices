@@ -9,7 +9,7 @@
 
 namespace Joomla\Webservices\API\Soap;
 
-use Joomla\Uri\Uri;
+use Joomla\Webservices\Uri\Uri;
 use Joomla\Webservices\Api\Hal\HalHelper;
 
 /**
@@ -266,8 +266,8 @@ class Wsdl
 	 */
 	public function generateWsdl($wsdlPath)
 	{
-		// @todo add Uri::root() method
-		$wsdlFullPath = Uri::root() . $wsdlPath;
+		$uri = Uri::getInstance();
+		$wsdlFullPath = $uri->root() . $wsdlPath;
 
 		$client = HalHelper::attributeToString($this->webserviceXml, 'client', 'site');
 		$version = !empty($this->webserviceXml->config->version) ? $this->webserviceXml->config->version : '1.0.0';

@@ -14,7 +14,7 @@ use Joomla\Input\Input;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 use Joomla\Utilities\ArrayHelper;
-use Joomla\Uri\Uri;
+use Joomla\Webservices\Uri\Uri;
 use Joomla\Language\Text;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Filter\InputFilter;
@@ -805,9 +805,9 @@ class HalHelper
 	public static function buildWebserviceFullUrl($client, $name, $version, $appendApi = '', $appendFormat = '')
 	{
 		$uri = self::buildWebserviceUri($client, $name, $version, $appendApi, $appendFormat);
+		$baseUri = Uri::getInstance();
 
-		/** @todo Implement Uri::base() */
-		return rtrim(Uri::base(), '/') . '/index.php?' . $uri;
+		return rtrim($baseUri->base(), '/') . '/index.php?' . $uri;
 	}
 
 	/**
