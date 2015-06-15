@@ -20,6 +20,8 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\DI\Container;
 use Joomla\Language\Text;
 use Joomla\Event\Event;
+use Joomla\Event\EventImmutable;
+use Joomla\Uri\Uri;
 
 /**
  * Class to represent a HAL standard object.
@@ -1520,10 +1522,18 @@ class Hal extends Api
 			return false;
 		}
 
-		$authorized = false;
+		$eventData = array(
+			'scopes' => $scopes,
+			'options' => $this->options,
+			'permissionCheck' => $this->permissionCheck,
+			'authorized' => false
+		);
 
-		$event = new Event('JApiHalPermissionCheck', array($scopes, $this->options, $this->permissionCheck, $authorized));
-		$result = $this->dispatcher->triggerEvent($event);
+		$event = new Event('JApiHalPermissionCheck', $eventData);
+		$this->dispatcher->triggerEvent($event);
+
+		// See if authorized variable has been changed
+		$authorized = $event->getArgument('authorized', false);
 
 		if ($authorized)
 		{
@@ -2170,10 +2180,10 @@ class Hal extends Api
 		$event = new Event('JApiHalBefore' . $functionName, $temp);
 		$result = $this->dispatcher->triggerEvent($event);
 
-		if ($result)
-		{
-			return $result;
-		}
+		//if ($result)
+		//{
+		//	return $result;
+		//}
 
 		// Checks if that method exists in helper file and executes it
 		if (method_exists($apiHelperClass, $functionName))
@@ -2185,8 +2195,8 @@ class Hal extends Api
 			$result = call_user_func_array(array($this, $functionName), $temp);
 		}
 
-		$event = new Event('JApiHalAfter' . $functionName, $temp);
-		$result = $this->dispatcher->triggerEvent($event);
+		$event = new EventImmutable('JApiHalAfter' . $functionName, $temp);
+		$this->dispatcher->triggerEvent($event);
 
 		return $result;
 	}
