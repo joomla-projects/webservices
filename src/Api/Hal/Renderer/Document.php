@@ -13,7 +13,7 @@ use Joomla\Webservices\Api\Hal\Hal;
 use Joomla\Webservices\Renderer\Document as JDocument;
 
 use Joomla\DI\Container;
-use Joomla\Uri\Uri;
+use Joomla\Webservices\Uri\Uri;
 
 /**
  * ApiDocumentHal class, provides an easy interface to parse and display HAL+JSON or HAL+XML output
@@ -230,14 +230,12 @@ class Document extends JDocument
 	 */
 	public function addUriParameters($href, $absoluteHrefs)
 	{
+		$uri = Uri::getInstance($href);
+
 		if ($absoluteHrefs && substr($href, 0, 1) == '/')
 		{
-			/** @todo Implement Uri::base **/
-			$href = rtrim(Uri::base(), '/') . $href;
+			$href = rtrim($uri->base(), '/') . $href;
 		}
-
-		/** @var \Joomla\Uri\Uri $uri */
-		$uri = Uri::getInstance($href);
 
 		if (!empty($this->uriParams))
 		{
