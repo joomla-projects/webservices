@@ -54,7 +54,7 @@ class ConfigurationProvider implements ServiceProviderInterface
 		}
 
 		$this->config = (new Registry)->loadObject($configObject);
-		$this->config->set('language.basedir', JPATH_API . '/src/language/');
+		$this->config->set('language.basedir', JPATH_API . '/src');
 	}
 
 	/**
