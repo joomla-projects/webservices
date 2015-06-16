@@ -173,12 +173,15 @@ class Hal extends Api
 
 		if (!empty($this->webserviceName))
 		{
+			/** @var \Joomla\Database\DatabaseDriver $db */
+			$db = $container->get('db');
+
 			if (empty($this->webserviceVersion))
 			{
-				$this->webserviceVersion = HalHelper::getNewestWebserviceVersion($this->client, $this->webserviceName, $container->get('db'));
+				$this->webserviceVersion = HalHelper::getNewestWebserviceVersion($this->client, $this->webserviceName, $db);
 			}
 
-			$this->webservice = HalHelper::getInstalledWebservice($this->client, $this->webserviceName, $this->webserviceVersion, $container->get('db'));
+			$this->webservice = HalHelper::getInstalledWebservice($this->client, $this->webserviceName, $this->webserviceVersion, $db);
 
 			if (empty($this->webservice))
 			{
