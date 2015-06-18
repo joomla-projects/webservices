@@ -24,10 +24,10 @@ abstract class Base
 	/**
 	 * Sets XML attributes for JApiHalDocumentLink
 	 * 
-	 * @param   \SimpleXMLElement     $xml   XML document
-	 * @param   Link   $link  Link element
+	 * @param   \SimpleXMLElement  $xml   XML document
+	 * @param   Link               $link  Link element
 	 *
-	 * @return  Base
+	 * @return  $this
 	 */
 	public function setXMLAttributes(\SimpleXMLElement $xml, Link $link)
 	{
