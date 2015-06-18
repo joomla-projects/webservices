@@ -12,7 +12,7 @@ namespace Joomla\Webservices\Api\Soap;
 use Joomla\Webservices\Api\Api;
 use Joomla\Webservices\Api\Hal\Hal;
 use Joomla\Webservices\Api\Soap\Operation\Operation;
-use Joomla\Webservices\Api\Soap\Document\Document;
+use Joomla\Webservices\Api\Soap\Renderer\Document;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\DI\Container;
 use Joomla\Event\Event;
@@ -291,14 +291,18 @@ class Soap extends Api
 			}
 		}
 
-		JFactory::$document = new Document($documentOptions, ($this->operation == 'wsdl' ? 'xml' : 'soap+xml'));
+		$soapDocument = new Document($this->container, $documentOptions, ($this->operation == 'wsdl' ? 'xml' : 'soap+xml'));
+
+		$body = $this->getBody();
 		$body = $this->triggerFunction('prepareBody', $body);
 
 		// Push results into the document.
-		JFactory::$document
-			->setApiObject($this)
-			->setBuffer($body)
-			->render(false);
+		$this->app->setBody(
+			$soapDocument
+				->setApiObject($this)
+				->setBuffer($body)
+				->render(false)
+		);
 	}
 
 	/**
