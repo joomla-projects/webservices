@@ -76,7 +76,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 			->set('Joomla\\DI\\Container', $container);
 
 		$session = $container->get('session');
-		$session->initialise($this->input, $container->get('Joomla\\Event\\Dispatcher'));
 		$this->session = $session;
 
 		$this->setContainer($container);
