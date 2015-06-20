@@ -12,6 +12,7 @@ namespace Joomla\Webservices;
 use Joomla\Application\AbstractWebApplication;
 use Joomla\Application\Web\WebClient;
 use Joomla\Input\Input;
+use Joomla\Filter\InputFilter;
 use Joomla\Session\Session;
 
 use Joomla\DI\Container;
@@ -118,7 +119,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 					$token   = '';
 					$apiName = ucfirst($apiName);
 					$method  = strtoupper($input->getMethod());
-					$task    = HalHelper::getTask($this->input);
+					$task    = $this->getTask();
 					$data    = Api::getPostedData($this->getContainer());
 					$dataGet = $input->get->getArray();
 
@@ -290,5 +291,42 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 
 		// Hand over processing to the parent now
 		parent::redirect($url, $moved);
+	}
+
+	/**
+	 * Method to get Task from request
+	 *
+	 * @return  string Task name
+	 *
+	 * @since   1.2
+	 */
+	public function getTask()
+	{
+		$command  = $this->input->get('task', '');
+
+		// Check for array format.
+		$filter = new InputFilter;
+
+		if (is_array($command))
+		{
+			$command = $filter->clean(array_pop(array_keys($command)), 'cmd');
+		}
+		else
+		{
+			$command = $filter->clean($command, 'cmd');
+		}
+
+		// Check for a controller.task command.
+		if (strpos($command, '.') !== false)
+		{
+			// Explode the controller.task command.
+			list ($type, $task) = explode('.', $command);
+		}
+		else
+		{
+			$task = $command;
+		}
+
+		return $task;
 	}
 }

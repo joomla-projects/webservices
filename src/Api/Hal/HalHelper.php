@@ -169,45 +169,6 @@ class HalHelper
 	}
 
 	/**
-	 * Method to get Task from request
-	 *
-	 * @param   Input  $input  The input object
-	 *
-	 * @return  string Task name
-	 *
-	 * @since   1.2
-	 */
-	public static function getTask(Input $input)
-	{
-		$command  = $input->get('task', '');
-
-		// Check for array format.
-		$filter = new InputFilter;
-
-		if (is_array($command))
-		{
-			$command = $filter->clean(array_pop(array_keys($command)), 'cmd');
-		}
-		else
-		{
-			$command = $filter->clean($command, 'cmd');
-		}
-
-		// Check for a controller.task command.
-		if (strpos($command, '.') !== false)
-		{
-			// Explode the controller.task command.
-			list ($type, $task) = explode('.', $command);
-		}
-		else
-		{
-			$task = $command;
-		}
-
-		return $task;
-	}
-
-	/**
 	 * Loading of webservice XML file
 	 *
 	 * @param   string  $client             Client
