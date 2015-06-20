@@ -493,18 +493,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/session.git",
-                "reference": "37b9432f77a20af04eefe2cf7a7473ccb1738c3f"
+                "reference": "a384b29d054df4d02e88a2aa1f3f759a46aeef36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/session/zipball/37b9432f77a20af04eefe2cf7a7473ccb1738c3f",
-                "reference": "37b9432f77a20af04eefe2cf7a7473ccb1738c3f",
+                "url": "https://api.github.com/repos/joomla-framework/session/zipball/a384b29d054df4d02e88a2aa1f3f759a46aeef36",
+                "reference": "a384b29d054df4d02e88a2aa1f3f759a46aeef36",
                 "shasum": ""
             },
             "require": {
                 "joomla/event": "2.0.*@dev",
-                "joomla/filter": "~1.1",
-                "joomla/input": "~1.2",
                 "php": ">=5.4"
             },
             "require-dev": {
@@ -536,7 +534,7 @@
                 "joomla",
                 "session"
             ],
-            "time": "2015-06-13 20:19:10"
+            "time": "2015-06-19 00:07:29"
         },
         {
             "name": "joomla/string",
