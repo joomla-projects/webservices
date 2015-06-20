@@ -23,10 +23,11 @@ class SessionProvider implements ServiceProviderInterface
 		$container->alias("session", "Joomla\\Session\\Session")
 			->share(
 				"Joomla\\Session\\Session",
-				function ()
+				function () use ($container)
 				{
+					$dispatcher = $container->get('Joomla\\Event\\Dispatcher');
 					$storage = new NativeStorage(new FilesystemHandler);
-					$session = new Session($storage);
+					$session = new Session($storage, $dispatcher);
 
 					return $session;
 				},
