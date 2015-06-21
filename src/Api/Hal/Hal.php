@@ -118,7 +118,7 @@ class Hal extends Api
 	 * @var    string  Dynamic model name used if dataMode="table"
 	 * @since  1.3
 	 */
-	public $apiDynamicModelClassName = 'JApiHalModelItem';
+	public $apiDynamicModelClassName = '\\Joomla\\Webservices\\Api\\Hal\\Model\\Item';
 
 	/**
 	 * @var    string  Rendered Documentation
@@ -571,7 +571,7 @@ class Hal extends Api
 		$isReadItem = $this->apiFillPrimaryKeys($primaryKeys);
 
 		$displayTarget = $isReadItem ? 'item' : 'list';
-		$this->apiDynamicModelClassName = 'JApiHalModel' . ucfirst($displayTarget);
+		$this->apiDynamicModelClassName = '\\Joomla\\Webservices\\Api\\Hal\\Model\\' . ucfirst($displayTarget);
 		$currentConfiguration = $this->operationConfiguration->{$displayTarget};
 		$model = $this->triggerFunction('loadModel', $this->elementName, $currentConfiguration);
 		$this->assignFiltersList($model);
@@ -719,7 +719,7 @@ class Hal extends Api
 		$this->loadResourceFromConfiguration($this->operationConfiguration);
 
 		// Delete function requires references and not values like we use in call_user_func_array so we use List delete function
-		$this->apiDynamicModelClassName = 'JApiHalModelList';
+		$this->apiDynamicModelClassName = '\\Joomla\\Webservices\\Api\\Hal\\Model\\List';
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = HalHelper::attributeToString($this->operationConfiguration, 'functionName', 'delete');
 		$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $this->operationConfiguration);
