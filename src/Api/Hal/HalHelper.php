@@ -79,7 +79,7 @@ class HalHelper
 	 */
 	public static function getWebservicesRelativePath()
 	{
-		return 'media/webservices/webservices';
+		return 'www/media/webservices/webservices';
 	}
 
 	/**
