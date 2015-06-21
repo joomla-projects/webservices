@@ -34,10 +34,10 @@ class Operation
 	/**
 	 * Constructor.
 	 *
-	 * @param   Hal  $webservice  Webservice object
-	 * @param   array       $config      An optional associative array of configuration settings.
+	 * @param   Hal    $webservice  Webservice object
+	 * @param   array  $config      An optional associative array of configuration settings.
 	 */
-	public function __construct($webservice, $config = array())
+	public function __construct(Hal $webservice, $config = array())
 	{
 		$this->webservice = $webservice;
 	}
