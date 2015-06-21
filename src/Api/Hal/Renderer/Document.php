@@ -93,7 +93,7 @@ class Document extends JDocument
 	 */
 	public function render($cache = false, $params = array())
 	{
-		$runtime = microtime(true) - $this->hal->startTime;
+		$runtime = microtime(true) - $this->app->startTime;
 
 		$this->app->setHeader('Status', $this->hal->statusCode . ' ' . $this->hal->statusText, true);
 		$this->app->setHeader('Server', '', true);
