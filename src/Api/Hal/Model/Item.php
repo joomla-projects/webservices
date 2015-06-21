@@ -9,7 +9,7 @@
 
 namespace Joomla\Webservices\Api\Hal\Model;
 
-use Joomla\Webservices\Api\Table\Table;
+use Joomla\Webservices\Api\Hal\Table\Table;
 
 /**
  * redCORE Dynamic Model List
