@@ -16,6 +16,7 @@ use Joomla\Webservices\Api\Soap\Renderer\Document;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\DI\Container;
 use Joomla\Event\Event;
+use Joomla\Event\EventImmutable;
 
 /**
  * Class to represent a SOAP standard object.
@@ -360,15 +361,15 @@ class Soap extends Api
 		$event = new Event('JApiSoapBefore' . $functionName, $temp);
 		$result = $this->dispatcher->triggerEvent($event);
 
-		if ($result)
-		{
-			return $result;
-		}
+		//if ($result)
+		//{
+		//	return $result;
+		//}
 
 		// Checks if that method exists in helper file and executes it
 		$result = call_user_func_array(array($this, $functionName), $temp);
 
-		$event = new Event('JApiSoapAfter' . $functionName, $temp);
+		$event = new EventImmutable('JApiSoapAfter' . $functionName, $temp);
 		$result = $this->dispatcher->triggerEvent($event);
 
 		return $result;
