@@ -92,7 +92,7 @@ class Api extends ApiBase implements DispatcherAwareInterface
 		parent::__construct($container);
 
 		// Load Library language
-		$this->loadExtensionLanguage('lib_joomla', JPATH_ADMINISTRATOR);
+		//$this->loadExtensionLanguage('lib_joomla', JPATH_ADMINISTRATOR);
 	}
 
 	/**
