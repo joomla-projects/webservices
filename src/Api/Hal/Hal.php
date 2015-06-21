@@ -542,7 +542,7 @@ class Hal extends Api
 
 		$dataGet = $this->options->get('dataGet', array());
 
-		$this->documentation = JLayoutHelper::render(
+		$this->documentation = \JLayoutHelper::render(
 			'webservice.documentation',
 			array(
 				'view' => $this,
@@ -1511,7 +1511,6 @@ class Hal extends Api
 
 		// Login user
 		$loggedIn = $this->loginUser($scopes);
-		$user = \JFactory::getUser();
 
 		// Public access
 		if (!$terminateIfNotAuthorized)
@@ -1555,6 +1554,7 @@ class Hal extends Api
 		elseif ($this->permissionCheck == 'joomla')
 		{
 			$authorized = false;
+			$user = \JFactory::getUser();
 
 			// Use Joomla to authorize
 			if (!empty($authorizationGroups))
