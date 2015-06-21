@@ -469,7 +469,7 @@ class Hal extends Api
 		$uri = Uri::getInstance();
 		$this->hal->setLink(new Link($uri->base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
 
-		$webservices = HalHelper::getInstalledWebservices($this->container->get('db'));
+		$webservices = HalHelper::getInstalledWebservices($this->getContainer()->get('db'));
 
 		if (!empty($webservices))
 		{
@@ -1169,7 +1169,7 @@ class Hal extends Api
 				'documentFormat' => $format,
 				'uriParams' => $this->uriParams,
 			);
-			$halDocument = new Document($this->container, $documentOptions);
+			$halDocument = new Document($this->getContainer(), $documentOptions);
 
 			$body = $this->getBody();
 			$body = $this->triggerFunction('prepareBody', $body);
@@ -1432,7 +1432,7 @@ class Hal extends Api
 	public function isOperationAllowed()
 	{
 		// Check if webservice is published
-		if (!HalHelper::isPublishedWebservice($this->client, $this->webserviceName, $this->webserviceVersion, $this->container->get('db')) && !empty($this->webserviceName))
+		if (!HalHelper::isPublishedWebservice($this->client, $this->webserviceName, $this->webserviceVersion, $this->getContainer()->get('db')) && !empty($this->webserviceName))
 		{
 			throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_IS_UNPUBLISHED', $this->webserviceName));
 		}

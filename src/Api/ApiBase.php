@@ -10,7 +10,10 @@
 namespace Joomla\Webservices\Api;
 
 use Joomla\Registry\Registry;
+
 use Joomla\DI\Container;
+use Joomla\DI\ContainerAwareTrait;
+use Joomla\DI\ContainerAwareInterface;
 
 /**
  * Interface to handle api calls
@@ -19,8 +22,10 @@ use Joomla\DI\Container;
  * @subpackage  Api
  * @since       1.2
  */
-abstract class ApiBase implements ApiInterface
+abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 {
+	use ContainerAwareTrait;
+
 	/**
 	 * Options object
 	 *
@@ -48,14 +53,6 @@ abstract class ApiBase implements ApiInterface
 	 * @since  1.2
 	 */
 	public $statusText = '';
-
-	/**
-	 * The DIC object
-	 *
-	 * @var    Container
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $container;
 
 	/**
 	 * Standard status codes for RESTfull api
@@ -116,7 +113,7 @@ abstract class ApiBase implements ApiInterface
 	 */
 	public function __construct(Container $container)
 	{
-		$this->container = $container;
+		$this->setContainer($container);
 	}
 
 	/**
@@ -162,7 +159,7 @@ abstract class ApiBase implements ApiInterface
 
 		if ($this->isInvalid())
 		{
-			throw new \Exception($this->container->get('Joomla\\Language\\LanguageFactory')->getText()->sprintf('LIB_WEBSERVICES_API_STATUS_CODE_INVALID', $statusCode));
+			throw new \Exception($this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getText()->sprintf('LIB_WEBSERVICES_API_STATUS_CODE_INVALID', $statusCode));
 		}
 
 		return $this;

@@ -292,7 +292,7 @@ class Soap extends Api
 			}
 		}
 
-		$soapDocument = new Document($this->container, $documentOptions, ($this->operation == 'wsdl' ? 'xml' : 'soap+xml'));
+		$soapDocument = new Document($this->getContainer(), $documentOptions, ($this->operation == 'wsdl' ? 'xml' : 'soap+xml'));
 
 		$body = $this->getBody();
 		$body = $this->triggerFunction('prepareBody', $body);

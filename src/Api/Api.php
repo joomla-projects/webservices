@@ -157,7 +157,7 @@ class Api extends ApiBase implements DispatcherAwareInterface
 	public function loadExtensionLanguage($option, $path = JPATH_SITE)
 	{
 		/** @var \Joomla\Language\Language $lang */
-		$lang = $this->container->get('Joomla\\Language\\LanguageFactory')->getLanguage();
+		$lang = $this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getLanguage();
 
 		// Load common and local language files.
 		$lang->load($option, $path, null, false, false)
