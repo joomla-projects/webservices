@@ -9,6 +9,8 @@
 
 namespace Joomla\Webservices\Api\Hal\Transform;
 
+use Joomla\Date\Date;
+
 /**
  * Transform api output
  *
@@ -32,7 +34,7 @@ class TransformDatetime extends TransformBase
 			return '';
 		}
 
-		$date = new JDate($definition);
+		$date = new Date($definition);
 
 		return $date->toISO8601();
 	}
