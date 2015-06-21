@@ -1511,7 +1511,7 @@ class Hal extends Api
 
 		// Login user
 		$loggedIn = $this->loginUser($scopes);
-		$user = JFactory::getUser();
+		$user = \JFactory::getUser();
 
 		// Public access
 		if (!$terminateIfNotAuthorized)

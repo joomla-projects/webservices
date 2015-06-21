@@ -15,13 +15,14 @@ use Joomla\Input\Input;
 use Joomla\Filter\InputFilter;
 use Joomla\Session\Session;
 
+use Joomla\Authentication\Authentication;
+
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\DI\ContainerAwareInterface;
 
 use Joomla\Webservices\Api\Api;
 use Joomla\Webservices\Api\Soap\SoapHelper;
-use Joomla\Webservices\Api\Hal\HalHelper;
 
 /**
  * Webservices bootstrap class
@@ -219,6 +220,34 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	public function isAdmin()
 	{
 		return true;
+	}
+
+	/**
+	 * Login authentication function.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function login()
+	{
+		$authenticate = new Authentication();
+
+		return $authenticate->authenticate();
+	}
+
+	/**
+	 * Logout authentication function.
+	 *
+	 * @param   integer  $userid   The user to load - Can be an integer or string - If string, it is converted to ID automatically
+	 *
+	 * @return  boolean  True on success
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function logout($userid = null)
+	{
+		return false;
 	}
 
 	/**
