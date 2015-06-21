@@ -9,6 +9,8 @@
 
 namespace Joomla\Webservices\Api\Hal\Model;
 
+use Joomla\Webservices\Api\Hal\Table\Table;
+
 /**
  * redCORE Dynamic Model List
  *
@@ -199,10 +201,9 @@ class List extends \JModelList
 	 * @param   string  $prefix   The class prefix. Optional.
 	 * @param   array   $options  Configuration array for model. Optional.
 	 *
-	 * @return  JTable  A JTable object
+	 * @return  Table  A JTable object
 	 *
 	 * @since   12.2
-	 * @throws  Exception
 	 */
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
@@ -227,7 +228,7 @@ class List extends \JModelList
 			$tableKey = 'id';
 		}
 
-		$table = new JApiHalTableTable($tableName, $tableKey, $db);
+		$table = new Table($tableName, $tableKey, $db);
 
 		return $table;
 	}
