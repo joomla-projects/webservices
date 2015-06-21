@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8d98a2f816800adce5b56a10cb99e129",
+    "hash": "b1dc990b482af8446b43b5371810aa24",
     "packages": [
         {
             "name": "ircmaxell/password-compat",
@@ -106,16 +106,16 @@
         },
         {
             "name": "joomla/authentication",
-            "version": "1.0.1",
+            "version": "dev-AbstractStrategy",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/authentication.git",
-                "reference": "24afaee42fb60c5affe2443762b56832267274e8"
+                "reference": "0d42f85408954ce88d92a295ac2ef8bf1c2953e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/authentication/zipball/24afaee42fb60c5affe2443762b56832267274e8",
-                "reference": "24afaee42fb60c5affe2443762b56832267274e8",
+                "url": "https://api.github.com/repos/joomla-framework/authentication/zipball/0d42f85408954ce88d92a295ac2ef8bf1c2953e9",
+                "reference": "0d42f85408954ce88d92a295ac2ef8bf1c2953e9",
                 "shasum": ""
             },
             "require": {
@@ -124,9 +124,14 @@
                 "php": ">=5.3.10"
             },
             "require-dev": {
+                "joomla/database": "~1.0",
                 "joomla/test": "~1.0",
+                "phpunit/dbunit": "~1.3",
                 "phpunit/phpunit": "4.*",
                 "squizlabs/php_codesniffer": "1.*"
+            },
+            "suggest": {
+                "joomla/database": "To use the DatabaseStrategy authentication class, install joomla/database"
             },
             "type": "joomla-package",
             "extra": {
@@ -137,7 +142,7 @@
             "autoload": {
                 "psr-4": {
                     "Joomla\\Authentication\\": "src/",
-                    "Joomla\\Authentication\\Tests\\": "Tests/"
+                    "Joomla\\Authentication\\Tests\\": "tests/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -151,7 +156,7 @@
                 "framework",
                 "joomla"
             ],
-            "time": "2014-09-28 18:45:42"
+            "time": "2015-06-16 13:33:16"
         },
         {
             "name": "joomla/compat",
@@ -803,6 +808,7 @@
     "stability-flags": {
         "joomla/event": 20,
         "joomla/session": 20,
+        "joomla/authentication": 20,
         "joomla/language": 20
     },
     "prefer-stable": false,
