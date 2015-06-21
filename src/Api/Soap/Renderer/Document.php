@@ -97,7 +97,7 @@ class Document extends JDocument
 	 */
 	public function render($cache = false, $params = array())
 	{
-		$runtime = microtime(true) - $this->soap->startTime;
+		$runtime = microtime(true) - $this->app->startTime;
 
 		$this->app->setHeader('Status', $this->soap->statusCode . ' ' . $this->soap->statusText, true);
 		$this->app->setHeader('Server', '', true);

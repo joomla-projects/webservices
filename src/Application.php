@@ -52,6 +52,14 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	protected $messageQueue = array();
 
 	/**
+	 * The start time for measuring the execution time.
+	 *
+	 * @var    float
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public $startTime;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param   Container  $container  DI Container
@@ -66,6 +74,9 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 */
 	public function __construct(Container $container, Input $input = null, WebClient $client = null)
 	{
+		// Set the start time of the app - will be used to calculate run time in the renderer
+		$this->startTime = microtime(true);
+
 		$config = $container->get('config');
 
 		parent::__construct($input, $config, $client);

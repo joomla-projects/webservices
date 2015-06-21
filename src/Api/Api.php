@@ -26,12 +26,6 @@ use Joomla\Event\DispatcherInterface;
 class Api extends ApiBase implements DispatcherAwareInterface
 {
 	/**
-	 * @var    array  JApi instances container.
-	 * @since  1.2
-	 */
-	public static $instances = array();
-
-	/**
 	 * @var    string  Name of the Api
 	 * @since  1.2
 	 */
@@ -42,14 +36,6 @@ class Api extends ApiBase implements DispatcherAwareInterface
 	 * @since  1.2
 	 */
 	public $operation = 'read';
-
-	/**
-	 * The start time for measuring the execution time.
-	 *
-	 * @var    float
-	 * @since  1.2
-	 */
-	public $startTime;
 
 	/**
 	 * Application Object
@@ -77,8 +63,6 @@ class Api extends ApiBase implements DispatcherAwareInterface
 	 */
 	public function __construct(Container $container, $options = null)
 	{
-		$this->startTime = microtime(true);
-
 		$this->app = $container->get('app');
 
 		// Initialise / Load options
