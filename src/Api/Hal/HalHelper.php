@@ -9,15 +9,12 @@
 
 namespace Joomla\Webservices\Api\Hal;
 
-use Joomla\Input\Input;
-
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\Language\Text;
 use Joomla\Database\DatabaseDriver;
-use Joomla\Filter\InputFilter;
 
 /**
  * Interface to handle api calls
@@ -70,7 +67,7 @@ class HalHelper
 	 */
 	public static function getWebservicesPath()
 	{
-		return JPATH_ROOT . '/' . self::getWebservicesRelativePath();
+		return JPATH_API . '/' . self::getWebservicesRelativePath();
 	}
 
 	/**
@@ -659,7 +656,7 @@ class HalHelper
 			return $transformElements;
 		}
 
-		$transformElementsFiles = Folder::files(JPATH_LIBRARIES . '/webservices/api/hal/transform', '.php');
+		$transformElementsFiles = Folder::files(JPATH_API . '/src/Api/Hal/Transform', '.php');
 		$transformElements = array();
 
 		foreach ($transformElementsFiles as $transformElement)
