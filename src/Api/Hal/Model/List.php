@@ -77,7 +77,7 @@ class List extends \JModelList
 	/**
 	 * Build an SQL query to load the list data.
 	 *
-	 * @return  JDatabaseQuery
+	 * @return  string
 	 */
 	protected function getTableName()
 	{
@@ -87,11 +87,13 @@ class List extends \JModelList
 	/**
 	 * Build an SQL query to load the list data.
 	 *
-	 * @return  JDatabaseQuery
+	 * @return  \Joomla\Database\DatabaseQuery
 	 */
 	protected function getListQuery()
 	{
 		$table = $this->getTableName();
+
+		/** @var \Joomla\Database\DatabaseDriver $db */
 		$db	= $this->getDbo();
 		$query = $db->getQuery(true);
 		$activeFields = array();
@@ -204,6 +206,7 @@ class List extends \JModelList
 	 */
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
+		/** @var \Joomla\Database\DatabaseDriver $db */
 		$db = $this->getDbo();
 		$config = $this->modelConfig;
 		$tableName = str_replace('#__', '', $config['tableName']);
