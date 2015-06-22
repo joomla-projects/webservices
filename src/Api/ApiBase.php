@@ -238,31 +238,6 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	}
 
 	/**
-	 * Method to render the api call.
-	 *
-	 * @return  string  Api call output
-	 *
-	 * @since   1.2
-	 */
-	public function render()
-	{
-		return '';
-	}
-
-	/**
-	 * Execute the Api operation.
-	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
-	 *
-	 * @since   1.2
-	 * @throws  \RuntimeException
-	 */
-	public function execute()
-	{
-		return null;
-	}
-
-	/**
 	 * Render the list of debug messages
 	 *
 	 * @return  string  Output text/HTML code
@@ -286,5 +261,19 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	public function addDebugMessage($message)
 	{
 		$this->debugMessages[] = $message;
+	}
+
+	/**
+	 * Change the debug mode
+	 *
+	 * @param   boolean  $debug  Enable / Disable debug
+	 *
+	 * @return  void
+	 *
+	 * @since   1.2
+	 */
+	public function setDebug($debug)
+	{
+		$this->setOption('debug', (boolean) $debug);
 	}
 }
