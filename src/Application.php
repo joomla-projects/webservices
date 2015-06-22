@@ -21,6 +21,8 @@ use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\DI\ContainerAwareInterface;
 
+use Joomla\Utilities\ArrayHelper;
+
 use Joomla\Webservices\Api\Api;
 use Joomla\Webservices\Api\Soap\SoapHelper;
 
@@ -126,13 +128,11 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 					$viewName         = $input->getString('view', '');
 					$version          = $input->getString('webserviceVersion', '');
 
-					// This is deprecated in favor of Plugin trigger
-					//$token = $input->getString(JBootstrap::getConfig('oauth2_token_param_name', 'access_token'), '');
-					$token   = '';
+					$token = $input->getString($this->get('webservices.oauth2_token_param_name', 'access_token'), '');
 					$apiName = ucfirst($apiName);
 					$method  = strtoupper($input->getMethod());
 					$task    = $this->getTask();
-					$data    = Api::getPostedData($this->getContainer());
+					$data    = $this->getPostedData();
 					$dataGet = $input->get->getArray();
 
 					if (empty($webserviceClient))
@@ -151,7 +151,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 						'data'              => $data,
 						'dataGet'           => $dataGet,
 						'accessToken'       => $token,
-						'format'            => $input->getString('format', $this->get('webservices_default_format', 'json')),
+						'format'            => $input->getString('format', $this->get('webservices.webservices_default_format', 'hal')),
 						'id'                => $input->getString('id', ''),
 						'absoluteHrefs'     => $input->get->getBool('absoluteHrefs', true),
 					);
@@ -368,5 +368,60 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 		}
 
 		return $task;
+	}
+
+	/**
+	 * Returns posted data in array format
+	 *
+	 * @return  array
+	 *
+	 * @since   1.2
+	 */
+	public function getPostedData()
+	{
+		$input = $this->input;
+		$inputData = file_get_contents("php://input");
+
+		if (is_object($inputData))
+		{
+			$inputData = ArrayHelper::fromObject($inputData);
+		}
+		elseif(is_string($inputData))
+		{
+			$parsedData = null;
+
+			// We try to transform it into JSON
+			if ($data_json = @json_decode($inputData, true))
+			{
+				if (json_last_error() == JSON_ERROR_NONE)
+				{
+					$parsedData = (array) $data_json;
+				}
+			}
+
+			// We try to transform it into XML
+			if (is_null($parsedData) && $xml = @simplexml_load_string($inputData))
+			{
+				$json = json_encode((array) $xml);
+				$parsedData = json_decode($json, true);
+			}
+
+			// We try to transform it into Array
+			if (is_null($parsedData) && !empty($inputData) && !is_array($inputData))
+			{
+				parse_str($inputData, $parsedData);
+			}
+
+			$inputData = $parsedData;
+		}
+		else
+		{
+			$inputData = $input->post->getArray();
+		}
+
+		// Filter data with Input default filter
+		$postedData = new Input($inputData);
+
+		return $postedData->getArray();
 	}
 }

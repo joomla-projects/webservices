@@ -255,7 +255,7 @@ class Resource extends Base
 	}
 
 	/**
-	 * Converts current JApiHalDocumentResource object to Array
+	 * Converts current Resource object to Array
 	 *
 	 * @return array
 	 */

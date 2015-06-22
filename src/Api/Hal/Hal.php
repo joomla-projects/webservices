@@ -18,7 +18,6 @@ use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 
 use Joomla\Utilities\ArrayHelper;
 use Joomla\DI\Container;
-use Joomla\Language\Text;
 use Joomla\Event\Event;
 use Joomla\Event\EventImmutable;
 use Joomla\Webservices\Uri\Uri;
@@ -145,14 +144,6 @@ class Hal extends Api
 	public $permissionCheck = 'joomla';
 
 	/**
-	 * The text translation object
-	 *
-	 * @var    Text
-	 * @since  __DELPOY_VERSION__
-	 */
-	private $text = null;
-
-	/**
 	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object
@@ -165,7 +156,6 @@ class Hal extends Api
 	{
 		parent::__construct($container, $options);
 
-		$this->text = $container->get('Joomla\\Language\\LanguageFactory')->getText();
 		$this->setWebserviceName();
 		$this->client = $this->options->get('webserviceClient', 'site');
 		$this->webserviceVersion = $this->options->get('webserviceVersion', '');
@@ -1147,7 +1137,7 @@ class Hal extends Api
 
 		if (!empty($token))
 		{
-			$this->setUriParams($this->app->get('oauth2_token_param_name', 'access_token'), $token);
+			$this->setUriParams($this->app->get('webservices.oauth2_token_param_name', 'access_token'), $token);
 		}
 
 		if ($client == 'administrator')
