@@ -122,11 +122,11 @@ class Document extends JDocument
 
 		if ($this->documentFormat == 'xml')
 		{
-			echo $hal->getXML()->asXML();
+			return $hal->getXML()->asXML();
 		}
 		else
 		{
-			echo (string) $hal;
+			return (string) $hal;
 		}
 	}
 
