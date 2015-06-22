@@ -114,7 +114,7 @@ class Document extends JDocument
 		// Get the Soap string from the buffer.
 		$content = $this->getBuffer();
 
-		echo (string) $content;
+		return (string) $content;
 	}
 
 	/**
