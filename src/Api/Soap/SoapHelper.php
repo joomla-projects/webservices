@@ -11,6 +11,7 @@ namespace Joomla\Webservices\Api\Soap;
 
 use Joomla\Filesystem\Path;
 use Joomla\Webservices\Api\Hal\HalHelper;
+use Joomla\Webservices\Api\Soap\Transform\TransformInterface;
 
 /**
  * Helper class for SOAP calls
@@ -104,6 +105,12 @@ class SoapHelper
 
 				/** @var \Joomla\Webservices\Api\Soap\Transform\TransformInterface $transform */
 				$transform = new $transformClass;
+
+				if (!($transform instanceof TransformInterface))
+				{
+					throw new \RuntimeException('Transform class must implement the transform interface');
+				}
+
 				$transform->wsdlField(
 					$field, $sequence, $typeSchema,
 					($elementName != '' ? $elementName : $typeName),
