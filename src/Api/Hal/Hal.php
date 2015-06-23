@@ -948,7 +948,7 @@ class Hal extends Api
 	 *
 	 * @return  Resource
 	 */
-	public function setDataValueToResource($resourceDocument, $resources, $data, $resourceSpecific = 'rcwsGlobal')
+	public function setDataValueToResource(Resource $resourceDocument, $resources, $data, $resourceSpecific = 'rcwsGlobal')
 	{
 		if (!empty($resources[$resourceSpecific]))
 		{
