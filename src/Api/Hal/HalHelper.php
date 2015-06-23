@@ -43,23 +43,6 @@ class HalHelper
 	public static $installedWebservices = null;
 
 	/**
-	 * Method to transform XML to array and get XML attributes
-	 *
-	 * @param   \SimpleXMLElement  $xmlElement      XML object to transform
-	 * @param   boolean            $onlyAttributes  return only attributes or all elements
-	 *
-	 * @return  array
-	 *
-	 * @since   1.2
-	 */
-	public static function getXMLElementAttributes($xmlElement, $onlyAttributes = true)
-	{
-		$transformedXML = json_decode(json_encode((array) $xmlElement), true);
-
-		return $onlyAttributes ? $transformedXML['@attributes'] : $transformedXML;
-	}
-
-	/**
 	 * Get Webservices path
 	 *
 	 * @return  string
@@ -852,7 +835,7 @@ class HalHelper
 		{
 			foreach ($xmlElement->fields->field as $field)
 			{
-				$fieldAttributes = self::getXMLElementAttributes($field);
+				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
 
 				if (($primaryKeys && XmlHelper::isAttributeTrue($field, 'isPrimaryField'))
 					|| !$primaryKeys)
