@@ -38,4 +38,25 @@ class XmlHelper
 
 		return !empty($value) ? $value : $default;
 	}
+
+	/**
+	 * Method to transform XML to array and get XML attributes
+	 *
+	 * @param   \SimpleXMLElement|Array  $element  XML object or array
+	 * @param   string                   $key      Key to check
+	 * @param   boolean                  $default  Default value to return
+	 *
+	 * @return  boolean
+	 *
+	 * @since   __DELPOY_VERSION__
+	 */
+	public static function isAttributeTrue($element, $key, $default = false)
+	{
+		if (!isset($element[$key]))
+		{
+			return $default;
+		}
+
+		return strtolower($element[$key]) == "true" ? true : false;
+	}
 }

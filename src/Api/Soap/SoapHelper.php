@@ -301,7 +301,7 @@ class SoapHelper
 				$transform = XmlHelper::attributeToString($field, 'transform', 'string');
 				$defaultValue = XmlHelper::attributeToString($field, 'defaultValue', 'null');
 
-				if ($defaultValue == 'null' && ($allRequired || HalHelper::isAttributeTrue($field, 'isRequiredField')))
+				if ($defaultValue == 'null' && ($allRequired || XmlHelper::isAttributeTrue($field, 'isRequiredField')))
 				{
 					$transformClass = '\\Joomla\\Webservices\\Api\\Soap\\Transform\\Transform' . ucfirst($transform);
 

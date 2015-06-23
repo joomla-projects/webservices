@@ -77,7 +77,7 @@ class TransformBase implements TransformInterface
 		{
 			$this->element->addAttribute(
 				'minOccurs',
-				(($validateOptional && HalHelper::isAttributeTrue($field, 'isRequiredField') || !$validateOptional) ? '1' : '0')
+				(($validateOptional && XmlHelper::isAttributeTrue($field, 'isRequiredField') || !$validateOptional) ? '1' : '0')
 			);
 		}
 
