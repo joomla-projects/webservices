@@ -32,7 +32,7 @@ class Resource extends Base
 	protected $jsonNumericCheck = self::JSON_NUMERIC_CHECK_OFF;
 
 	/**
-	 * Internal storage of `JApiHalDocumentLink` objects
+	 * Internal storage of `\Joomla\Webservices\Api\Hal\Renderer\Link` objects
 	 * @var array
 	 */
 	protected $_links = array();
