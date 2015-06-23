@@ -358,7 +358,7 @@ class HalHelper
 			}
 		}
 
-		return WebservicesHelper::uploadFiles($files, self::getWebservicesPath() . '/upload', $uploadOptions);
+		return \WebservicesHelper::uploadFiles($files, self::getWebservicesPath() . '/upload', $uploadOptions);
 	}
 
 	/**
