@@ -11,6 +11,7 @@ namespace Joomla\Webservices\API\Soap;
 
 use Joomla\Webservices\Uri\Uri;
 use Joomla\Webservices\Api\Hal\HalHelper;
+use Joomla\Webservices\Xml\XmlHelper;
 
 /**
  * Wsdl class for redCORE webservice
@@ -269,7 +270,7 @@ class Wsdl
 		$uri = Uri::getInstance();
 		$wsdlFullPath = $uri->root() . $wsdlPath;
 
-		$client = HalHelper::attributeToString($this->webserviceXml, 'client', 'site');
+		$client = XmlHelper::attributeToString($this->webserviceXml, 'client', 'site');
 		$version = !empty($this->webserviceXml->config->version) ? $this->webserviceXml->config->version : '1.0.0';
 		$this->webserviceFullName = $client . '.' . $this->webserviceXml->config->name . '.' . $version;
 		$this->webserviceUrl = HalHelper::buildWebserviceFullUrl($client, $this->webserviceXml->config->name, $version, 'soap');

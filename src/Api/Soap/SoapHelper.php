@@ -11,6 +11,7 @@ namespace Joomla\Webservices\Api\Soap;
 
 use Joomla\Filesystem\Path;
 use Joomla\Webservices\Api\Hal\HalHelper;
+use Joomla\Webservices\Xml\XmlHelper;
 use Joomla\Webservices\Api\Soap\Transform\TransformInterface;
 
 /**
@@ -138,7 +139,7 @@ class SoapHelper
 		{
 			foreach ($xmlElement->resources->resource as $resource)
 			{
-				$displayGroup = HalHelper::attributeToString($resource, 'displayGroup');
+				$displayGroup = XmlHelper::attributeToString($resource, 'displayGroup');
 
 				switch ($displayGroup)
 				{
@@ -147,12 +148,12 @@ class SoapHelper
 						break;
 
 					default:
-						if (($resourceSpecific != '' && HalHelper::attributeToString($resource, 'resourceSpecific') == $resourceSpecific)
+						if (($resourceSpecific != '' && XmlHelper::attributeToString($resource, 'resourceSpecific') == $resourceSpecific)
 							|| $resourceSpecific == '')
 						{
 							if ($namesOnly)
 							{
-								$outputResources[] = HalHelper::attributeToString($resource, 'displayName');
+								$outputResources[] = XmlHelper::attributeToString($resource, 'displayName');
 							}
 							else
 							{
@@ -180,8 +181,8 @@ class SoapHelper
 		{
 			foreach ($xmlElement->resources->resource as $resource)
 			{
-				$displayName = HalHelper::attributeToString($resource, 'displayName');
-				$resourceSpecific = HalHelper::attributeToString($resource, 'resourceSpecific');
+				$displayName = XmlHelper::attributeToString($resource, 'displayName');
+				$resourceSpecific = XmlHelper::attributeToString($resource, 'resourceSpecific');
 
 				if ($displayName == 'result' && $resourceSpecific == 'rcwsGlobal')
 				{
@@ -297,8 +298,8 @@ class SoapHelper
 		{
 			foreach ($fields as $field)
 			{
-				$transform = HalHelper::attributeToString($field, 'transform', 'string');
-				$defaultValue = HalHelper::attributeToString($field, 'defaultValue', 'null');
+				$transform = XmlHelper::attributeToString($field, 'transform', 'string');
+				$defaultValue = XmlHelper::attributeToString($field, 'defaultValue', 'null');
 
 				if ($defaultValue == 'null' && ($allRequired || HalHelper::isAttributeTrue($field, 'isRequiredField')))
 				{
@@ -314,7 +315,7 @@ class SoapHelper
 				}
 
 				$fieldsArray[] = '$' .
-					HalHelper::attributeToString($field, 'name') .
+					XmlHelper::attributeToString($field, 'name') .
 					' ' . $assignation . ' (' . $transform . ') ' .
 					$defaultValue;
 			}

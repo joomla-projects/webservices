@@ -14,6 +14,7 @@ use Joomla\Webservices\Api\Hal\Renderer\Resource;
 use Joomla\Webservices\Api\Hal\Renderer\Link;
 use Joomla\Webservices\Api\Hal\Renderer\Document;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
+use Joomla\Webservices\Xml\XmlHelper;
 
 
 use Joomla\Utilities\ArrayHelper;
@@ -568,7 +569,7 @@ class Hal extends Api
 
 		if ($displayTarget == 'list')
 		{
-			$functionName = HalHelper::attributeToString($currentConfiguration, 'functionName', 'getItems');
+			$functionName = XmlHelper::attributeToString($currentConfiguration, 'functionName', 'getItems');
 
 			$items = method_exists($model, $functionName) ? $model->{$functionName}() : array();
 
@@ -599,7 +600,7 @@ class Hal extends Api
 		$primaryKeys = count($primaryKeys) > 1 ? array($primaryKeys) : $primaryKeys;
 
 		// Getting single item
-		$functionName = HalHelper::attributeToString($currentConfiguration, 'functionName', 'getItem');
+		$functionName = XmlHelper::attributeToString($currentConfiguration, 'functionName', 'getItem');
 		$messagesBefore = $this->app->getMessageQueue();
 		$itemObject = method_exists($model, $functionName) ? call_user_func_array(array(&$model, $functionName), $primaryKeys) : array();
 		$messagesAfter = $this->app->getMessageQueue();
@@ -646,7 +647,7 @@ class Hal extends Api
 		$this->loadResourceFromConfiguration($this->operationConfiguration);
 
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
-		$functionName = HalHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
+		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
 		$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $this->operationConfiguration);
 
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
@@ -711,7 +712,7 @@ class Hal extends Api
 		// Delete function requires references and not values like we use in call_user_func_array so we use List delete function
 		$this->apiDynamicModelClassName = '\\Joomla\\Webservices\\Api\\Hal\\Model\\List';
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
-		$functionName = HalHelper::attributeToString($this->operationConfiguration, 'functionName', 'delete');
+		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'delete');
 		$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $this->operationConfiguration);
 
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
@@ -730,7 +731,7 @@ class Hal extends Api
 		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
 
 		// Prepare parameters for the function
-		if (strtolower(HalHelper::attributeToString($this->operationConfiguration, 'dataMode', 'model')) == 'table')
+		if (strtolower(XmlHelper::attributeToString($this->operationConfiguration, 'dataMode', 'model')) == 'table')
 		{
 			$primaryKeys = array();
 			$this->apiFillPrimaryKeys($primaryKeys, $this->operationConfiguration);
@@ -783,7 +784,7 @@ class Hal extends Api
 		// Get resource list from configuration
 		$this->loadResourceFromConfiguration($this->operationConfiguration);
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
-		$functionName = HalHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
+		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
 		$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $this->operationConfiguration);
 
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
@@ -854,7 +855,7 @@ class Hal extends Api
 				$this->operationConfiguration->{$task} : $this->operationConfiguration;
 
 			$model = $this->triggerFunction('loadModel', $this->elementName, $taskConfiguration);
-			$functionName = HalHelper::attributeToString($taskConfiguration, 'functionName', $task);
+			$functionName = XmlHelper::attributeToString($taskConfiguration, 'functionName', $task);
 			$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $taskConfiguration);
 
 			$data = $this->triggerFunction('validatePostData', $model, $data, $taskConfiguration);
@@ -1325,7 +1326,7 @@ class Hal extends Api
 			return false;
 		}
 
-		$validateMethod = strtolower(HalHelper::attributeToString($configuration, 'validateData', 'none'));
+		$validateMethod = strtolower(XmlHelper::attributeToString($configuration, 'validateData', 'none'));
 
 		if ($validateMethod == 'none')
 		{
@@ -1362,7 +1363,7 @@ class Hal extends Api
 
 		if ($validateMethod == 'function')
 		{
-			$validateMethod = strtolower(HalHelper::attributeToString($configuration, 'validateDataFunction', 'validate'));
+			$validateMethod = strtolower(XmlHelper::attributeToString($configuration, 'validateDataFunction', 'validate'));
 
 			if (method_exists($model, $validateMethod))
 			{
@@ -1655,7 +1656,7 @@ class Hal extends Api
 			return $this->apiDynamicModelClass;
 		}
 
-		$tableName = HalHelper::attributeToString($configuration, 'tableName', '');
+		$tableName = XmlHelper::attributeToString($configuration, 'tableName', '');
 
 		if (empty($tableName))
 		{
@@ -1760,7 +1761,7 @@ class Hal extends Api
 		$this->addModelIncludePaths($isAdmin, $this->optionName);
 		$this->loadExtensionLanguage($this->optionName, $isAdmin ? JPATH_ADMINISTRATOR : JPATH_SITE);
 		$this->triggerFunction('loadExtensionLibrary', $this->optionName);
-		$dataMode = strtolower(HalHelper::attributeToString($configuration, 'dataMode', 'model'));
+		$dataMode = strtolower(XmlHelper::attributeToString($configuration, 'dataMode', 'model'));
 
 		if ($dataMode == 'helper')
 		{
@@ -1963,7 +1964,7 @@ class Hal extends Api
 	public function assignValueToResource($resource, $value, $attribute = 'fieldFormat')
 	{
 		$format = $resource[$attribute];
-		$transform = HalHelper::attributeToString($resource, 'transform', '');
+		$transform = XmlHelper::attributeToString($resource, 'transform', '');
 
 		$stringsToReplace = array();
 		preg_match_all('/\{([^}]+)\}/', $format, $stringsToReplace);
