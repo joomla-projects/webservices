@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-defined('JPATH_BASE') or die;
+namespace Joomla\Webservices\Api\Hal\Transform;
 
 /**
  * Transform api output
