@@ -171,7 +171,6 @@ class Document extends JDocument
 		if ($links = $hal->getLinks())
 		{
 			// Adjust hrefs in the _links object.
-			/* @var $link Link */
 			foreach ($links as $link)
 			{
 				if (is_array($link))
@@ -187,6 +186,7 @@ class Document extends JDocument
 				}
 				else
 				{
+					/* @var $link Link */
 					$href = $link->getHref();
 					$href = $this->addUriParameters($href, $absoluteHrefs);
 					$link->setHref($href);
