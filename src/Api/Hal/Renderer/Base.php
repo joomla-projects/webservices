@@ -22,7 +22,7 @@ abstract class Base
 	protected $xml;
 
 	/**
-	 * Sets XML attributes for JApiHalDocumentLink
+	 * Sets XML attributes for \Joomla\Webservices\Api\Hal\Renderer\Link
 	 * 
 	 * @param   \SimpleXMLElement  $xml   XML document
 	 * @param   Link               $link  Link element
