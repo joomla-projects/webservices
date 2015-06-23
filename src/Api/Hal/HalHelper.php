@@ -143,29 +143,6 @@ class HalHelper
 	}
 
 	/**
-	 * Method to transform XML to array and get XML attributes
-	 *
-	 * @param   \SimpleXMLElement|Array  $element  XML object or array
-	 * @param   string                   $key      Key to check
-	 * @param   string                   $default  Default value to return
-	 *
-	 * @return  boolean
-	 *
-	 * @since   1.2
-	 */
-	public static function attributeToString($element, $key, $default = '')
-	{
-		if (!isset($element[$key]))
-		{
-			return $default;
-		}
-
-		$value = (string) $element[$key];
-
-		return !empty($value) ? $value : $default;
-	}
-
-	/**
 	 * Loading of webservice XML file
 	 *
 	 * @param   string  $client             Client

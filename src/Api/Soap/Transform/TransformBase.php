@@ -10,6 +10,7 @@
 namespace Joomla\Webservices\Api\Soap\Transform;
 
 use Joomla\Webservices\Api\Hal\HalHelper;
+use Joomla\Webservices\Xml\XmlHelper;
 
 /**
  * Interface to transform api output for SOAP
@@ -82,7 +83,7 @@ class TransformBase implements TransformInterface
 
 		if (!isset($this->element['maxOccurs']))
 		{
-			$this->element->addAttribute('maxOccurs', HalHelper::attributeToString($field, 'maxOccurs', 1));
+			$this->element->addAttribute('maxOccurs', XmlHelper::attributeToString($field, 'maxOccurs', 1));
 		}
 
 		if (!isset($this->element['name']) && isset($field['name']))
