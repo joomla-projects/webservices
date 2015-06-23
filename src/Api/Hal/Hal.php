@@ -972,7 +972,7 @@ class Hal extends Api
 								$resource['linkTitle'],
 								$this->assignGlobalValueToResource($resource['linkName']),
 								$resource['hrefLang'],
-								HalHelper::isAttributeTrue($resource, 'linkTemplated')
+								XmlHelper::isAttributeTrue($resource, 'linkTemplated')
 							), $linkSingular = false, $linkPlural
 						);
 					}
@@ -1292,7 +1292,7 @@ class Hal extends Api
 				$dataFields[$fieldAttributes['name']] = $data[$fieldAttributes['name']];
 			}
 
-			if (HalHelper::isAttributeTrue($configuration, 'strictFields'))
+			if (XmlHelper::isAttributeTrue($configuration, 'strictFields'))
 			{
 				$data = $dataFields;
 			}
@@ -1396,7 +1396,7 @@ class Hal extends Api
 		{
 			foreach ($configuration->fields->field as $field)
 			{
-				if (HalHelper::isAttributeTrue($field, 'isRequiredField'))
+				if (XmlHelper::isAttributeTrue($field, 'isRequiredField'))
 				{
 					if (is_null($data[(string) $field['name']]) || $data[(string) $field['name']] == '')
 					{
@@ -1707,7 +1707,7 @@ class Hal extends Api
 		{
 			foreach ($configuration->fields->field as $field)
 			{
-				$isPrimaryField = HalHelper::isAttributeTrue($field, 'isPrimaryField');
+				$isPrimaryField = XmlHelper::isAttributeTrue($field, 'isPrimaryField');
 
 				if ($isPrimaryField)
 				{
@@ -1757,7 +1757,7 @@ class Hal extends Api
 	public function loadModel($elementName, $configuration)
 	{
 		$this->setOptionViewName($elementName, $configuration);
-		$isAdmin = HalHelper::isAttributeTrue($configuration, 'isAdminClass');
+		$isAdmin = XmlHelper::isAttributeTrue($configuration, 'isAdminClass');
 		$this->addModelIncludePaths($isAdmin, $this->optionName);
 		$this->loadExtensionLanguage($this->optionName, $isAdmin ? JPATH_ADMINISTRATOR : JPATH_SITE);
 		$this->triggerFunction('loadExtensionLibrary', $this->optionName);

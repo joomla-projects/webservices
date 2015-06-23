@@ -15,6 +15,7 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\Language\Text;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Webservices\Xml\XmlHelper;
 
 /**
  * Interface to handle api calls
@@ -119,27 +120,6 @@ class HalHelper
 			array('scope' => 'administrator.documentation',
 				'scopeDisplayName' => $text->translate('JADMINISTRATOR') . ' - ' . $text->translate('LIB_WEBSERVICES_API_SCOPES_ALL_WEBSERVICES_DOCUMENTATION')),
 		);
-	}
-
-	/**
-	 * Method to transform XML to array and get XML attributes
-	 *
-	 * @param   \SimpleXMLElement|Array  $element  XML object or array
-	 * @param   string                   $key      Key to check
-	 * @param   boolean                  $default  Default value to return
-	 *
-	 * @return  boolean
-	 *
-	 * @since   1.2
-	 */
-	public static function isAttributeTrue($element, $key, $default = false)
-	{
-		if (!isset($element[$key]))
-		{
-			return $default;
-		}
-
-		return strtolower($element[$key]) == "true" ? true : false;
 	}
 
 	/**
@@ -874,7 +854,7 @@ class HalHelper
 			{
 				$fieldAttributes = self::getXMLElementAttributes($field);
 
-				if (($primaryKeys && self::isAttributeTrue($field, 'isPrimaryField'))
+				if (($primaryKeys && XmlHelper::isAttributeTrue($field, 'isPrimaryField'))
 					|| !$primaryKeys)
 				{
 					$fields[$fieldAttributes['name']] = $fieldAttributes;
@@ -927,13 +907,13 @@ class HalHelper
 		{
 			foreach ($configuration->fields->field as $field)
 			{
-				if (self::isAttributeTrue($field, 'isFilterField'))
+				if (XmlHelper::isAttributeTrue($field, 'isFilterField'))
 				{
 					if ($fullDefinition)
 					{
 						$required = 'false';
 
-						if (self::isAttributeTrue($field, 'isRequiredField'))
+						if (XmlHelper::isAttributeTrue($field, 'isRequiredField'))
 						{
 							$required = 'true';
 						}
