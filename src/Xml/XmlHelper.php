@@ -59,4 +59,21 @@ class XmlHelper
 
 		return strtolower($element[$key]) == "true" ? true : false;
 	}
+
+	/**
+	 * Method to transform XML to array and get XML attributes
+	 *
+	 * @param   \SimpleXMLElement  $xmlElement      XML object to transform
+	 * @param   boolean            $onlyAttributes  return only attributes or all elements
+	 *
+	 * @return  array
+	 *
+	 * @since   __DELPOY_VERSION__
+	 */
+	public static function getXMLElementAttributes($xmlElement, $onlyAttributes = true)
+	{
+		$transformedXML = json_decode(json_encode((array) $xmlElement), true);
+
+		return $onlyAttributes ? $transformedXML['@attributes'] : $transformedXML;
+	}
 }

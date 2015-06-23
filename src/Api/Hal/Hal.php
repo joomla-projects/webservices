@@ -1006,7 +1006,7 @@ class Hal extends Api
 		{
 			foreach ($configuration->resources->resource as $resourceXML)
 			{
-				$resource = HalHelper::getXMLElementAttributes($resourceXML);
+				$resource = XmlHelper::getXMLElementAttributes($resourceXML);
 
 				// Filters out specified displayGroup values
 				if ($this->options->get('filterOutResourcesGroups') != ''
@@ -1282,7 +1282,7 @@ class Hal extends Api
 
 			foreach ($configuration->fields->field as $field)
 			{
-				$fieldAttributes = HalHelper::getXMLElementAttributes($field);
+				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
 				$fieldAttributes['transform'] = !is_null($fieldAttributes['transform']) ? $fieldAttributes['transform'] : 'string';
 				$fieldAttributes['defaultValue'] = isset($fieldAttributes['defaultValue']) && !is_null($fieldAttributes['defaultValue']) ?
 					$fieldAttributes['defaultValue'] : '';
@@ -1736,7 +1736,7 @@ class Hal extends Api
 		{
 			foreach ($configuration->fields->field as $field)
 			{
-				$fieldAttributes = HalHelper::getXMLElementAttributes($field);
+				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
 				$fields[] = $fieldAttributes;
 			}
 		}

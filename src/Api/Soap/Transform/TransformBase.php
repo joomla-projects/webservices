@@ -9,7 +9,6 @@
 
 namespace Joomla\Webservices\Api\Soap\Transform;
 
-use Joomla\Webservices\Api\Hal\HalHelper;
 use Joomla\Webservices\Xml\XmlHelper;
 
 /**
