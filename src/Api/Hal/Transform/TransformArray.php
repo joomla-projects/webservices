@@ -18,7 +18,7 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Api
  * @since       1.2
  */
-class JApiHalTransformArray extends TransformBase
+class TransformArray extends TransformBase
 {
 	/**
 	 * Method to transform an internal representation to an external one.
