@@ -16,6 +16,7 @@ use Joomla\Webservices\Uri\Uri;
 use Joomla\Language\Text;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Webservices\Xml\XmlHelper;
+use Joomla\Webservices\Webservices\WebserviceHelper;
 
 /**
  * Interface to handle api calls
@@ -41,30 +42,6 @@ class HalHelper
 	 * @since  1.2
 	 */
 	public static $installedWebservices = null;
-
-	/**
-	 * Get Webservices path
-	 *
-	 * @return  string
-	 *
-	 * @since   1.2
-	 */
-	public static function getWebservicesPath()
-	{
-		return JPATH_API . '/' . self::getWebservicesRelativePath();
-	}
-
-	/**
-	 * Get Webservices path
-	 *
-	 * @return  string
-	 *
-	 * @since   1.2
-	 */
-	public static function getWebservicesRelativePath()
-	{
-		return 'www/media/webservices/webservices';
-	}
 
 	/**
 	 * Get Default scopes for all webservices
@@ -167,12 +144,12 @@ class HalHelper
 	{
 		if (empty($webserviceName))
 		{
-			$folders = Folder::folders(self::getWebservicesPath(), '.', true);
-			$webserviceXmls[' '] = Folder::files(self::getWebservicesPath(), '.xml');
+			$folders = Folder::folders(WebserviceHelper::getWebservicesPath(), '.', true);
+			$webserviceXmls[' '] = Folder::files(WebserviceHelper::getWebservicesPath(), '.xml');
 
 			foreach ($folders as $folder)
 			{
-				$webserviceXmls[$folder] = Folder::files(self::getWebservicesPath() . '/' . $folder, '.xml');
+				$webserviceXmls[$folder] = Folder::files(WebserviceHelper::getWebservicesPath() . '/' . $folder, '.xml');
 			}
 
 			foreach ($webserviceXmls as $webserviceXmlPath => $webservices)
@@ -252,7 +229,7 @@ class HalHelper
 		if (!empty($webserviceName))
 		{
 			$version = !empty($version) ? array(Path::clean($version)) : array('1.0.0');
-			$webservicePath = !empty($path) ? self::getWebservicesPath() . '/' . $path : self::getWebservicesPath();
+			$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesPath() . '/' . $path : WebserviceHelper::getWebservicesPath();
 
 			// Search for suffixed versions. Example: content.1.0.0.xml
 			if (!empty($version))
@@ -358,7 +335,7 @@ class HalHelper
 			}
 		}
 
-		return \WebservicesHelper::uploadFiles($files, self::getWebservicesPath() . '/upload', $uploadOptions);
+		return \WebservicesHelper::uploadFiles($files, WebserviceHelper::getWebservicesPath() . '/upload', $uploadOptions);
 	}
 
 	/**

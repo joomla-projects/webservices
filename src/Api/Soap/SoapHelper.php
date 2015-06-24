@@ -10,8 +10,8 @@
 namespace Joomla\Webservices\Api\Soap;
 
 use Joomla\Filesystem\Path;
-use Joomla\Webservices\Api\Hal\HalHelper;
 use Joomla\Webservices\Xml\XmlHelper;
+use Joomla\Webservices\Webservices\WebserviceHelper;
 use Joomla\Webservices\Api\Soap\Transform\TransformInterface;
 
 /**
@@ -216,7 +216,7 @@ class SoapHelper
 		if (!empty($webserviceName))
 		{
 			$version = !empty($version) ? Path::clean($version) : '1.0.0';
-			$webservicePath = !empty($path) ? HalHelper::getWebservicesRelativePath() . '/' . $path : HalHelper::getWebservicesRelativePath();
+			$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesRelativePath() . '/' . $path : WebserviceHelper::getWebservicesRelativePath();
 
 			$rawPath = $webserviceName . '.' . $version;
 			$rawPath = !empty($extension) ? $rawPath . '.' . $extension : $rawPath;
