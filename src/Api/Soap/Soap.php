@@ -370,7 +370,7 @@ class Soap extends Api
 		$result = call_user_func_array(array($this, $functionName), $temp);
 
 		$event = new EventImmutable('JApiSoapAfter' . $functionName, $temp);
-		$result = $this->dispatcher->triggerEvent($event);
+		$this->dispatcher->triggerEvent($event);
 
 		return $result;
 	}
