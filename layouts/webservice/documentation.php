@@ -7,16 +7,20 @@
  * @license     GNU General Public License version 2 or later, see LICENSE.
  */
 
-defined('_JEXEC') or die;
-
+/** @var \Joomla\Webservices\Api\Hal\Hal $view */
 $view = !empty($displayData['view']) ? $displayData['view'] : null;
+
+/** @var \SimpleXMLElement $xml */
 $xml = !empty($displayData['options']['xml']) ? $displayData['options']['xml'] : array();
 $soapEnabled = $displayData['options']['soapEnabled'];
 $print = $displayData['options']['print'];
-$date   = new JDate;
+$date   = new \Joomla\Date\Date;
 
-$halLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'hal');
-$docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'hal', 'doc');
+/** @var \Joomla\Language\Text $text */
+$text = $displayData['text'];
+
+$halLink = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'hal');
+$docsLink = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'hal', 'doc');
 
 ?>
 <!DOCTYPE html>
@@ -42,28 +46,28 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 <body<?php if ($print) : ?> onload="printWindow()"<?php endif; ?>>
 <div class="container-fluid">
 	<?php if (empty($xml)) : ?>
-		<h1><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_NONE'); ?></h1>
+		<h1><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_NONE'); ?></h1>
 	<?php else : ?>
-		<h1><?php echo $xml->name; ?> (<?php echo JText::_('JVERSION'); ?> <?php echo $xml->config->version; ?>)</h1>
+		<h1><?php echo $xml->name; ?> (<?php echo $text->translate('JVERSION'); ?> <?php echo $xml->config->version; ?>)</h1>
 		<div class="well">
 			<?php if (isset($xml->author)) : ?>
-				<strong><?php echo JText::_('JAUTHOR'); ?></strong>: <?php echo (string) $xml->author; ?><br />
+				<strong><?php echo $text->translate('JAUTHOR'); ?></strong>: <?php echo (string) $xml->author; ?><br />
 			<?php endif; ?>
 			<?php if (isset($xml->copyright)) : ?>
-				<strong><?php echo JText::_('LIB_WEBSERVICES_COPYRIGHT'); ?></strong>: <?php echo (string) $xml->copyright; ?><br />
+				<strong><?php echo $text->translate('LIB_WEBSERVICES_COPYRIGHT'); ?></strong>: <?php echo (string) $xml->copyright; ?><br />
 			<?php endif; ?>
-			<strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_GENERATED'); ?></strong>: <?php echo $date->toRFC822(); ?><br />
-			<strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_SUPPORTED_FORMATS'); ?></strong>:
-			json (<?php echo JText::_('JDEFAULT'); ?>), xml<br />
+			<strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_GENERATED'); ?></strong>: <?php echo $date->toRFC822(); ?><br />
+			<strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_SUPPORTED_FORMATS'); ?></strong>:
+			json (<?php echo $text->translate('JDEFAULT'); ?>), xml<br />
 			<strong>
-				<?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_CLIENT'); ?>:
+				<?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_CLIENT'); ?>:
 			</strong>
 			<?php echo ucfirst($view->client); ?><br />
 			<strong>
-				<?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_ACCESS_OPTION'); ?>:
+				<?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_ACCESS_OPTION'); ?>:
 			</strong>
 			<?php echo $xml->config->name; ?> (com_<?php echo $xml->config->name; ?>)<br />
-			<strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_ACCESS_URL'); ?></strong>:
+			<strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_ACCESS_URL'); ?></strong>:
 			<small>
 				<a href="<?php echo $halLink ?>">
 					<?php echo $halLink ?>
@@ -72,9 +76,9 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 			<br />
 			<?php
 				if ($soapEnabled) :
-					$wsdlLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'soap') . '&wsdl';
+					$wsdlLink = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'soap') . '&wsdl';
 			?>
-				<strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_WSDL_ACCESS_URL'); ?></strong>:
+				<strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_WSDL_ACCESS_URL'); ?></strong>:
 				<small>
 					<a href="<?php echo $wsdlLink ?>">
 						<?php echo $wsdlLink ?>
@@ -82,7 +86,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 				</small>
 				<br />
 			<?php endif; ?>
-			<strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DOCUMENTATION_URL'); ?></strong>:
+			<strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DOCUMENTATION_URL'); ?></strong>:
 			<small>
 				<a href="<?php echo $docsLink ?>">
 					<?php echo $docsLink ?>
@@ -91,14 +95,14 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 		</div>
 			<?php if (isset($xml->description)) : ?>
 			<div class="well">
-				<h4><?php echo JText::_('JGLOBAL_DESCRIPTION'); ?></h4>
+				<h4><?php echo $text->translate('JGLOBAL_DESCRIPTION'); ?></h4>
 				<p><?php echo (string) $xml->description; ?></p>
 			</div>
 			<?php endif; ?>
 
-		<h2><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_ALLOWED_OPERATIONS'); ?></h2>
+		<h2><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_ALLOWED_OPERATIONS'); ?></h2>
 		<p>
-			<?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_ALLOWED_OPERATIONS_DESC'); ?>
+			<?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_ALLOWED_OPERATIONS_DESC'); ?>
 		</p>
 		<?php foreach ($xml->operations as $operations) : ?>
 			<?php foreach ($operations as $operationName => $operation) : ?>
@@ -107,7 +111,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 					elseif ($operationName == 'read') :
 						if (isset($xml->operations->read->list)) : ?>
 							<a name="<?php echo $operationName . 'list'; ?>"></a>
-							<?php echo JLayoutHelper::render(
+							<?php echo \Joomla\Webservices\Layout\LayoutHelper::render(
 								'webservice.documentationoperation',
 								array(
 									'view' => $view,
@@ -116,7 +120,8 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 										'operationXml' => $operation->list,
 										'operationName' => $operationName . ' ' . 'list',
 										'soapEnabled' => $soapEnabled,
-									)
+									),
+									'text' => $text
 								),
 								JPATH_TEMPLATES
 							);?>
@@ -125,7 +130,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 
 						if (isset($xml->operations->read->item)) : ?>
 							<a name="<?php echo $operationName . 'item'; ?>"></a>
-							<?php echo JLayoutHelper::render(
+							<?php echo \Joomla\Webservices\Layout\LayoutHelper::render(
 								'webservice.documentationoperation',
 								array(
 									'view' => $view,
@@ -134,7 +139,8 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 										'operationXml' => $operation->item,
 										'operationName' => $operationName . ' ' . 'item',
 										'soapEnabled' => $soapEnabled,
-									)
+									),
+									'text' => $text
 								),
 								JPATH_TEMPLATES
 							);?>
@@ -143,7 +149,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 					elseif ($operationName == 'task') :
 						foreach ($operation as $taskName => $task) : ?>
 							<a name="<?php echo $operationName . $taskName; ?>"></a>
-							<?php echo JLayoutHelper::render(
+							<?php echo \Joomla\Webservices\Layout\LayoutHelper::render(
 								'webservice.documentationoperation',
 								array(
 									'view' => $view,
@@ -161,7 +167,7 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 						<?php endforeach;
 					else : ?>
 						<a name="<?php echo $operationName; ?>"></a>
-							<?php echo JLayoutHelper::render(
+							<?php echo \Joomla\Webservices\Layout\LayoutHelper::render(
 								'webservice.documentationoperation',
 								array(
 									'view' => $view,
@@ -170,7 +176,8 @@ $docsLink = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webservi
 										'operationXml' => $operation,
 										'operationName' => $operationName,
 										'soapEnabled' => $soapEnabled,
-									)
+									),
+									'text' => $text
 								),
 								JPATH_TEMPLATES
 							);?>

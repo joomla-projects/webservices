@@ -9,11 +9,16 @@
 
 defined('_JEXEC') or die;
 
+/** @var \Joomla\Webservices\Api\Hal\Hal $view */
 $view = !empty($displayData['view']) ? $displayData['view'] : null;
+
+/** @var \Joomla\Language\Text $text */
+$text = $displayData['text'];
+
 $operationXml = !empty($displayData['options']['operationXml']) ? $displayData['options']['operationXml'] : array();
 $operationName = !empty($displayData['options']['operationName']) ? $displayData['options']['operationName'] : '';
 $authorizationNotNeeded = (isset($operationXml['authorizationNeeded']) && strtolower($operationXml['authorizationNeeded']) == 'false');
-$url = JApiHalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion);
+$url = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion);
 $view->resetDocumentResources();
 $resources = $view->loadResourceFromConfiguration($operationXml);
 $method = 'GET';
@@ -41,7 +46,7 @@ switch ($operationName)
 		$errorList = array(200, 405, 500);
 		break;
 	case 'read item' :
-		$fields = JApiHalHelper::getFieldsArray($operationXml, true, true);
+		$fields = \Joomla\Webservices\Api\Hal\HalHelper::getFieldsArray($operationXml, true, true);
 		$method = 'GET';
 		$noteName = '_ITEM';
 		$errorList = array(200, 404, 405, 500);
@@ -73,14 +78,14 @@ endif;
 <div>
 	<h4>
 		<span class="label label-success">
-			<?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_EXAMPLE_USAGE'); ?>
+			<?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_EXAMPLE_USAGE'); ?>
 		</span>
 		<?php if (!$authorizationNotNeeded) : ?>
 			 &nbsp;- <span class="label label-warning"><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_AUTHORIZATION_NEEDED') ?></span>
 		<?php endif; ?>
 	</h4>
 
-	<strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_BASIC'); ?></strong><br />
+	<strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_BASIC'); ?></strong><br />
 	<h5>
 		<span class="label label-success">
 			<?php echo $method; ?>
@@ -96,18 +101,18 @@ endif;
 					$ids[] = $field['name'];
 				}
 			}
-			echo JText::sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_BASIC' . $noteName . '_NOTE', implode(', ', $ids));
+			echo $text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_BASIC' . $noteName . '_NOTE', implode(', ', $ids));
 		else:
-			echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_BASIC' . $noteName . '_NOTE');
+			echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_BASIC' . $noteName . '_NOTE');
 		endif; ?></em><br /><br />
 
 	<div class="row">
 		<div class="col-xs-4 col-md-4 well" style="border: 2px solid #fff;">
-			<h5 style="border-bottom: 1px solid #ddd"><strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_REQUEST'); ?></strong></h5>
+			<h5 style="border-bottom: 1px solid #ddd"><strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_REQUEST'); ?></strong></h5>
 			<small>
 				<?php if ($operationName == 'read item' && empty($operationXml->fields)):
 					echo '<strong>id</strong> (<em>int, '
-						. JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_REQUIRED') . '</em>)';
+						. $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_REQUIRED') . '</em>)';
 				endif;
 
 				if (!empty($operationXml->fields)) :
@@ -116,17 +121,17 @@ endif;
 
 						if ($operationName == 'read list'):
 							$fieldsContainer[] = '<strong>lang</strong> (<em>string, '
-								. JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
+								. $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
 							$fieldsContainer[] = '<strong>list[limitstart]</strong> (<em>int, '
-								. JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
+								. $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
 							$fieldsContainer[] = '<strong>list[limit]</strong> (<em>int, '
-								. JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
+								. $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
 							$fieldsContainer[] = '<strong>filter[search]</strong> (<em>string, '
-								. JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
+								. $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
 							$fieldsContainer[] = '<strong>list[ordering]</strong> (<em>string, '
-								. JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
+								. $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
 							$fieldsContainer[] = '<strong>list[direction]</strong> (<em>string, '
-								. JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
+								. $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL') . '</em>)';
 						endif;
 
 						if ($operationName == 'read item'):
@@ -134,7 +139,7 @@ endif;
 
 							if (empty($primaryKeys)):
 								echo '<strong>id</strong> (<em>int, '
-									. JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_REQUIRED') . '</em>)';
+									. $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_REQUIRED') . '</em>)';
 							endif;
 						endif;
 
@@ -143,7 +148,7 @@ endif;
 								continue;
 							endif;
 							if ($operationName == 'read list'):
-								if (JApiHalHelper::isAttributeTrue($field, 'isFilterField')):
+								if (\Joomla\Webservices\Xml\XmlHelper::isAttributeTrue($field, 'isFilterField')):
 									$field['name'] = 'filter[' . $field['name'] . ']';
 								else:
 									continue;
@@ -151,7 +156,7 @@ endif;
 							endif;
 
 							if ($operationName == 'read item'):
-								if (!JApiHalHelper::isAttributeTrue($field, 'isPrimaryField')):
+								if (!\Joomla\Webservices\Xml\XmlHelper::isAttributeTrue($field, 'isPrimaryField')):
 									continue;
 								endif;
 
@@ -161,9 +166,9 @@ endif;
 
 							$fieldsContainer[] = '<strong>' . $field['name'] . '</strong> '
 								. '(<em>' . (!empty($field['transform']) ? $field['transform'] : 'string') . ', '
-								. (JApiHalHelper::isAttributeTrue($field, 'isRequiredField') ?
-								JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_REQUIRED')
-								: JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL')) . '</em>)';
+								. (\Joomla\Webservices\Xml\XmlHelper::isAttributeTrue($field, 'isRequiredField') ?
+								$text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_REQUIRED')
+								: $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_OPTIONAL')) . '</em>)';
 						endforeach;
 						echo implode(',<br />', $fieldsContainer);
 					endforeach;
@@ -171,7 +176,7 @@ endif;
 			</small>
 		</div>
 		<div class="col-xs4 col-md-4 well" style="border: 2px solid #fff;">
-			<h5 style="border-bottom: 1px solid #ddd"><strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESPONSE'); ?></strong></h5>
+			<h5 style="border-bottom: 1px solid #ddd"><strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESPONSE'); ?></strong></h5>
 			<small>
 				<?php if (!empty($resources)) :
 					$output = array();
@@ -207,11 +212,11 @@ endif;
 		</div>
 
 		<div class="col-xs-4 col-md-4 well" style="border: 2px solid #fff;">
-			<h5 style="border-bottom: 1px solid #ddd"><strong><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_HEADERS'); ?></strong></h5>
+			<h5 style="border-bottom: 1px solid #ddd"><strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_HEADERS'); ?></strong></h5>
 			<small>
 				<?php if (!empty($errorList)) : ?>
 					<?php foreach ($errorList as $error) : ?>
-						<?php echo '<strong>' . $error . ':</strong> ' . JApiBase::$statusTexts[$error]; ?><br />
+						<?php echo '<strong>' . $error . ':</strong> ' . \Joomla\Webservices\Api\ApiBase::$statusTexts[$error]; ?><br />
 					<?php endforeach; ?>
 				<?php endif; ?>
 			</small>				

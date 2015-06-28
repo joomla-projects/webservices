@@ -9,7 +9,9 @@
 
 defined('_JEXEC') or die;
 
+/** @var \Joomla\Webservices\Api\Hal\Hal $view */
 $view = !empty($displayData['view']) ? $displayData['view'] : null;
+
 $xml = !empty($displayData['options']['xml']) ? $displayData['options']['xml'] : array();
 $operationXml = !empty($displayData['options']['operationXml']) ? $displayData['options']['operationXml'] : array();
 $operationName = !empty($displayData['options']['operationName']) ? $displayData['options']['operationName'] : '';
@@ -17,13 +19,16 @@ $isOperationRead = $operationName == 'read list' || $operationName == 'read item
 $view->resetDocumentResources();
 $resources = $view->loadResourceFromConfiguration($operationXml);
 $authorizationNotNeeded = (isset($operationXml['authorizationNeeded']) && strtolower($operationXml['authorizationNeeded']) == 'false');
+
+/** @var \Joomla\Language\Text $text */
+$text = $displayData['text'];
 ?>
 <div class="container-fluid">
 	<div class="page-header">
 		<h3>
-			<span class="label label-info"><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_OPERATION') ?></span>
+			<span class="label label-info"><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_OPERATION') ?></span>
 			<?php if (!$authorizationNotNeeded) : ?>
-				<span class="label label-warning"><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_AUTHORIZATION_NEEDED') ?></span>
+				<span class="label label-warning"><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_AUTHORIZATION_NEEDED') ?></span>
 			<?php endif; ?>
 			<?php echo ucfirst($operationName); ?>
 		</h3>
@@ -33,7 +38,7 @@ $authorizationNotNeeded = (isset($operationXml['authorizationNeeded']) && strtol
 	</div>
 
 	<?php if (!empty($operationXml['useOperation'])): ?>
-		<?php echo JText::sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_USE_OPERATION',
+		<?php echo $text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_USE_OPERATION',
 			'<a href="#' . $operationXml['useOperation'] . '">' . $operationXml['useOperation'] . '</a>'); ?>
 	<?php else : ?>
 		<?php if (!empty($resources)) : ?>
@@ -53,8 +58,8 @@ $authorizationNotNeeded = (isset($operationXml['authorizationNeeded']) && strtol
 					usort($resourceGroup, array($view, "sortResourcesByDisplayGroup"));
 					$currentDisplayGroup = '--';
 				?>
-				<h4><?php echo $resourceGroupName == 'rcwsGlobal' ? JText::_('JDEFAULT') : ucfirst($resourceGroupName); ?>
-					 <?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCES'); ?></h4>
+				<h4><?php echo $resourceGroupName == 'rcwsGlobal' ? $text->translate('JDEFAULT') : ucfirst($resourceGroupName); ?>
+					 <?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCES'); ?></h4>
 
 				<div class="container-fluid">
 					<?php
@@ -66,15 +71,15 @@ $authorizationNotNeeded = (isset($operationXml['authorizationNeeded']) && strtol
 								</table>
 							<?php endif; ?>
 							<?php $currentDisplayGroup = $resource['displayGroup']; ?>
-							<h4><?php echo $currentDisplayGroup == '' ? JText::_('JDEFAULT') : $currentDisplayGroup; ?></h4>
+							<h4><?php echo $currentDisplayGroup == '' ? $text->translate('JDEFAULT') : $currentDisplayGroup; ?></h4>
 							<table class="table table-striped table-hover">
 								<thead>
 								<tr>
-									<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCE_NAME'); ?></th>
-									<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCE_FORMAT'); ?></th>
-									<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCE_TRANSFORM'); ?></th>
-									<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCE_PARAMETERS'); ?></th>
-									<th><?php echo JText::_('JGLOBAL_DESCRIPTION'); ?></th>
+									<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCE_NAME'); ?></th>
+									<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCE_FORMAT'); ?></th>
+									<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCE_TRANSFORM'); ?></th>
+									<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCE_PARAMETERS'); ?></th>
+									<th><?php echo $text->translate('JGLOBAL_DESCRIPTION'); ?></th>
 								</tr>
 								</thead>
 						<?php endif; ?>
@@ -99,23 +104,23 @@ $authorizationNotNeeded = (isset($operationXml['authorizationNeeded']) && strtol
 			<?php endforeach; ?>
 		<?php endif; ?>
 		<?php if (!empty($operationXml->fields)) : ?>
-			<h4><span class="label label-warning"><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_PARAMETERS'); ?></span> <?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELDS'); ?></h4>
+			<h4><span class="label label-warning"><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_PARAMETERS'); ?></span> <?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELDS'); ?></h4>
 			<?php if (!empty($operationXml->fields->description)) : ?>
 				<p><?php echo $operationXml->fields->description ?></p>
 			<?php endif; ?>
 			<table class="table table-striped table-hover">
 				<thead>
 				<tr>
-					<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_NAME'); ?></th>
-					<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_TRANSFORM'); ?></th>
-					<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_DEFAULT_VALUE'); ?></th>
+					<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_NAME'); ?></th>
+					<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_TRANSFORM'); ?></th>
+					<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_DEFAULT_VALUE'); ?></th>
 					<?php if ($isOperationRead) : ?>
-						<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_FILTER'); ?></th>
-						<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_SEARCHABLE'); ?></th>
+						<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_FILTER'); ?></th>
+						<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_SEARCHABLE'); ?></th>
 					<?php else: ?>
-						<th><?php echo JText::_('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_REQUIRED'); ?></th>
+						<th><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_FIELD_REQUIRED'); ?></th>
 					<?php endif; ?>
-					<th><?php echo JText::_('JGLOBAL_DESCRIPTION'); ?></th>
+					<th><?php echo $text->translate('JGLOBAL_DESCRIPTION'); ?></th>
 				</tr>
 				</thead>
 				<?php foreach ($operationXml->fields as $fields) : ?>
@@ -128,10 +133,10 @@ $authorizationNotNeeded = (isset($operationXml['authorizationNeeded']) && strtol
 							<td><?php echo !empty($field['transform']) ? $field['transform'] : 'string'; ?></td>
 							<td><?php echo !empty($field['defaultValue']) ? $field['defaultValue'] : ''; ?></td>
 							<?php if ($isOperationRead) : ?>
-								<td><?php echo JApiHalHelper::isAttributeTrue($field, 'isFilterField') ? JText::_('JYES') : JText::_('JNO'); ?></td>
-								<td><?php echo JApiHalHelper::isAttributeTrue($field, 'isSearchableField') ? JText::_('JYES') : JText::_('JNO'); ?></td>
+								<td><?php echo \Joomla\Webservices\Xml\XmlHelper::isAttributeTrue($field, 'isFilterField') ? $text->translate('JYES') : $text->translate('JNO'); ?></td>
+								<td><?php echo \Joomla\Webservices\Xml\XmlHelper::isAttributeTrue($field, 'isSearchableField') ? $text->translate('JYES') : $text->translate('JNO'); ?></td>
 							<?php else: ?>
-								<td><?php echo JApiHalHelper::isAttributeTrue($field, 'isRequiredField') ? JText::_('JYES') : JText::_('JNO'); ?></td>
+								<td><?php echo \Joomla\Webservices\Xml\XmlHelper::isAttributeTrue($field, 'isRequiredField') ? $text->translate('JYES') : $text->translate('JNO'); ?></td>
 							<?php endif; ?>
 							<td><?php echo !empty($field->description) ? $field->description : ''; ?></td>
 						</tr>

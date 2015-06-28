@@ -15,7 +15,7 @@ use Joomla\Webservices\Resource\Link;
 use Joomla\Webservices\Renderer\Hal as Document;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 use Joomla\Webservices\Xml\XmlHelper;
-
+use Joomla\Webservices\Layout\LayoutHelper;
 
 use Joomla\Utilities\ArrayHelper;
 use Joomla\DI\Container;
@@ -533,7 +533,7 @@ class Hal extends Api
 
 		$dataGet = $this->options->get('dataGet', array());
 
-		$this->documentation = \JLayoutHelper::render(
+		$this->documentation = LayoutHelper::render(
 			'webservice.documentation',
 			array(
 				'view' => $this,
@@ -541,7 +541,8 @@ class Hal extends Api
 					'xml' => $currentConfiguration,
 					'soapEnabled' => $this->app->get('webservices.enable_soap', 0),
 					'print' => isset($dataGet->print)
-				)
+				),
+				'text' => $this->text
 			),
 			JPATH_TEMPLATES
 		);
