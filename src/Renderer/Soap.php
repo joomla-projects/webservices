@@ -96,6 +96,7 @@ class Soap extends Base
 	 */
 	public function render($cache = false, $params = array())
 	{
+		parent::render($cache, $params);
 		$runtime = microtime(true) - $this->app->startTime;
 
 		$this->app->setHeader('Status', $this->soap->statusCode . ' ' . $this->soap->statusText, true);
@@ -106,7 +107,7 @@ class Soap extends Base
 		$this->app->setHeader('Expires', '0', true);
 		$this->app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
 		$this->app->setHeader('Cache-Control', 'private', false);
-		$this->app->setHeader('Content-type', $this->_mime . '; charset=UTF-8', true);
+		$this->app->setHeader('Content-type', $this->_mime . '; charset=' . $this->_charset, true);
 
 		$this->app->sendHeaders();
 

@@ -20,7 +20,7 @@ use Joomla\DI\ContainerAwareInterface;
  *
  * @since  11.1
  */
-class Base implements ContainerAwareInterface
+abstract class Base implements ContainerAwareInterface
 {
 	use ContainerAwareTrait;
 
@@ -86,22 +86,6 @@ class Base implements ContainerAwareInterface
 	 * @since  11.1
 	 */
 	public $_mdate = '';
-
-	/**
-	 * Tab string
-	 *
-	 * @var    string
-	 * @since  11.1
-	 */
-	public $_tab = "\11";
-
-	/**
-	 * Contains the line end string
-	 *
-	 * @var    string
-	 * @since  11.1
-	 */
-	public $_lineEnd = "\12";
 
 	/**
 	 * Contains the character encoding string
@@ -200,14 +184,6 @@ class Base implements ContainerAwareInterface
 	public $buffer = null;
 
 	/**
-	 * Media version added to assets
-	 *
-	 * @var    string
-	 * @since  3.2
-	 */
-	protected $mediaVersion = null;
-
-	/**
 	 * @var    Application  Application Object
 	 * @since  __DEPLOY_VERSION__
 	 */
@@ -226,11 +202,6 @@ class Base implements ContainerAwareInterface
 		$this->app = $container->get('app');
 		$this->setContainer($container);
 
-		if (array_key_exists('lineend', $options))
-		{
-			$this->setLineEnd($options['lineend']);
-		}
-
 		if (array_key_exists('charset', $options))
 		{
 			$this->setCharset($options['charset']);
@@ -246,11 +217,6 @@ class Base implements ContainerAwareInterface
 			$this->setDirection($options['direction']);
 		}
 
-		if (array_key_exists('tab', $options))
-		{
-			$this->setTab($options['tab']);
-		}
-
 		if (array_key_exists('link', $options))
 		{
 			$this->setLink($options['link']);
@@ -259,11 +225,6 @@ class Base implements ContainerAwareInterface
 		if (array_key_exists('base', $options))
 		{
 			$this->setBase($options['base']);
-		}
-
-		if (array_key_exists('mediaversion', $options))
-		{
-			$this->setMediaVersion($options['mediaversion']);
 		}
 	}
 
@@ -396,156 +357,6 @@ class Base implements ContainerAwareInterface
 	}
 
 	/**
-	 * Adds a linked script to the page
-	 *
-	 * @param   string   $url    URL to the linked script
-	 * @param   string   $type   Type of script. Defaults to 'text/javascript'
-	 * @param   boolean  $defer  Adds the defer attribute.
-	 * @param   boolean  $async  Adds the async attribute.
-	 *
-	 * @return  $this
-	 *
-	 * @since   11.1
-	 */
-	public function addScript($url, $type = "text/javascript", $defer = false, $async = false)
-	{
-		$this->_scripts[$url]['mime'] = $type;
-		$this->_scripts[$url]['defer'] = $defer;
-		$this->_scripts[$url]['async'] = $async;
-
-		return $this;
-	}
-
-	/**
-	 * Adds a linked script to the page with a version to allow to flush it. Ex: myscript.js54771616b5bceae9df03c6173babf11d
-	 * If not specified Joomla! automatically handles versioning
-	 *
-	 * @param   string   $url      URL to the linked script
-	 * @param   string   $version  Version of the script
-	 * @param   string   $type     Type of script. Defaults to 'text/javascript'
-	 * @param   boolean  $defer    Adds the defer attribute.
-	 * @param   boolean  $async    [description]
-	 *
-	 * @return  $this
-	 *
-	 * @since   3.2
-	 */
-	public function addScriptVersion($url, $version = null, $type = "text/javascript", $defer = false, $async = false)
-	{
-		// Automatic version
-		if ($version === null)
-		{
-			$version = $this->getMediaVersion();
-		}
-
-		if (!empty($version) && strpos($url, '?') === false)
-		{
-			$url .= '?' . $version;
-		}
-
-		return $this->addScript($url, $type, $defer, $async);
-	}
-
-	/**
-	 * Adds a script to the page
-	 *
-	 * @param   string  $content  Script
-	 * @param   string  $type     Scripting mime (defaults to 'text/javascript')
-	 *
-	 * @return  $this
-	 *
-	 * @since   11.1
-	 */
-	public function addScriptDeclaration($content, $type = 'text/javascript')
-	{
-		if (!isset($this->_script[strtolower($type)]))
-		{
-			$this->_script[strtolower($type)] = $content;
-		}
-		else
-		{
-			$this->_script[strtolower($type)] .= chr(13) . $content;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Adds a linked stylesheet to the page
-	 *
-	 * @param   string  $url      URL to the linked style sheet
-	 * @param   string  $type     Mime encoding type
-	 * @param   string  $media    Media type that this stylesheet applies to
-	 * @param   array   $attribs  Array of attributes
-	 *
-	 * @return  $this
-	 *
-	 * @since   11.1
-	 */
-	public function addStyleSheet($url, $type = 'text/css', $media = null, $attribs = array())
-	{
-		$this->_styleSheets[$url]['mime'] = $type;
-		$this->_styleSheets[$url]['media'] = $media;
-		$this->_styleSheets[$url]['attribs'] = $attribs;
-
-		return $this;
-	}
-
-	/**
-	 * Adds a linked stylesheet version to the page. Ex: template.css?54771616b5bceae9df03c6173babf11d
-	 * If not specified Joomla! automatically handles versioning
-	 *
-	 * @param   string  $url      URL to the linked style sheet
-	 * @param   string  $version  Version of the stylesheet
-	 * @param   string  $type     Mime encoding type
-	 * @param   string  $media    Media type that this stylesheet applies to
-	 * @param   array   $attribs  Array of attributes
-	 *
-	 * @return  $this
-	 *
-	 * @since   3.2
-	 */
-	public function addStyleSheetVersion($url, $version = null, $type = "text/css", $media = null, $attribs = array())
-	{
-		// Automatic version
-		if ($version === null)
-		{
-			$version = $this->getMediaVersion();
-		}
-
-		if (!empty($version) && strpos($url, '?') === false)
-		{
-			$url .= '?' . $version;
-		}
-
-		return $this->addStyleSheet($url, $type, $media, $attribs);
-	}
-
-	/**
-	 * Adds a stylesheet declaration to the page
-	 *
-	 * @param   string  $content  Style declarations
-	 * @param   string  $type     Type of stylesheet (defaults to 'text/css')
-	 *
-	 * @return  $this
-	 *
-	 * @since   11.1
-	 */
-	public function addStyleDeclaration($content, $type = 'text/css')
-	{
-		if (!isset($this->_style[strtolower($type)]))
-		{
-			$this->_style[strtolower($type)] = $content;
-		}
-		else
-		{
-			$this->_style[strtolower($type)] .= chr(13) . $content;
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Sets the document charset
 	 *
 	 * @param   string  $type  Charset encoding string
@@ -655,34 +466,6 @@ class Base implements ContainerAwareInterface
 	public function getTitle()
 	{
 		return $this->title;
-	}
-
-	/**
-	 * Set the assets version
-	 *
-	 * @param   string  $mediaVersion  Media version to use
-	 *
-	 * @return  $this
-	 *
-	 * @since   3.2
-	 */
-	public function setMediaVersion($mediaVersion)
-	{
-		$this->mediaVersion = strtolower($mediaVersion);
-
-		return $this;
-	}
-
-	/**
-	 * Return the media version
-	 *
-	 * @return  string
-	 *
-	 * @since   3.2
-	 */
-	public function getMediaVersion()
-	{
-		return $this->mediaVersion;
 	}
 
 	/**
@@ -866,89 +649,6 @@ class Base implements ContainerAwareInterface
 	public function getMimeEncoding()
 	{
 		return $this->_mime;
-	}
-
-	/**
-	 * Sets the line end style to Windows, Mac, Unix or a custom string.
-	 *
-	 * @param   string  $style  "win", "mac", "unix" or custom string.
-	 *
-	 * @return  $this
-	 *
-	 * @since   11.1
-	 */
-	public function setLineEnd($style)
-	{
-		switch ($style)
-		{
-			case 'win':
-				$this->_lineEnd = "\15\12";
-				break;
-			case 'unix':
-				$this->_lineEnd = "\12";
-				break;
-			case 'mac':
-				$this->_lineEnd = "\15";
-				break;
-			default:
-				$this->_lineEnd = $style;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Returns the lineEnd
-	 *
-	 * @return  string
-	 *
-	 * @since   11.1
-	 */
-	public function _getLineEnd()
-	{
-		return $this->_lineEnd;
-	}
-
-	/**
-	 * Sets the string used to indent HTML
-	 *
-	 * @param   string  $string  String used to indent ("\11", "\t", '  ', etc.).
-	 *
-	 * @return  $this
-	 *
-	 * @since   11.1
-	 */
-	public function setTab($string)
-	{
-		$this->_tab = $string;
-
-		return $this;
-	}
-
-	/**
-	 * Returns a string containing the unit for indenting HTML
-	 *
-	 * @return  string
-	 *
-	 * @since   11.1
-	 */
-	public function _getTab()
-	{
-		return $this->_tab;
-	}
-
-	/**
-	 * Parses the document and prepares the buffers
-	 *
-	 * @param   array  $params  The array of parameters
-	 *
-	 * @return  $this
-	 *
-	 * @since   11.1
-	 */
-	public function parse($params = array())
-	{
-		return $this;
 	}
 
 	/**
