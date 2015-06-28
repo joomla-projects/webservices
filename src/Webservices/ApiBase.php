@@ -7,14 +7,13 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api;
+namespace Joomla\Webservices\Webservices;
 
 use Joomla\Registry\Registry;
 
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\DI\ContainerAwareInterface;
-use Joomla\Webservices\Application;
 
 /**
  * Interface to handle api calls
@@ -23,7 +22,7 @@ use Joomla\Webservices\Application;
  * @subpackage  Api
  * @since       1.2
  */
-abstract class ApiBase implements ApiInterface, ContainerAwareInterface
+abstract class ApiBase implements ContainerAwareInterface
 {
 	use ContainerAwareTrait;
 
@@ -54,14 +53,6 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	 * @since  1.2
 	 */
 	public $statusText = '';
-
-	/**
-	 * Application Object
-	 *
-	 * @var    Application
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $app = null;
 
 	/**
 	 * Standard status codes for RESTfull api
@@ -122,14 +113,22 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	 */
 	public function __construct(Container $container)
 	{
-		$this->app = $container->get('app');
 		$this->setContainer($container);
 	}
 
 	/**
+	 * Execute the Api operation.
+	 *
+	 * @return  $this
+	 *
+	 * @throws  \Exception
+	 */
+	abstract public function execute();
+
+	/**
 	 * Set the options
 	 *
-	 * @param   mixed  $options  Array / JRegistry object with the options to load
+	 * @param   mixed  $options  Array / Registry object with the options to load
 	 *
 	 * @return  $this
 	 */
@@ -233,5 +232,57 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	public function resetOptions()
 	{
 		return $this->setOptions(null);
+	}
+
+	/**
+	 * Get the debug messages array
+	 *
+	 * @return  array
+	 *
+	 * @since   1.2
+	 */
+	public function getDebugMessages()
+	{
+		return $this->debugMessages;
+	}
+
+	/**
+	 * Render the list of debug messages
+	 *
+	 * @return  string  Output text/HTML code
+	 *
+	 * @since   1.2
+	 */
+	public function renderDebugMessages()
+	{
+		return implode($this->debugMessages, "\n");
+	}
+
+	/**
+	 * Add a debug message to the debug messages array
+	 *
+	 * @param   string  $message  Message to save
+	 *
+	 * @return  void
+	 *
+	 * @since   1.2
+	 */
+	public function addDebugMessage($message)
+	{
+		$this->debugMessages[] = $message;
+	}
+
+	/**
+	 * Change the debug mode
+	 *
+	 * @param   boolean  $debug  Enable / Disable debug
+	 *
+	 * @return  void
+	 *
+	 * @since   1.2
+	 */
+	public function setDebug($debug)
+	{
+		$this->setOption('debug', (boolean) $debug);
 	}
 }

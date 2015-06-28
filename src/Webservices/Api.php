@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api;
+namespace Joomla\Webservices\Webservices;
 
 use Joomla\DI\Container;
 use Joomla\Webservices\Application;
@@ -82,9 +82,6 @@ abstract class Api extends ApiBase implements DispatcherAwareInterface
 		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
 
 		parent::__construct($container);
-
-		// Load Library language
-		//$this->loadExtensionLanguage('lib_joomla', JPATH_ADMINISTRATOR);
 	}
 
 	/**
@@ -113,27 +110,5 @@ abstract class Api extends ApiBase implements DispatcherAwareInterface
 	public function setApi($apiName)
 	{
 		$this->apiName = $apiName;
-	}
-
-	/**
-	 * Load extension language file.
-	 *
-	 * @param   string  $option  Option name
-	 * @param   string  $path    Path to language file
-	 *
-	 * @return  object
-	 */
-	public function loadExtensionLanguage($option, $path = JPATH_SITE)
-	{
-		/** @var \Joomla\Language\Language $lang */
-		$lang = $this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getLanguage();
-
-		// Load common and local language files.
-		$lang->load($option, $path, null, false, false)
-		|| $lang->load($option, $path . "/components/$option", null, false, false)
-		|| $lang->load($option, $path, $lang->getDefault(), false, false)
-		|| $lang->load($option, $path . "/components/$option", $lang->getDefault(), false, false);
-
-		return $this;
 	}
 }

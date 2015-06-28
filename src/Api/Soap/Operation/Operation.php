@@ -11,8 +11,8 @@ namespace Joomla\Webservices\Api\Soap\Operation;
 
 use Joomla\Utilities\ArrayHelper;
 
-use Joomla\Webservices\Api\Hal\Hal;
-use Joomla\Webservices\Api\Hal\HalHelper;
+use Joomla\Webservices\Webservices\Webservice;
+use Joomla\Webservices\Webservices\ConfigurationHelper;
 use Joomla\Webservices\Api\Soap\SoapHelper;
 
 /**
@@ -34,10 +34,10 @@ class Operation
 	/**
 	 * Constructor.
 	 *
-	 * @param   Hal    $webservice  Webservice object
-	 * @param   array  $config      An optional associative array of configuration settings.
+	 * @param   Webservice  $webservice  Webservice object
+	 * @param   array       $config      An optional associative array of configuration settings.
 	 */
-	public function __construct(Hal $webservice, $config = array())
+	public function __construct(Webservice $webservice, $config = array())
 	{
 		$this->webservice = $webservice;
 	}
@@ -65,7 +65,7 @@ class Operation
 		$dataGet['list']['limit'] = (isset($data->limit) ? (int) $data->limit : 20);
 		$dataGet['filter']['search'] = (isset($data->filterSearch) ? (string) $data->filterSearch : '');
 
-		$filters = HalHelper::getFilterFields($this->webservice->configuration->operations->read->list, true);
+		$filters = ConfigurationHelper::getFilterFields($this->webservice->configuration->operations->read->list, true);
 
 		foreach ($filters as $filter)
 		{
@@ -114,7 +114,7 @@ class Operation
 		// We are setting the operation of the webservice to Read
 		$this->setOperation('read');
 		$dataGet = $this->webservice->options->get('dataGet', array());
-		$primaryKeysFromFields = HalHelper::getFieldsArray($this->webservice->configuration->operations->read->item, true);
+		$primaryKeysFromFields = ConfigurationHelper::getFieldsArray($this->webservice->configuration->operations->read->item, true);
 
 		// If there are no primary keys defined we will use id field as default
 		if (empty($primaryKeysFromFields))

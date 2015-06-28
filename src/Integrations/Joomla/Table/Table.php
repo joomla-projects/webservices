@@ -7,9 +7,10 @@
  * @license     GNU General Public License version 2 or later, see LICENSE.
  */
 
-namespace Joomla\Webservices\Api\Hal\Table;
+namespace Joomla\Webservices\Integrations\Joomla\Table;
 
 use Joomla\Database\DatabaseDriver;
+use \JTable;
 
 /**
  * redCORE Dynamic Table
@@ -18,7 +19,7 @@ use Joomla\Database\DatabaseDriver;
  * @subpackage  Tables
  * @since       1.0
  */
-class Table extends \JTable
+class Table extends JTable
 {
 	/**
 	 * Object constructor to set table and key fields.  In most cases this will

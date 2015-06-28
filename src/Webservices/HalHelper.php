@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Hal;
+namespace Joomla\Webservices\Webservices;
 
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
@@ -16,7 +16,6 @@ use Joomla\Webservices\Uri\Uri;
 use Joomla\Language\Text;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Webservices\Xml\XmlHelper;
-use Joomla\Webservices\Webservices\WebserviceHelper;
 
 /**
  * Interface to handle api calls
@@ -25,7 +24,7 @@ use Joomla\Webservices\Webservices\WebserviceHelper;
  * @subpackage  Api
  * @since       1.2
  */
-class HalHelper
+class ConfigurationHelper
 {
 	/**
 	 * An array to hold webservices xmls
@@ -617,6 +616,7 @@ class HalHelper
 
 		if (!empty($appendFormat))
 		{
+
 			$uri .= '&format=' . $appendFormat;
 		}
 
@@ -640,27 +640,6 @@ class HalHelper
 		$baseUri = Uri::getInstance();
 
 		return rtrim($baseUri->base(), '/') . '/index.php?' . $uri;
-	}
-
-	/**
-	 * Returns user credentials from globals
-	 *
-	 * @return  array
-	 */
-	public static function getCredentialsFromGlobals()
-	{
-		$credentials = array();
-		$headers = self::getHeaderVariablesFromGlobals();
-
-		if (isset($headers['PHP_AUTH_USER']) && isset($headers['PHP_AUTH_PW']))
-		{
-			return $credentials = array(
-				'username'	 => $headers['PHP_AUTH_USER'],
-				'password'	 => $headers['PHP_AUTH_PW']
-			);
-		}
-
-		return $credentials;
 	}
 
 	/**

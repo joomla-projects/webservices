@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-/** @var \Joomla\Webservices\Api\Hal\Hal $view */
+/** @var \Joomla\Webservices\Webservices\Webservice $view */
 $view = !empty($displayData['view']) ? $displayData['view'] : null;
 
 /** @var \Joomla\Language\Text $text */
@@ -18,7 +18,7 @@ $text = $displayData['text'];
 $operationXml = !empty($displayData['options']['operationXml']) ? $displayData['options']['operationXml'] : array();
 $operationName = !empty($displayData['options']['operationName']) ? $displayData['options']['operationName'] : '';
 $authorizationNotNeeded = (isset($operationXml['authorizationNeeded']) && strtolower($operationXml['authorizationNeeded']) == 'false');
-$url = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion);
+$url = \Joomla\Webservices\Webservices\ConfigurationHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion);
 $view->resetDocumentResources();
 $resources = $view->loadResourceFromConfiguration($operationXml);
 $method = 'GET';
@@ -46,7 +46,7 @@ switch ($operationName)
 		$errorList = array(200, 405, 500);
 		break;
 	case 'read item' :
-		$fields = \Joomla\Webservices\Api\Hal\HalHelper::getFieldsArray($operationXml, true, true);
+		$fields = \Joomla\Webservices\Webservices\ConfigurationHelper::getFieldsArray($operationXml, true, true);
 		$method = 'GET';
 		$noteName = '_ITEM';
 		$errorList = array(200, 404, 405, 500);

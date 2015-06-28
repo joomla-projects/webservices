@@ -8,12 +8,12 @@
  */
 
 // Application constants
-define('JPATH_ROOT',      dirname(__DIR__));
 define('JPATH_API',      dirname(__DIR__));
 define('JPATH_TEMPLATES', JPATH_API . '/layouts');
+define('JPATH_BASE',      dirname(__DIR__) . '/staging.joomla.org/www');
 
 // Ensure we've initialized Composer
-if (!file_exists(JPATH_ROOT . '/vendor/autoload.php'))
+if (!file_exists(JPATH_API . '/vendor/autoload.php'))
 {
 	header('HTTP/1.1 500 Internal Server Error', null, 500);
 	echo 'Composer is not set up properly, please run "composer install".';

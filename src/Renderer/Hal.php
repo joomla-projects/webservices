@@ -9,7 +9,7 @@
 
 namespace Joomla\Webservices\Renderer;
 
-use Joomla\Webservices\Api\Hal\Hal as Api;
+use Joomla\Webservices\Webservices\Webservice as Api;
 use Joomla\Webservices\Resource\Resource;
 
 use Joomla\DI\Container;

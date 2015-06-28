@@ -21,7 +21,7 @@ interface ApiInterface
 	/**
 	 * Method to execute task.
 	 *
-	 * @return  Api  The Api output result.
+	 * @return  $this
 	 *
 	 * @since   1.2
 	 */

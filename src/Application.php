@@ -236,13 +236,18 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	/**
 	 * Login authentication function.
 	 *
+	 * @param   \Joomla\Authentication\AuthenticationStrategyInterface[]  $strategies
+	 *
 	 * @return  boolean  True on success.
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
-	public function login()
+	public function login($strategies)
 	{
 		$authenticate = new Authentication();
+
+		foreach ($strategies as $name => $strategy)
+		$authenticate->addStrategy($name, $strategy);
 
 		return $authenticate->authenticate();
 	}

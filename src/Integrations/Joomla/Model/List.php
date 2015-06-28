@@ -7,9 +7,9 @@
  * @license     GNU General Public License version 2 or later, see LICENSE.
  */
 
-namespace Joomla\Webservices\Api\Hal\Model;
+namespace Joomla\Webservices\Integrations\Joomla\Model;
 
-use Joomla\Webservices\Api\Hal\Table\Table;
+use Joomla\Webservices\Integrations\Joomla\Table\Table;
 
 /**
  * redCORE Dynamic Model List
@@ -18,7 +18,7 @@ use Joomla\Webservices\Api\Hal\Table\Table;
  * @subpackage  Base
  * @since       1.3
  */
-class List extends \JModelList
+class JList extends \JModelList
 {
 	/**
 	 * Name of the filter form to load

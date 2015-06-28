@@ -9,26 +9,34 @@
 
 namespace Joomla\Webservices\Api\Soap;
 
-use Joomla\Webservices\Api\Api;
-use Joomla\Webservices\Api\Hal\Hal;
+use Joomla\Webservices\Api\ApiBase;
+use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Api\Soap\Operation\Operation;
 use Joomla\Webservices\Renderer\Soap as Document;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\DI\Container;
 use Joomla\Event\Event;
 use Joomla\Event\EventImmutable;
+use Joomla\Event\DispatcherAwareInterface;
+use Joomla\Event\DispatcherInterface;
 
 /**
  * Class to represent a SOAP standard object.
  *
  * @since  1.2
  */
-class Soap extends Api
+class Soap extends ApiBase  implements DispatcherAwareInterface
 {
+	/**
+	 * @var    string  Operation that will be preformed with this Api call
+	 * @since  1.2
+	 */
+	public $operation = 'soap';
+
 	/**
 	 * Webservice object
 	 *
-	 * @var    Hal  Webservice
+	 * @var    Webservice  Webservice object
 	 * @since  1.4
 	 */
 	public $webservice = null;
@@ -40,6 +48,14 @@ class Soap extends Api
 	 * @since  1.4
 	 */
 	public $wsdl = null;
+
+	/**
+	 * Event Dispatcher Object
+	 *
+	 * @var    DispatcherInterface
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $dispatcher = null;
 
 	/**
 	 * Soap server response
@@ -70,8 +86,10 @@ class Soap extends Api
 	{
 		parent::__construct($container, $options);
 
-		$this->webservice = new Hal($container, $options);
-		$this->webservice->authorizationCheck = 'joomla';
+		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
+
+		$this->webservice = new Webservice($container, $options);
+		$this->webservice->permissionCheck = 'joomla';
 
 		// Init Environment
 		$this->triggerFunction('setApiOperation');
@@ -89,7 +107,7 @@ class Soap extends Api
 	 */
 	public function setApiOperation()
 	{
-		$dataGet = $this->options->get('dataGet', array());
+		$dataGet = $this->webservice->options->get('dataGet', array());
 		$method = 'soap';
 
 		if (isset($dataGet->wsdl))
@@ -157,6 +175,20 @@ class Soap extends Api
 	}
 
 	/**
+	 * Set the dispatcher to use.
+	 *
+	 * @param   DispatcherInterface  $dispatcher  The dispatcher to use.
+	 *
+	 * @return  DispatcherAwareInterface  This method is chainable.
+	 *
+	 * @since   1.0
+	 */
+	public function setDispatcher(DispatcherInterface $dispatcher)
+	{
+		$this->dispatcher = $dispatcher;
+	}
+
+	/**
 	 * Main Soap server
 	 *
 	 * @return  string  Full URL to the webservice
@@ -206,7 +238,7 @@ class Soap extends Api
 			}
 			else
 			{
-				unlink(JPATH_ROOT . '/' . $this->wsdlPath);
+				unlink(JPATH_API . '/' . $this->wsdlPath);
 				$this->checkWSDL();
 
 				return $this->apiWsdl();
@@ -214,7 +246,7 @@ class Soap extends Api
 		}
 		catch (\Exception $e)
 		{
-			unlink(JPATH_ROOT . '/' . $this->wsdlPath);
+			unlink(JPATH_API . '/' . $this->wsdlPath);
 			$this->checkWSDL();
 
 			return $this->apiWsdl();
@@ -270,7 +302,7 @@ class Soap extends Api
 	public function render()
 	{
 		$documentOptions = array(
-			'absoluteHrefs' => $this->options->get('absoluteHrefs', false),
+			'absoluteHrefs' => $this->webservice->options->get('absoluteHrefs', false),
 			'documentFormat' => 'xml',
 		);
 
@@ -298,7 +330,6 @@ class Soap extends Api
 
 		$soapDocument = new Document($this->getContainer(), $documentOptions, ($this->operation == 'wsdl' ? 'xml' : 'soap+xml'));
 
-		$body = $this->getBody();
 		$body = $this->triggerFunction('prepareBody', $body);
 
 		// Push results into the document.

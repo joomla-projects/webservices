@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later, see LICENSE.
  */
 
-/** @var \Joomla\Webservices\Api\Hal\Hal $view */
+/** @var \Joomla\Webservices\Webservices\Webservice $view */
 $view = !empty($displayData['view']) ? $displayData['view'] : null;
 
 /** @var \SimpleXMLElement $xml */
@@ -19,8 +19,8 @@ $date   = new \Joomla\Date\Date;
 /** @var \Joomla\Language\Text $text */
 $text = $displayData['text'];
 
-$halLink = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'hal');
-$docsLink = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'hal', 'doc');
+$halLink = \Joomla\Webservices\Webservices\ConfigurationHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'hal');
+$docsLink = \Joomla\Webservices\Webservices\ConfigurationHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'hal', 'doc');
 
 ?>
 <!DOCTYPE html>
@@ -76,7 +76,7 @@ $docsLink = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view-
 			<br />
 			<?php
 				if ($soapEnabled) :
-					$wsdlLink = \Joomla\Webservices\Api\Hal\HalHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'soap') . '&wsdl';
+					$wsdlLink = \Joomla\Webservices\Webservices\ConfigurationHelper::buildWebserviceFullUrl($view->client, $view->webserviceName, $view->webserviceVersion, 'soap') . '&wsdl';
 			?>
 				<strong><?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_WSDL_ACCESS_URL'); ?></strong>:
 				<small>

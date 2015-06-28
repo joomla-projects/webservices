@@ -7,9 +7,11 @@
  * @license     GNU General Public License version 2 or later, see LICENSE.
  */
 
-namespace Joomla\Webservices\Api\Hal\Model;
+namespace Joomla\Webservices\Integrations\Joomla\Model;
 
-use Joomla\Webservices\Api\Hal\Table\Table;
+use Joomla\Webservices\Integrations\Joomla\Table\Table;
+use Joomla\Utilities\ArrayHelper;
+use Joomla\Registry\Registry;
 
 /**
  * redCORE Dynamic Model List
@@ -139,13 +141,13 @@ class Item extends \JModelAdmin
 	 * Each field error is stored in session and can be retrieved with getFieldError().
 	 * Once getFieldError() is called, the error is deleted from the session.
 	 *
-	 * @param   Form   $form   The form to validate against.
+	 * @param   \JForm   $form   The form to validate against.
 	 * @param   array    $data   The data to validate.
 	 * @param   string   $group  The name of the field group to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 */
-	public function validate(Form $form, $data, $group = null)
+	public function validate(\JForm $form, $data, $group = null)
 	{
 		// @todo We should integrate custom validation here as well
 		return $data;
@@ -188,7 +190,7 @@ class Item extends \JModelAdmin
 	 */
 	public function save($data)
 	{
-		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher = \JEventDispatcher::getInstance();
 		$table      = $this->getTable();
 		$context    = $this->option . '.' . $this->name;
 
@@ -216,7 +218,7 @@ class Item extends \JModelAdmin
 		$isNew = true;
 
 		// Include the plugins for the save events.
-		JPluginHelper::importPlugin($this->events_map['save']);
+		\JPluginHelper::importPlugin($this->events_map['save']);
 
 		// Allow an exception to be thrown.
 		try
