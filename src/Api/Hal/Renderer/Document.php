@@ -176,7 +176,7 @@ class Document extends JDocument
 			{
 				if (is_array($link))
 				{
-					/* @var $arrayLink Link */
+					/* @var $arrayLink \Joomla\Webservices\Resource\Link */
 					foreach ($link as $group => $arrayLink)
 					{
 						$href = $arrayLink->getHref();
@@ -187,7 +187,7 @@ class Document extends JDocument
 				}
 				else
 				{
-					/* @var $link Link */
+					/* @var $link \Joomla\Webservices\Resource\Link */
 					$href = $link->getHref();
 					$href = $this->addUriParameters($href, $absoluteHrefs);
 					$link->setHref($href);
