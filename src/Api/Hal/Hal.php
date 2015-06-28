@@ -10,8 +10,8 @@
 namespace Joomla\Webservices\Api\Hal;
 
 use Joomla\Webservices\Api\Api;
-use Joomla\Webservices\Api\Hal\Renderer\Resource;
-use Joomla\Webservices\Api\Hal\Renderer\Link;
+use Joomla\Webservices\Resource\Resource;
+use Joomla\Webservices\Resource\Link;
 use Joomla\Webservices\Api\Hal\Renderer\Document;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 use Joomla\Webservices\Xml\XmlHelper;

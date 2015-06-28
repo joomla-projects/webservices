@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Hal\Renderer;
+namespace Joomla\Webservices\Resource;
 
 /**
  * Object to represent a hypermedia link in HAL.
@@ -22,7 +22,7 @@ abstract class Base
 	protected $xml;
 
 	/**
-	 * Sets XML attributes for \Joomla\Webservices\Api\Hal\Renderer\Link
+	 * Sets XML attributes for \Joomla\Webservices\Resource\Link
 	 * 
 	 * @param   \SimpleXMLElement  $xml   XML document
 	 * @param   Link               $link  Link element

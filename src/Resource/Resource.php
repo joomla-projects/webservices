@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Hal\Renderer;
+namespace Joomla\Webservices\Resource;
 
 /**
  * Object to represent a hypermedia resource in HAL.
@@ -32,7 +32,7 @@ class Resource extends Base
 	protected $jsonNumericCheck = self::JSON_NUMERIC_CHECK_OFF;
 
 	/**
-	 * Internal storage of `\Joomla\Webservices\Api\Hal\Renderer\Link` objects
+	 * Internal storage of Link objects
 	 * @var array
 	 */
 	protected $_links = array();
@@ -337,7 +337,7 @@ class Resource extends Base
 		}
 		else
 		{
-			/** @var \Joomla\Webservices\Api\Hal\Renderer\Link $link */
+			/** @var \Joomla\Webservices\Resource\Link $link */
 			foreach ($links as $link)
 			{
 				$result[] = $link->toArray();

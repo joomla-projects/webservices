@@ -10,6 +10,7 @@
 namespace Joomla\Webservices\Api\Hal\Renderer;
 
 use Joomla\Webservices\Api\Hal\Hal;
+use Joomla\Webservices\Resource\Resource;
 use Joomla\Webservices\Renderer\Document as JDocument;
 
 use Joomla\DI\Container;
@@ -110,7 +111,7 @@ class Document extends JDocument
 		$this->app->sendHeaders();
 
 		// Get the HAL object from the buffer.
-		/* @var $hal \Joomla\Webservices\Api\Hal\Renderer\Resource */
+		/* @var $hal \Joomla\Webservices\Resource\Resource */
 		$hal = $this->getBuffer();
 
 		// If required, change relative links to absolute.
