@@ -7,10 +7,9 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Soap\Renderer;
+namespace Joomla\Webservices\Renderer;
 
-use Joomla\Webservices\Api\Soap\Soap;
-use Joomla\Webservices\Renderer\Document as JDocument;
+use Joomla\Webservices\Api\Soap\Soap as Api;
 use Joomla\DI\Container;
 
 /**
@@ -20,7 +19,7 @@ use Joomla\DI\Container;
  * @subpackage  Document
  * @since       1.4
  */
-class Document extends JDocument
+class Soap extends Base
 {
 	/**
 	 * Document name
@@ -47,7 +46,7 @@ class Document extends JDocument
 	public $outputContent = null;
 
 	/**
-	 * @var    Soap  Soap object
+	 * @var    Api  Soap object
 	 * @since  1.4
 	 */
 	public $soap = null;
@@ -132,13 +131,13 @@ class Document extends JDocument
 	/**
 	 * Sets Soap object to the document
 	 *
-	 * @param   Soap  $soap  Soap object
+	 * @param   Api  $soap  Soap object
 	 *
 	 * @return  $this
 	 *
 	 * @since  1.4
 	 */
-	public function setApiObject($soap)
+	public function setApiObject(Api $soap)
 	{
 		$this->soap = $soap;
 

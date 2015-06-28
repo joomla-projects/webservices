@@ -20,7 +20,7 @@ use Joomla\DI\ContainerAwareInterface;
  *
  * @since  11.1
  */
-class Document implements ContainerAwareInterface
+class Base implements ContainerAwareInterface
 {
 	use ContainerAwareTrait;
 

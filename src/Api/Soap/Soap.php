@@ -12,7 +12,7 @@ namespace Joomla\Webservices\Api\Soap;
 use Joomla\Webservices\Api\Api;
 use Joomla\Webservices\Api\Hal\Hal;
 use Joomla\Webservices\Api\Soap\Operation\Operation;
-use Joomla\Webservices\Api\Soap\Renderer\Document;
+use Joomla\Webservices\Renderer\Soap as Document;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\DI\Container;
 use Joomla\Event\Event;

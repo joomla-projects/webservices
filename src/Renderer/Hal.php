@@ -7,11 +7,10 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Api\Hal\Renderer;
+namespace Joomla\Webservices\Renderer;
 
-use Joomla\Webservices\Api\Hal\Hal;
+use Joomla\Webservices\Api\Hal\Hal as Api;
 use Joomla\Webservices\Resource\Resource;
-use Joomla\Webservices\Renderer\Document as JDocument;
 
 use Joomla\DI\Container;
 use Joomla\Webservices\Uri\Uri;
@@ -24,7 +23,7 @@ use Joomla\Webservices\Uri\Uri;
  * @see         http://stateless.co/hal_specification.html
  * @since       1.2
  */
-class Document extends JDocument
+class Hal extends Base
 {
 	/**
 	 * Document name
@@ -45,7 +44,7 @@ class Document extends JDocument
 	protected $documentFormat = false;
 
 	/**
-	 * @var    Hal  Main HAL object
+	 * @var    Api  Main HAL object
 	 * @since  1.2
 	 */
 	public $hal = null;
@@ -146,13 +145,13 @@ class Document extends JDocument
 	/**
 	 * Sets HAL object to the document
 	 *
-	 * @param   Hal  $hal  Hal object
+	 * @param   Api  $hal  Hal object
 	 *
-	 * @return  Document
+	 * @return  $this
 	 *
 	 * @since  1.2
 	 */
-	public function setHal($hal)
+	public function setHal(Api $hal)
 	{
 		$this->hal = $hal;
 
