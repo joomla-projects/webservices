@@ -166,7 +166,11 @@ class Soap extends Api
 	public function apiSoap()
 	{
 		$uri = Uri::getInstance();
-		$wsdl = $uri->root() . $this->wsdlPath;
+
+		// Get the URL to the Wsdl file by stripping the www directory from the file path
+		$wsdlUriPath = str_replace('www/', '', $this->wsdlPath);
+		$wsdl = $uri->root() . $wsdlUriPath;
+
 		$params = array(
 			'uri' => $wsdl,
 			'soap_version' => SOAP_1_2,
@@ -194,7 +198,7 @@ class Soap extends Api
 	{
 		try
 		{
-			$content = @file_get_contents(JPATH_ROOT . '/' . $this->wsdlPath);
+			$content = @file_get_contents(JPATH_API . '/' . $this->wsdlPath);
 
 			if (is_string($content))
 			{
@@ -239,7 +243,7 @@ class Soap extends Api
 				$this->webservice->webservicePath
 			);
 
-			if (is_readable(JPATH_ROOT . '/' . $this->wsdlPath))
+			if (is_readable(JPATH_API . '/' . $this->wsdlPath))
 			{
 				return $this->wsdlPath;
 			}
@@ -250,7 +254,7 @@ class Soap extends Api
 
 		// Something went wrong, we are going to generate it on the fly
 		$this->wsdl = SoapHelper::generateWsdl($this->webservice->configuration, $this->wsdlPath);
-		$this->wsdl->asXML(JPATH_ROOT . '/' . $this->wsdlPath);
+		$this->wsdl->asXML(JPATH_API . '/' . $this->wsdlPath);
 
 		return $this->wsdlPath;
 	}
