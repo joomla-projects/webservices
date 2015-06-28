@@ -137,6 +137,7 @@ class SoapHelper
 
 		if (isset($xmlElement->resources->resource))
 		{
+			/** @var \SimpleXMLElement $resource */
 			foreach ($xmlElement->resources->resource as $resource)
 			{
 				$displayGroup = XmlHelper::attributeToString($resource, 'displayGroup');
@@ -179,6 +180,7 @@ class SoapHelper
 	{
 		if (isset($xmlElement->resources->resource))
 		{
+			/** @var \SimpleXMLElement $resource */
 			foreach ($xmlElement->resources->resource as $resource)
 			{
 				$displayName = XmlHelper::attributeToString($resource, 'displayName');
