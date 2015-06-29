@@ -102,9 +102,20 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 			$app = new \JApplicationSite(null, $applicationConfig);
 		}
 
-		// Set the application and session objects into JFactory.
-		// Note that we are actually injecting our own framework session object - but it seems to work fine.
+		/** @var \Joomla\Language\LanguageFactory $languageFactory */
+		$languageFactory = $this->getContainer()->get('Joomla\\Language\\LanguageFactory');
+		$lang = $languageFactory->getLanguage();
+
+		// Set up the Joomla language object with the instances we are using
+		$joomlaLang = \JLanguage::getInstance($lang->getLanguage(), $lang->getDebug());
+		$app->loadLanguage($joomlaLang);
+
+		/**
+		 * Set the application, session and language objects into JFactory.
+		 * Note that we are actually injecting our own framework session object - but it seems to work fine.
+		 */
 		\JFactory::$application = $app;
+		\JFactory::$language = $joomlaLang;
 		\JFactory::$session = $container->get("session");
 	}
 
