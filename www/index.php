@@ -10,7 +10,7 @@
 // Application constants
 define('JPATH_API',      dirname(__DIR__));
 define('JPATH_TEMPLATES', JPATH_API . '/layouts');
-define('JPATH_BASE',      dirname(__DIR__) . '/staging.joomla.org/www');
+define('JPATH_CMS',      dirname(__DIR__) . DIRECTORY_SEPARATOR . 'staging.joomla.org' . DIRECTORY_SEPARATOR . 'www');
 
 // Ensure we've initialized Composer
 if (!file_exists(JPATH_API . '/vendor/autoload.php'))

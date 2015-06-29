@@ -44,9 +44,6 @@ class Joomla implements ContainerAwareInterface
 		 */
 		define('_JEXEC', 1);
 
-		require_once JPATH_BASE . '/includes/defines.php';
-		require_once JPATH_BASE . '/includes/framework.php';
-
 		/** @var \Joomla\Session\Session $session */
 		// Don't let the session load twice!
 		$session =  $container->get("session");
@@ -55,9 +52,27 @@ class Joomla implements ContainerAwareInterface
 			'session_name' => $session->getName()
 		);
 
-		$config = new Registry($data);
-		$app = new \JApplicationSite(null, $config);
+		$applicationConfig = new Registry($data);
+
+		if ($webservice->options->get('webserviceClient', 'site') == 'administrator')
+		{
+			define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
+			require_once JPATH_BASE . '/includes/defines.php';
+			require_once JPATH_BASE . '/includes/framework.php';
+			$app = new \JApplicationAdministrator(null, $applicationConfig);
+		}
+		else
+		{
+			define('JPATH_BASE',      JPATH_CMS);
+			require_once JPATH_BASE . '/includes/defines.php';
+			require_once JPATH_BASE . '/includes/framework.php';
+			$app = new \JApplicationSite(null, $applicationConfig);
+		}
+
+		// Set the application and session objects into JFactory.
+		// Note that we are actually injecting our own framework session object - but it seems to work fine.
 		\JFactory::$application = $app;
+		\JFactory::$session = $container->get("session");
 	}
 
 	/**
