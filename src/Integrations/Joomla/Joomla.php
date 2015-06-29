@@ -332,7 +332,7 @@ class Joomla implements ContainerAwareInterface
 		}
 
 		$webserviceName = preg_replace('/[^A-Z0-9_\.]/i', '', $this->webservice->webserviceName);
-		$helperClassName = '\\Joomla\\Webservices\\Helper\\' . ucfirst($this->webservice->client) . '\\' . ucfirst(strtolower($webserviceName));
+		$helperClassName = '\\JWebserviceHelper' . ucfirst($this->webservice->client) . ucfirst(strtolower($webserviceName));
 
 		if (class_exists($helperClassName))
 		{
