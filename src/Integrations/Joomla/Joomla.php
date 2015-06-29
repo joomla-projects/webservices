@@ -331,7 +331,7 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		}
 
 		$version = $this->webservice->options->get('webserviceVersion', '');
-		$helperFile = ConfigurationHelper::getWebserviceFile($this->webservice->client, strtolower($this->webservice->webserviceName), $version, 'php', $this->webservicePath);
+		$helperFile = ConfigurationHelper::getWebserviceFile($this->webservice->client, strtolower($this->webservice->webserviceName), $version, 'php', $this->webservice->webservicePath);
 
 		if (file_exists($helperFile))
 		{
