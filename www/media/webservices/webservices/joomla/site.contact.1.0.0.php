@@ -7,6 +7,8 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Joomla\Webservices\Webservices\Webservice;
+
 defined('JPATH_API') or die;
 
 /**
@@ -16,79 +18,79 @@ defined('JPATH_API') or die;
  * @subpackage  Api Helper
  * @since       1.2
  */
-class JApiHalHelperSiteContact
+class JWebserviceHelperSiteContact
 {
 	/**
 	 * Checks if operation is allowed from the configuration file
 	 *
-	 * @return object This method may be chained.
+	 * @return  $this
 	 *
 	 * @throws  RuntimeException
 	 */
-	/* public function isOperationAllowed(JApiHalHal $apiHal){} */
+	/* public function isOperationAllowed(Webservice $webservice){} */
 
 	/**
 	 * Execute the Api Default Page operation.
 	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
+	 * @return  mixed  Webservice object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiDefaultPage(JApiHalHal $apiHal){} */
+	/* public function apiDefaultPage(Webservice $webservice){} */
 
 	/**
 	 * Execute the Api Create operation.
 	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
+	 * @return  mixed  Webservice object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiCreate(JApiHalHal $apiHal){} */
+	/* public function apiCreate(Webservice $webservice){} */
 
 	/**
 	 * Execute the Api Read operation.
 	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
+	 * @return  mixed  Webservice object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiRead(JApiHalHal $apiHal){} */
+	/* public function apiRead(Webservice $webservice){} */
 
 	/**
 	 * Execute the Api Delete operation.
 	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
+	 * @return  mixed  Webservice object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiDelete(JApiHalHal $apiHal){} */
+	/* public function apiDelete(Webservice $webservice){} */
 
 	/**
 	 * Execute the Api Update operation.
 	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
+	 * @return  mixed  Webservice object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiUpdate(JApiHalHal $apiHal){} */
+	/* public function apiUpdate(Webservice $webservice){} */
 
 	/**
 	 * Execute the Api Task operation.
 	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
+	 * @return  mixed  Webservice object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiTask(JApiHalHal $apiHal){} */
+	/* public function apiTask(Webservice $webservice){} */
 
 	/**
 	 * Execute the Api Documentation operation.
 	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
+	 * @return  mixed  Webservice object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
 	 */
-	/* public function apiDocumentation(JApiHalHal $apiHal){} */
+	/* public function apiDocumentation(Webservice $webservice){} */
 
 	/**
 	 * Process posted data from json or object to array
@@ -100,7 +102,7 @@ class JApiHalHelperSiteContact
 	 *
 	 * @since   1.2
 	 */
-	/* public function processPostData($data, $configuration, JApiHalHal $apiHal){} */
+	/* public function processPostData($data, $configuration, Webservice $webservice){} */
 
 	/**
 	 * Set document content for List view
@@ -110,7 +112,7 @@ class JApiHalHelperSiteContact
 	 *
 	 * @return void
 	 */
-	/* public function setForRenderList($items, $configuration, JApiHalHal $apiHal){} */
+	/* public function setForRenderList($items, $configuration, Webservice $webservice){} */
 
 	/**
 	 * Set document content for Item view
@@ -120,7 +122,7 @@ class JApiHalHelperSiteContact
 	 *
 	 * @return void
 	 */
-	/* public function setForRenderItem($item, $configuration, JApiHalHal $apiHal){} */
+	/* public function setForRenderItem($item, $configuration, Webservice $webservice){} */
 
 	/**
 	 * Prepares body for response
@@ -131,7 +133,7 @@ class JApiHalHelperSiteContact
 	 *
 	 * @since   1.2
 	 */
-	/* public function prepareBody($message, JApiHalHal $apiHal){} */
+	/* public function prepareBody($message, Webservice $webservice){} */
 
 	/**
 	 * Load model class for data manipulation
@@ -143,16 +145,16 @@ class JApiHalHelperSiteContact
 	 *
 	 * @since   1.2
 	 */
-	/* public function loadModel($elementName, $configuration, JApiHalHal $apiHal){} */
+	/* public function loadModel($elementName, $configuration, Webservice $webservice){} */
 
 	/**
 	 * Set Method for Api to be performed
 	 *
-	 * @return  JApi
+	 * @return  Webservice
 	 *
 	 * @since   1.2
 	 */
-	/* public function setApiOperation(JApiHalHal $apiHal){} */
+	/* public function setApiOperation(Webservice $webservice){} */
 
 	/**
 	 * Include library classes
@@ -163,7 +165,7 @@ class JApiHalHelperSiteContact
 	 *
 	 * @since   1.4
 	 */
-	/*public function loadExtensionLibrary($element, JApiHalHal $apiHal){} */
+	/*public function loadExtensionLibrary($element, Webservice $webservice){} */
 
 	/**
 	 * Validates posted data
@@ -176,7 +178,7 @@ class JApiHalHelperSiteContact
 	 *
 	 * @since   1.3
 	 */
-	/*public function validatePostData($model, $data, $configuration, JApiHalHal $apiHal){} */
+	/*public function validatePostData($model, $data, $configuration, Webservice $webservice){} */
 
 	/**
 	 * Gets errors from model and places it into Application message queue
@@ -185,5 +187,6 @@ class JApiHalHelperSiteContact
 	 *
 	 * @return void
 	 */
-	/*public function displayErrors($model, JApiHalHal $apiHal)*/
+	/*public function displayErrors($model, Webservice $webservice)*/
 }
+

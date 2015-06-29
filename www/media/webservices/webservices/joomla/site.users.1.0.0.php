@@ -16,7 +16,7 @@ defined('JPATH_API') or die;
  * @subpackage  Api Helper
  * @since       1.2
  */
-class JApiHalHelperSiteUsers
+class JWebserviceHelperSiteUsers
 {
 	/**
 	 * Service for reset password of user when they forgot password.
