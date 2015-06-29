@@ -26,7 +26,7 @@ use Joomla\Webservices\Uri\Uri;
  *
  * @since  1.2
  */
-class Webservice extends Api
+class Webservice extends WebserviceBase
 {
 	/**
 	 * Webservice element name

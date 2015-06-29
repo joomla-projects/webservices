@@ -14,6 +14,11 @@ use Joomla\Registry\Registry;
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\DI\ContainerAwareInterface;
+use Joomla\Event\DispatcherAwareInterface;
+use Joomla\Event\DispatcherInterface;
+
+use Joomla\Webservices\Application;
+use Joomla\Language\Text;
 
 /**
  * Interface to handle api calls
@@ -22,9 +27,25 @@ use Joomla\DI\ContainerAwareInterface;
  * @subpackage  Api
  * @since       1.2
  */
-abstract class ApiBase implements ContainerAwareInterface
+abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwareInterface
 {
 	use ContainerAwareTrait;
+
+	/**
+	 * Application Object
+	 *
+	 * @var    Application
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $app = null;
+
+	/**
+	 * Event Dispatcher Object
+	 *
+	 * @var    DispatcherInterface
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $dispatcher = null;
 
 	/**
 	 * Options object
@@ -33,6 +54,12 @@ abstract class ApiBase implements ContainerAwareInterface
 	 * @since  1.2
 	 */
 	public $options = null;
+
+	/**
+	 * @var    string  Operation that will be preformed with this Api call. supported: CREATE, READ, UPDATE, DELETE
+	 * @since  1.2
+	 */
+	public $operation = 'read';
 
 	/**
 	 * Debug information messages
@@ -53,6 +80,14 @@ abstract class ApiBase implements ContainerAwareInterface
 	 * @since  1.2
 	 */
 	public $statusText = '';
+
+	/**
+	 * The text translation object
+	 *
+	 * @var    Text
+	 * @since  __DELPOY_VERSION__
+	 */
+	protected $text = null;
 
 	/**
 	 * Standard status codes for RESTfull api
@@ -105,14 +140,23 @@ abstract class ApiBase implements ContainerAwareInterface
 	);
 
 	/**
-	 * Constructor.
+	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object
+	 * @param   mixed      $options    Optional custom options to load. JRegistry or array format
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   1.2
 	 */
-	public function __construct(Container $container)
+	public function __construct(Container $container, $options = null)
 	{
+		$this->app = $container->get('app');
+		$this->text = $container->get('Joomla\\Language\\LanguageFactory')->getText();
+
+		// Initialise / Load options
+		$this->setOptions($options);
+
+		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
+
 		$this->setContainer($container);
 	}
 
@@ -284,5 +328,19 @@ abstract class ApiBase implements ContainerAwareInterface
 	public function setDebug($debug)
 	{
 		$this->setOption('debug', (boolean) $debug);
+	}
+
+	/**
+	 * Set the dispatcher to use.
+	 *
+	 * @param   DispatcherInterface  $dispatcher  The dispatcher to use.
+	 *
+	 * @return  DispatcherAwareInterface  This method is chainable.
+	 *
+	 * @since   1.0
+	 */
+	public function setDispatcher(DispatcherInterface $dispatcher)
+	{
+		$this->dispatcher = $dispatcher;
 	}
 }
