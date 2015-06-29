@@ -25,12 +25,6 @@ use Joomla\Language\Text;
 abstract class Api extends ApiBase implements DispatcherAwareInterface
 {
 	/**
-	 * @var    string  Name of the Api
-	 * @since  1.2
-	 */
-	public $apiName = '';
-
-	/**
 	 * @var    string  Operation that will be preformed with this Api call. supported: CREATE, READ, UPDATE, DELETE
 	 * @since  1.2
 	 */
@@ -76,9 +70,6 @@ abstract class Api extends ApiBase implements DispatcherAwareInterface
 		// Initialise / Load options
 		$this->setOptions($options);
 
-		// Main properties
-		$this->setApi($this->options->get('api', 'hal'));
-
 		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
 
 		parent::__construct($container);
@@ -96,19 +87,5 @@ abstract class Api extends ApiBase implements DispatcherAwareInterface
 	public function setDispatcher(DispatcherInterface $dispatcher)
 	{
 		$this->dispatcher = $dispatcher;
-	}
-
-	/**
-	 * Change the Api
-	 *
-	 * @param   string  $apiName  Api instance to render
-	 *
-	 * @return  void
-	 *
-	 * @since   1.2
-	 */
-	public function setApi($apiName)
-	{
-		$this->apiName = $apiName;
 	}
 }

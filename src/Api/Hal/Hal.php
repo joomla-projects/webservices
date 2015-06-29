@@ -33,6 +33,9 @@ class Hal extends ApiBase
 	 */
 	public function __construct(Container $container, $options = null)
 	{
+		// Main properties
+		$this->setApi($options->get('api', 'hal'));
+
 		parent::__construct($container);
 
 		$this->webservice = new Webservice($container, $options);

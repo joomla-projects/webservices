@@ -28,6 +28,12 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	use ContainerAwareTrait;
 
 	/**
+	 * @var    string  Name of the Api
+	 * @since  1.2
+	 */
+	public $apiName = '';
+
+	/**
 	 * Options object
 	 *
 	 * @var    Registry
@@ -233,5 +239,19 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	public function resetOptions()
 	{
 		return $this->setOptions(null);
+	}
+
+	/**
+	 * Change the Api
+	 *
+	 * @param   string  $apiName  Api instance to render
+	 *
+	 * @return  void
+	 *
+	 * @since   1.2
+	 */
+	public function setApi($apiName)
+	{
+		$this->apiName = $apiName;
 	}
 }
