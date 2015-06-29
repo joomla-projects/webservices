@@ -13,6 +13,7 @@ use Joomla\Application\AbstractWebApplication;
 use Joomla\Application\Web\WebClient;
 use Joomla\Input\Input;
 use Joomla\Filter\InputFilter;
+use Joomla\Registry\Registry;
 use Joomla\Session\Session;
 
 use Joomla\Authentication\Authentication;
@@ -166,7 +167,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 					try
 					{
 						/** @var \Joomla\Webservices\Api\ApiBase $api */
-						$api = new $apiClass($this->getContainer(), $options);
+						$api = new $apiClass($this->getContainer(), new Registry($options));
 					}
 					catch (\RuntimeException $e)
 					{

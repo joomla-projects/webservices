@@ -14,6 +14,7 @@ use Joomla\Webservices\Renderer\Hal as Document;
 use Joomla\Webservices\Webservices\Webservice;
 
 use Joomla\DI\Container;
+use Joomla\Registry\Registry;
 
 /**
  * Class to represent a HAL standard object.
@@ -26,17 +27,16 @@ class Hal extends ApiBase
 	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object
-	 * @param   mixed      $options    Optional custom options to load. Registry or array format
+	 * @param   Registry   $options    Optional custom options to load
 	 *
 	 * @throws  \Exception
 	 * @since   1.4
 	 */
-	public function __construct(Container $container, $options = null)
+	public function __construct(Container $container, Registry $options)
 	{
-		// Main properties
-		$this->setApi($options->get('api', 'hal'));
+		parent::__construct($container, $options);
 
-		parent::__construct($container);
+		$this->setApi($this->getOptions()->get('api', 'hal'));
 
 		$this->webservice = new Webservice($container, $options);
 		$this->webservice->authorizationCheck = 'joomla';

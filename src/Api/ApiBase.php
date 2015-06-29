@@ -123,11 +123,19 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	 * Constructor.
 	 *
 	 * @param   Container  $container  The DIC object
+	 * @param   Registry   $options    Optional custom options to load
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
-	public function __construct(Container $container)
+	public function __construct(Container $container, $options = null)
 	{
+		if ($options === null)
+		{
+			$options = new Registry;
+		}
+
+		$this->setOptions($options);
+
 		$this->app = $container->get('app');
 		$this->setContainer($container);
 	}
@@ -135,7 +143,7 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	/**
 	 * Set the options
 	 *
-	 * @param   mixed  $options  Array / JRegistry object with the options to load
+	 * @param   mixed  $options  Array / Registry object with the options to load
 	 *
 	 * @return  $this
 	 */

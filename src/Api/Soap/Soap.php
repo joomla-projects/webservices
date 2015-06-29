@@ -19,6 +19,7 @@ use Joomla\Event\Event;
 use Joomla\Event\EventImmutable;
 use Joomla\Event\DispatcherAwareInterface;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Registry\Registry;
 
 /**
  * Class to represent a SOAP standard object.
@@ -77,12 +78,12 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object
-	 * @param   mixed      $options    Optional custom options to load. Registry or array format
+	 * @param   Registry   $options    Optional custom options to load
 	 *
 	 * @throws  \Exception
 	 * @since   1.4
 	 */
-	public function __construct(Container $container, $options = null)
+	public function __construct(Container $container, Registry $options)
 	{
 		// Main properties
 		$this->setApi($this->options->get('api', 'soap'));
