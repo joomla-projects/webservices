@@ -9,7 +9,15 @@
 
 namespace Joomla\Webservices\Integrations;
 
-
-interface AuthorisationInterface {
+interface AuthorisationInterface
+{
+	/**
+	 * Authorise the user in the class to perform the action
+	 *
+	 * @param   string  $action  The action to check the user has permission to do
+	 * @param   mixed   $asset   The asset the action is to performed on (either a string or an integer)
+	 *
+	 * @return mixed
+	 */
 	public function authorise($action, $asset);
 }

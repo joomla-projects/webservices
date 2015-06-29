@@ -1,9 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: georg_000
- * Date: 28/06/2015
- * Time: 21:36
+ * Integration class for Joomla! CMS 3.x
+ *
+ * @package    Webservices
+ * @copyright  Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Joomla\Webservices\Integrations\Joomla;
@@ -12,18 +13,20 @@ use Joomla\DI\ContainerAwareInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\Registry\Registry;
+use Joomla\Webservices\Integrations\IntegrationInterface;
 use Joomla\Webservices\Integrations\Joomla\Authorisation\Authorise;
 use Joomla\Webservices\Integrations\AuthorisationInterface;
 use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Xml\XmlHelper;
 use Joomla\Webservices\Webservices\ConfigurationHelper;
+use Joomla\Authentication\AuthenticationStrategyInterface;
 
 /**
  * Integration class for Joomla! CMS 3.x
  *
  * @package Joomla\Webservices\Integrations\Joomla
  */
-class Joomla implements ContainerAwareInterface
+class Joomla implements ContainerAwareInterface, IntegrationInterface
 {
 	use ContainerAwareTrait;
 
@@ -59,19 +62,22 @@ class Joomla implements ContainerAwareInterface
 	public $apiDynamicModelClassName = '\\Joomla\\Webservices\\Integrations\\Joomla\\Model\\Item';
 
 
+	/**
+	 * Public constructor
+	 *
+	 * @param   Container   $container   The DIC object
+	 * @param   Webservice  $webservice  The webservice object
+	 */
 	public function __construct(Container $container, Webservice $webservice)
 	{
 		$this->setContainer($container);
 		$this->webservice = $webservice;
 
-		/**
-		 * Constant that is checked in included files to prevent direct access.
-		 * define() is used in the installation folder rather than "const" to not error for PHP 5.2 and lower
-		 */
+		// Constant that is checked in included files to prevent direct access.
 		define('_JEXEC', 1);
 
+		// Don't let the session load twice! So inject ours into Joomla
 		/** @var \Joomla\Session\Session $session */
-		// Don't let the session load twice!
 		$session =  $container->get("session");
 		$data = array(
 			'session' => false,
@@ -80,6 +86,7 @@ class Joomla implements ContainerAwareInterface
 
 		$applicationConfig = new Registry($data);
 
+		// Get the CMS base data and load the application
 		if ($webservice->options->get('webserviceClient', 'site') == 'administrator')
 		{
 			define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
@@ -189,7 +196,7 @@ class Joomla implements ContainerAwareInterface
 	 * @throws  \Exception
 	 * @since   __DEPLOY_VERSION__
 	 */
-	public function getDynamicModelObject($configuration)
+	private function getDynamicModelObject($configuration)
 	{
 		if (!empty($this->apiDynamicModelClass))
 		{
@@ -244,7 +251,7 @@ class Joomla implements ContainerAwareInterface
 	 *
 	 * @since   1.3
 	 */
-	public function addModelIncludePaths($isAdmin, $optionName)
+	private function addModelIncludePaths($isAdmin, $optionName)
 	{
 		if ($isAdmin)
 		{
@@ -342,7 +349,11 @@ class Joomla implements ContainerAwareInterface
 		return $this->apiHelperClass;
 	}
 
-
+	/**
+	 * Load Authentication Strategies. Returned array should have a key of the strategy name.
+	 *
+	 * @return  AuthenticationStrategyInterface[]
+	 */
 	public function getStrategies()
 	{
 		return array(
