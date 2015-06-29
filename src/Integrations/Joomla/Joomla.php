@@ -16,6 +16,7 @@ use Joomla\Webservices\Integrations\Joomla\Authorisation\Authorise;
 use Joomla\Webservices\Integrations\AuthorisationInterface;
 use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Xml\XmlHelper;
+use Joomla\Webservices\Webservices\ConfigurationHelper;
 
 /**
  * Integration class for Joomla! CMS 3.x
@@ -32,6 +33,31 @@ class Joomla implements ContainerAwareInterface
 	 * @var  Webservice
 	 */
 	private $webservice;
+
+	/**
+	 * Helper class object
+	 *
+	 * @var    object
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public $apiHelperClass = null;
+
+	/**
+	 * Dynamic model class object
+	 *
+	 * @var    object
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public $apiDynamicModelClass = null;
+
+	/**
+	 * Dynamic model name used if dataMode="table"
+	 *
+	 * @var    string
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public $apiDynamicModelClassName = '\\Joomla\\Webservices\\Integrations\\Joomla\\Model\\Item';
+
 
 	public function __construct(Container $container, Webservice $webservice)
 	{
@@ -130,7 +156,7 @@ class Joomla implements ContainerAwareInterface
 			}
 			else
 			{
-				$componentName = ucfirst(strtolower(substr($this->optionName, 4)));
+				$componentName = ucfirst(strtolower(substr($this->webservice->optionName, 4)));
 				$prefix = $componentName . 'Model';
 
 				$model = \JModelAdmin::getInstance($modelClass, $prefix);
@@ -151,6 +177,61 @@ class Joomla implements ContainerAwareInterface
 		$prefix = $componentName . 'Model';
 
 		return \JModelAdmin::getInstance($elementName, $prefix);
+	}
+
+	/**
+	 * Gets instance of dynamic model object class (for table bind)
+	 *
+	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
+	 *
+	 * @return mixed It will return Api dynamic model class
+	 *
+	 * @throws  \Exception
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function getDynamicModelObject($configuration)
+	{
+		if (!empty($this->apiDynamicModelClass))
+		{
+			return $this->apiDynamicModelClass;
+		}
+
+		$tableName = XmlHelper::attributeToString($configuration, 'tableName', '');
+
+		if (empty($tableName))
+		{
+			/** @var \Joomla\Language\LanguageFactory $languageFactory */
+			$languageFactory = $this->getContainer()->get('Joomla\\Language\\LanguageFactory');
+			$text = $languageFactory->getText();
+
+			throw new \Exception($text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_TABLE_NAME_NOT_SET'));
+		}
+
+		$context = $this->webservice->webserviceName . '.' . $this->webservice->webserviceVersion;
+
+		// We are not using prefix like str_replace(array('.', '-'), array('_', '_'), $context) . '_';
+		$paginationPrefix = '';
+		$filterFields = ConfigurationHelper::getFilterFields($configuration);
+		$primaryFields = $this->webservice->getPrimaryFields($configuration);
+		$fields = $this->webservice->getAllFields($configuration);
+
+		$config = array(
+			'tableName' => $tableName,
+			'context'   => $context,
+			'paginationPrefix' => $paginationPrefix,
+			'filterFields' => $filterFields,
+			'primaryFields' => $primaryFields,
+			'fields' => $fields,
+		);
+
+		$apiDynamicModelClassName = $this->apiDynamicModelClassName;
+
+		if (class_exists($apiDynamicModelClassName))
+		{
+			$this->apiDynamicModelClass = new $apiDynamicModelClassName($config);
+		}
+
+		return $this->apiDynamicModelClass;
 	}
 
 	/**
@@ -227,6 +308,40 @@ class Joomla implements ContainerAwareInterface
 
 		return $this;
 	}
+
+	/**
+	 * Gets instance of helper object class if exists
+	 *
+	 * @return  mixed It will return Api helper class or false if it does not exists
+	 *
+	 * @since   __DELPOY_VERSION__
+	 */
+	private function getHelperObject()
+	{
+		if (!empty($this->apiHelperClass))
+		{
+			return $this->apiHelperClass;
+		}
+
+		$version = $this->webservice->options->get('webserviceVersion', '');
+		$helperFile = ConfigurationHelper::getWebserviceFile($this->webservice->client, strtolower($this->webservice->webserviceName), $version, 'php', $this->webservicePath);
+
+		if (file_exists($helperFile))
+		{
+			require_once $helperFile;
+		}
+
+		$webserviceName = preg_replace('/[^A-Z0-9_\.]/i', '', $this->webservice->webserviceName);
+		$helperClassName = '\\Joomla\\Webservices\\Helper\\' . ucfirst($this->webservice->client) . '\\' . ucfirst(strtolower($webserviceName));
+
+		if (class_exists($helperClassName))
+		{
+			$this->apiHelperClass = new $helperClassName;
+		}
+
+		return $this->apiHelperClass;
+	}
+
 
 	public function getStrategies()
 	{
