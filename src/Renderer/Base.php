@@ -77,7 +77,7 @@ abstract class Base implements ContainerAwareInterface
 	 *
 	 * @var    string
 	 */
-	public $_generator = 'Joomla! - Open Source Content Management';
+	public $generator = 'Joomla! - Open Source Content Management';
 
 	/**
 	 * Document modified date
@@ -85,7 +85,7 @@ abstract class Base implements ContainerAwareInterface
 	 * @var    string
 	 * @since  11.1
 	 */
-	public $_mdate = '';
+	public $mdate = '';
 
 	/**
 	 * Contains the character encoding string
@@ -93,7 +93,7 @@ abstract class Base implements ContainerAwareInterface
 	 * @var    string
 	 * @since  11.1
 	 */
-	public $_charset = 'utf-8';
+	public $charset = 'utf-8';
 
 	/**
 	 * Document mime type
@@ -101,55 +101,7 @@ abstract class Base implements ContainerAwareInterface
 	 * @var    string
 	 * @since  11.1
 	 */
-	public $_mime = '';
-
-	/**
-	 * Document namespace
-	 *
-	 * @var    string
-	 * @since  11.1
-	 */
-	public $_namespace = '';
-
-	/**
-	 * Document profile
-	 *
-	 * @var    string
-	 * @since  11.1
-	 */
-	public $_profile = '';
-
-	/**
-	 * Array of linked scripts
-	 *
-	 * @var    array
-	 * @since  11.1
-	 */
-	public $_scripts = array();
-
-	/**
-	 * Array of scripts placed in the header
-	 *
-	 * @var    array
-	 * @since  11.1
-	 */
-	public $_script = array();
-
-	/**
-	 * Array of linked style sheets
-	 *
-	 * @var    array
-	 * @since  11.1
-	 */
-	public $_styleSheets = array();
-
-	/**
-	 * Array of included style declarations
-	 *
-	 * @var    array
-	 * @since  11.1
-	 */
-	public $_style = array();
+	public $mime = '';
 
 	/**
 	 * Array of meta tags
@@ -173,7 +125,7 @@ abstract class Base implements ContainerAwareInterface
 	 * @var    string
 	 * @since  11.1
 	 */
-	public $_type = null;
+	public $type = null;
 
 	/**
 	 * Array of buffered output
@@ -184,7 +136,9 @@ abstract class Base implements ContainerAwareInterface
 	public $buffer = null;
 
 	/**
-	 * @var    Application  Application Object
+	 * Application Object
+	 *
+	 * @var    Application
 	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $app = null;
@@ -239,7 +193,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function setType($type)
 	{
-		$this->_type = $type;
+		$this->type = $type;
 
 		return $this;
 	}
@@ -253,7 +207,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function getType()
 	{
-		return $this->_type;
+		return $this->type;
 	}
 
 	/**
@@ -367,7 +321,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function setCharset($type = 'utf-8')
 	{
-		$this->_charset = $type;
+		$this->charset = $type;
 
 		return $this;
 	}
@@ -381,7 +335,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function getCharset()
 	{
-		return $this->_charset;
+		return $this->charset;
 	}
 
 	/**
@@ -563,7 +517,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function setGenerator($generator)
 	{
-		$this->_generator = $generator;
+		$this->generator = $generator;
 
 		return $this;
 	}
@@ -577,7 +531,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function getGenerator()
 	{
-		return $this->_generator;
+		return $this->generator;
 	}
 
 	/**
@@ -591,7 +545,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function setModifiedDate($date)
 	{
-		$this->_mdate = $date;
+		$this->mdate = $date;
 
 		return $this;
 	}
@@ -605,7 +559,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function getModifiedDate()
 	{
-		return $this->_mdate;
+		return $this->mdate;
 	}
 
 	/**
@@ -628,12 +582,12 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function setMimeEncoding($type = 'text/html', $sync = true)
 	{
-		$this->_mime = strtolower($type);
+		$this->mime = strtolower($type);
 
 		// Syncing with meta-data
 		if ($sync)
 		{
-			$this->setMetaData('content-type', $type . '; charset=' . $this->_charset, true);
+			$this->setMetaData('content-type', $type . '; charset=' . $this->getCharset(), true);
 		}
 
 		return $this;
@@ -648,7 +602,7 @@ abstract class Base implements ContainerAwareInterface
 	 */
 	public function getMimeEncoding()
 	{
-		return $this->_mime;
+		return $this->mime;
 	}
 
 	/**
@@ -668,7 +622,7 @@ abstract class Base implements ContainerAwareInterface
 			$this->app->modifiedDate = $mdate;
 		}
 
-		$this->app->mimeType = $this->_mime;
-		$this->app->charSet  = $this->_charset;
+		$this->app->mimeType = $this->getMimeEncoding();
+		$this->app->charSet  = $this->getCharset();
 	}
 }

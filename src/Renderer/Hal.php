@@ -69,10 +69,10 @@ class Hal extends Base
 		}
 
 		// Set default mime type.
-		$this->_mime = 'application/hal+' . $this->documentFormat;
+		$this->setMimeEncoding('application/hal+' . $this->documentFormat, false);
 
 		// Set document type.
-		$this->_type = 'hal+' . $this->documentFormat;
+		$this->setType('hal+' . $this->documentFormat);
 
 		// Set absolute/relative hrefs.
 		$this->absoluteHrefs = isset($options['absoluteHrefs']) ? $options['absoluteHrefs'] : false;
@@ -104,7 +104,7 @@ class Hal extends Base
 		$this->app->setHeader('Expires', '0', true);
 		$this->app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
 		$this->app->setHeader('Cache-Control', 'private', false);
-		$this->app->setHeader('Content-type', $this->_mime . '; charset=' . $this->_charset, true);
+		$this->app->setHeader('Content-type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
 		$this->app->setHeader('Webservice name', $this->hal->webserviceName, true);
 		$this->app->setHeader('Webservice version', $this->hal->webserviceVersion, true);
 

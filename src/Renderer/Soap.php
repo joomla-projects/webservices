@@ -72,10 +72,10 @@ class Soap extends Base
 		}
 
 		// Set default mime type.
-		$this->_mime = 'application/' . $mimeType;
+		$this->setMimeEncoding('application/' . $mimeType, false);
 
 		// Set document type.
-		$this->_type = 'xml';
+		$this->setType('xml');
 
 		// Set absolute/relative hrefs.
 		$this->absoluteHrefs = isset($options['absoluteHrefs']) ? $options['absoluteHrefs'] : true;
@@ -107,7 +107,7 @@ class Soap extends Base
 		$this->app->setHeader('Expires', '0', true);
 		$this->app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
 		$this->app->setHeader('Cache-Control', 'private', false);
-		$this->app->setHeader('Content-type', $this->_mime . '; charset=' . $this->_charset, true);
+		$this->app->setHeader('Content-type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
 
 		$this->app->sendHeaders();
 
