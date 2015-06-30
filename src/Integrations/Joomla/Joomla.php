@@ -85,9 +85,10 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		);
 
 		$applicationConfig = new Registry($data);
+		$client = $webservice->options->get('webserviceClient', 'site');
 
 		// Get the CMS base data and load the application
-		if ($webservice->options->get('webserviceClient', 'site') == 'administrator')
+		if ($client == 'administrator')
 		{
 			define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
 			require_once JPATH_BASE . '/includes/defines.php';
@@ -110,13 +111,24 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		$joomlaLang = \JLanguage::getInstance($lang->getLanguage(), $lang->getDebug());
 		$app->loadLanguage($joomlaLang);
 
-		/**
-		 * Set the application, session and language objects into JFactory.
-		 * Note that we are actually injecting our own framework session object - but it seems to work fine.
-		 */
+		// Set the application and language objects into JFactory.
 		\JFactory::$application = $app;
 		\JFactory::$language = $joomlaLang;
+
+		/**
+		 * Set the session object into JFactory now. Note that we are injecting
+		 * our framework session used here and not a JSession object.
+		 */
 		\JFactory::$session = $container->get("session");
+
+		/**
+		 * Set the application instance into the instances property of JApplicationCms for when some
+		 * classes call JApplicationCms::getInstance() rather than JFactory::getApplication()
+		 */
+		$reflection = new \ReflectionClass($app);
+		$property = $reflection->getProperty('instances');
+		$property->setAccessible(true);
+		$property->setValue($app, array($client => $app));
 	}
 
 	/**
