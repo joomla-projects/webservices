@@ -26,22 +26,20 @@ use Joomla\Webservices\Uri\Uri;
 class Hal extends Base
 {
 	/**
-	 * Document name
-	 *
-	 * @var    string
-	 * @since  1.2
-	 */
-	protected $name = 'joomla';
-
-	/**
 	 * Render all hrefs as absolute, relative is default
+	 *
+	 * @var    boolean
+	 * @since  __DELPOY_VERSION__
 	 */
 	protected $absoluteHrefs = false;
 
 	/**
 	 * Document format (xml or json)
+	 *
+	 * @var    string
+	 * @since  __DEPLOY__VERSION__
 	 */
-	protected $documentFormat = false;
+	protected $documentFormat;
 
 	/**
 	 * @var    Api  Main HAL object
@@ -63,6 +61,7 @@ class Hal extends Base
 
 		$this->documentFormat = $options['documentFormat'];
 
+		// Sanity check - fall back to XML format
 		if (!in_array($this->documentFormat, array('xml', 'json')))
 		{
 			$this->documentFormat = 'json';
@@ -129,18 +128,6 @@ class Hal extends Base
 		{
 			return (string) $hal;
 		}
-	}
-
-	/**
-	 * Returns the document name
-	 *
-	 * @return  string
-	 *
-	 * @since  1.2
-	 */
-	public function getName()
-	{
-		return $this->name;
 	}
 
 	/**
@@ -250,21 +237,5 @@ class Hal extends Base
 		}
 
 		return $uri->toString();
-	}
-
-	/**
-	 * Sets the document name
-	 *
-	 * @param   string  $name  Document name
-	 *
-	 * @return  $this
-	 *
-	 * @since   1.2
-	 */
-	public function setName($name = 'joomla')
-	{
-		$this->name = $name;
-
-		return $this;
 	}
 }

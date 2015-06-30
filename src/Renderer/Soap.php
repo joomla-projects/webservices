@@ -31,22 +31,24 @@ class Soap extends Base
 
 	/**
 	 * Render all hrefs as absolute, relative is default
+	 *
+	 * @var    boolean
+	 * @since  __DELPOY_VERSION__
 	 */
 	protected $absoluteHrefs = false;
 
 	/**
 	 * Document format (xml or json)
+	 *
+	 * @var    string
+	 * @since  __DEPLOY__VERSION__
 	 */
-	protected $documentFormat = false;
+	protected $documentFormat;
 
 	/**
-	 * @var    string  Content
-	 * @since  1.4
-	 */
-	public $outputContent = null;
-
-	/**
-	 * @var    Api  Soap object
+	 * Soap object
+	 *
+	 * @var    Api
 	 * @since  1.4
 	 */
 	public $soap = null;
@@ -66,6 +68,7 @@ class Soap extends Base
 
 		$this->documentFormat = $options['documentFormat'];
 
+		// Sanity check - fall back to XML format
 		if (!in_array($this->documentFormat, array('xml', 'json')))
 		{
 			$this->documentFormat = 'xml';
@@ -118,18 +121,6 @@ class Soap extends Base
 	}
 
 	/**
-	 * Returns the document name
-	 *
-	 * @return  string
-	 *
-	 * @since  1.4
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	/**
 	 * Sets Soap object to the document
 	 *
 	 * @param   Api  $soap  Soap object
@@ -141,22 +132,6 @@ class Soap extends Base
 	public function setApiObject(Api $soap)
 	{
 		$this->soap = $soap;
-
-		return $this;
-	}
-
-	/**
-	 * Sets the document name
-	 *
-	 * @param   string  $name  Document name
-	 *
-	 * @return  $this
-	 *
-	 * @since   1.4
-	 */
-	public function setName($name = 'joomla')
-	{
-		$this->name = $name;
 
 		return $this;
 	}
