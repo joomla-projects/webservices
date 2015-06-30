@@ -85,10 +85,9 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 	 */
 	public function __construct(Container $container, Registry $options)
 	{
-		// Main properties
-		$this->setApi($this->options->get('api', 'soap'));
-
 		parent::__construct($container, $options);
+
+		$this->setApi($this->options->get('api', 'soap'));
 
 		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
 
