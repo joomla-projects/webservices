@@ -27,7 +27,7 @@ class Operation
 	/**
 	 * Webservice object
 	 *
-	 * @var  Hal
+	 * @var  Webservice
 	 */
 	protected $webservice = null;
 
@@ -84,7 +84,7 @@ class Operation
 		$this->webservice->options->set('filterResourcesSpecific', 'listItem');
 		$this->webservice->execute();
 
-		$arr = $this->webservice->hal->toArray();
+		$arr = $this->webservice->resource->toArray();
 		$outputResources = SoapHelper::getOutputResources($this->webservice->configuration->operations->read->list, 'listItem', true);
 
 		if ($arr['_embedded'] && $arr['_embedded']['item'])
@@ -142,7 +142,7 @@ class Operation
 		$this->webservice->options->set('filterOutResourcesGroups', array('_links', '_messages'));
 		$this->webservice->execute();
 
-		$arr = $this->webservice->hal->toArray();
+		$arr = $this->webservice->resource->toArray();
 		$outputResources = SoapHelper::getOutputResources($this->webservice->configuration->operations->read->item, '', true);
 
 		$response = SoapHelper::selectListResources($outputResources, array($arr));
@@ -189,7 +189,7 @@ class Operation
 		$this->webservice->options->set('filterOutResourcesGroups', array('_links', '_messages'));
 		$this->webservice->execute();
 
-		$arr = $this->webservice->hal->toArray();
+		$arr = $this->webservice->resource->toArray();
 
 		if (!isset($arr['result']))
 		{
@@ -215,7 +215,7 @@ class Operation
 		$this->webservice->options->set('filterOutResourcesGroups', array('_links', '_messages'));
 		$this->webservice->execute();
 
-		$arr = $this->webservice->hal->toArray();
+		$arr = $this->webservice->resource->toArray();
 
 		if (!isset($arr['result']))
 		{
@@ -241,7 +241,7 @@ class Operation
 		$this->webservice->options->set('filterOutResourcesGroups', array('_links', '_messages'));
 		$this->webservice->execute();
 
-		$arr = $this->webservice->hal->toArray();
+		$arr = $this->webservice->resource->toArray();
 
 		if (!isset($arr['result']))
 		{
@@ -292,7 +292,7 @@ class Operation
 		$this->webservice->options->set('filterOutResourcesGroups', array('_links', '_messages'));
 		$this->webservice->execute();
 
-		$arr = $this->webservice->hal->toArray();
+		$arr = $this->webservice->resource->toArray();
 
 		if (!isset($arr['result']))
 		{

@@ -172,7 +172,7 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 
 		if (!empty($messages))
 		{
-			$this->webservice->hal->setData('_messages', $messages);
+			$this->webservice->resource->setData('_messages', $messages);
 		}
 
 		return $this;
@@ -373,7 +373,7 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 
 	/**
 	 * Calls method from method from this class,
-	 * Additionally it Triggers plugin call for specific function in a format JApiHalFunctionName
+	 * Additionally it Triggers plugin call for specific function in a format JApiSoapFunctionName
 	 *
 	 * @param   string  $functionName  Field type.
 	 *

@@ -74,7 +74,7 @@ class Webservice extends WebserviceBase
 	 * Main HAL resource object
 	 * @var  Resource
 	 */
-	public $hal = null;
+	public $resource = null;
 
 	/**
 	 * Resource container that will be outputted
@@ -153,7 +153,7 @@ class Webservice extends WebserviceBase
 		$this->setWebserviceName();
 		$this->client = $this->options->get('webserviceClient', 'site');
 		$this->webserviceVersion = $this->options->get('webserviceVersion', '');
-		$this->hal = new Resource('');
+		$this->resource = new Resource('');
 
 		if (!empty($this->webserviceName))
 		{
@@ -408,7 +408,7 @@ class Webservice extends WebserviceBase
 			}
 
 			// Set links from resources to the main document
-			$this->setDataValueToResource($this->hal, $this->resources, $this->data);
+			$this->setDataValueToResource($this->resource, $this->resources, $this->data);
 
 			$messages = $this->app->getMessageQueue();
 
@@ -442,7 +442,7 @@ class Webservice extends WebserviceBase
 				}
 			}
 
-			$this->hal->setData('_messages', $messages);
+			$this->resource->setData('_messages', $messages);
 		}
 
 		return $this;
@@ -466,11 +466,11 @@ class Webservice extends WebserviceBase
 		);
 
 		// Add basic hypermedia links.
-		$this->hal->setLink($documentationCurieAdmin, false, true);
-		$this->hal->setLink($documentationCurieSite, false, true);
+		$this->resource->setLink($documentationCurieAdmin, false, true);
+		$this->resource->setLink($documentationCurieSite, false, true);
 
 		$uri = Uri::getInstance();
-		$this->hal->setLink(new Link($uri->base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
+		$this->resource->setLink(new Link($uri->base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
 
 		$webservices = ConfigurationHelper::getInstalledWebservices($this->getContainer()->get('db'));
 
@@ -497,7 +497,7 @@ class Webservice extends WebserviceBase
 							}
 
 							// We will fetch only top level webservice
-							$this->hal->setLink(
+							$this->resource->setLink(
 								new Link(
 									$webserviceUrlPath . '&webserviceClient=' . $webserviceClient,
 									$documentation . ':' . $webservice['name'],
@@ -947,7 +947,7 @@ class Webservice extends WebserviceBase
 
 				$embedItem = new Resource('item', $item);
 				$embedItem = $this->setDataValueToResource($embedItem, $this->resources, $itemValue, 'listItem');
-				$this->hal->setEmbedded('item', $embedItem);
+				$this->resource->setEmbedded('item', $embedItem);
 			}
 		}
 	}
@@ -1152,11 +1152,11 @@ class Webservice extends WebserviceBase
 		{
 			foreach ($data as $k => $v)
 			{
-				$this->hal->$k = $v;
+				$this->resource->$k = $v;
 			}
 		}
 
-		return $this->hal;
+		return $this->resource;
 	}
 
 	/**

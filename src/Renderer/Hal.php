@@ -9,7 +9,7 @@
 
 namespace Joomla\Webservices\Renderer;
 
-use Joomla\Webservices\Webservices\Webservice as Api;
+use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Resource\Resource;
 
 use Joomla\DI\Container;
@@ -42,10 +42,12 @@ class Hal extends Base
 	protected $documentFormat;
 
 	/**
-	 * @var    Api  Main HAL object
+	 * Webservice object
+	 *
+	 * @var    Webservice
 	 * @since  1.2
 	 */
-	public $hal = null;
+	public $webservice = null;
 
 	/**
 	 * Class constructor
@@ -95,7 +97,7 @@ class Hal extends Base
 		parent::render($cache, $params);
 		$runtime = microtime(true) - $this->app->startTime;
 
-		$this->app->setHeader('Status', $this->hal->statusCode . ' ' . $this->hal->statusText, true);
+		$this->app->setHeader('Status', $this->webservice->statusCode . ' ' . $this->webservice->statusText, true);
 		$this->app->setHeader('Server', '', true);
 		$this->app->setHeader('X-Runtime', $runtime, true);
 		$this->app->setHeader('Access-Control-Allow-Origin', '*', true);
@@ -104,8 +106,8 @@ class Hal extends Base
 		$this->app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
 		$this->app->setHeader('Cache-Control', 'private', false);
 		$this->app->setHeader('Content-type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
-		$this->app->setHeader('Webservice name', $this->hal->webserviceName, true);
-		$this->app->setHeader('Webservice version', $this->hal->webserviceVersion, true);
+		$this->app->setHeader('Webservice name', $this->webservice->webserviceName, true);
+		$this->app->setHeader('Webservice version', $this->webservice->webserviceVersion, true);
 
 		$this->app->sendHeaders();
 
@@ -133,15 +135,15 @@ class Hal extends Base
 	/**
 	 * Sets HAL object to the document
 	 *
-	 * @param   Api  $hal  Hal object
+	 * @param   Webservice  $webservice  Webservice object
 	 *
 	 * @return  $this
 	 *
 	 * @since  1.2
 	 */
-	public function setHal(Api $hal)
+	public function setHal(Webservice $webservice)
 	{
-		$this->hal = $hal;
+		$this->webservice = $webservice;
 
 		return $this;
 	}
@@ -149,14 +151,14 @@ class Hal extends Base
 	/**
 	 * Method to convert relative to absolute links.
 	 *
-	 * @param   Resource  $hal            Hal object which contains links (_links).
+	 * @param   Resource  $resource       Resource object which contains links (_links).
 	 * @param   boolean   $absoluteHrefs  Should we replace link Href with absolute.
 	 *
 	 * @return  void
 	 */
-	protected function relToAbs(Resource $hal, $absoluteHrefs)
+	protected function relToAbs(Resource $resource, $absoluteHrefs)
 	{
-		if ($links = $hal->getLinks())
+		if ($links = $resource->getLinks())
 		{
 			// Adjust hrefs in the _links object.
 			foreach ($links as $link)
@@ -169,7 +171,7 @@ class Hal extends Base
 						$href = $arrayLink->getHref();
 						$href = $this->addUriParameters($href, $absoluteHrefs);
 						$arrayLink->setHref($href);
-						$hal->setReplacedLink($arrayLink, $group);
+						$resource->setReplacedLink($arrayLink, $group);
 					}
 				}
 				else
@@ -178,13 +180,13 @@ class Hal extends Base
 					$href = $link->getHref();
 					$href = $this->addUriParameters($href, $absoluteHrefs);
 					$link->setHref($href);
-					$hal->setReplacedLink($link);
+					$resource->setReplacedLink($link);
 				}
 			}
 		}
 
 		// Adjust hrefs in the _embedded object (if there is one).
-		if ($embedded = $hal->getEmbedded())
+		if ($embedded = $resource->getEmbedded())
 		{
 			foreach ($embedded as $resources)
 			{
