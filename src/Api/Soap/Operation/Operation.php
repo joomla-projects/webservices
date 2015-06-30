@@ -336,11 +336,13 @@ class Operation
 	 * @param   string  $language  Language name
 	 *
 	 * @return  void
+	 * @todo    Move into the integration handler
 	 */
 	protected function setLanguage($language)
 	{
-		$languageObject = JFactory::getLanguage();
-		$languages = JLanguageHelper::getLanguages('sef');
+		$this->webservice->getIntegrationObject();
+		$languageObject = \JFactory::getLanguage();
+		$languages = \JLanguageHelper::getLanguages('sef');
 
 		if (!empty($language) && isset($languages[$language]))
 		{
@@ -348,7 +350,7 @@ class Operation
 		}
 		else
 		{
-			$languageObject->setLanguage($languages[JComponentHelper::getParams('com_languages')->get('site')]->lang_code);
+			$languageObject->setLanguage($languages[\JComponentHelper::getParams('com_languages')->get('site')]->lang_code);
 		}
 	}
 }
