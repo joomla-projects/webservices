@@ -1,10 +1,10 @@
 <?php
 /**
- * @package     Joomla.Platform
- * @subpackage  Document
+ * Base response class for Joomla Webservices. Based on \JDocument in the CMS
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @package    Webservices
+ * @copyright  Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Joomla\Webservices\Renderer;
@@ -18,7 +18,7 @@ use Joomla\DI\ContainerAwareInterface;
 /**
  * Document class, provides an easy interface to parse and display a document
  *
- * @since  11.1
+ * @since  __DELPOY_VERSION__
  */
 abstract class Base implements ContainerAwareInterface
 {
