@@ -150,6 +150,8 @@ class RoboFile extends \Robo\Tasks
 			$this->getSelenium();
 		}
 
+		$this->_copyDir(__DIR__.'/.dist', __DIR__.'/tests/joomla-cms3/package');
+
 		$this->getComposer();
 
 		$this->taskComposerInstall()->run();
