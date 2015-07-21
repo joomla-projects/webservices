@@ -40,37 +40,6 @@ class RoboFile extends \Robo\Tasks
 	}
 
 	/**
-	 * Sends Codeception errors to Slack
-	 *
-	 * @param   string  $slackChannel             The Slack Channel ID
-	 * @param   string  $slackToken               Your Slack authentication token.
-	 * @param   string  $codeceptionOutputFolder  Optional. By default tests/_output
-	 *
-	 * @return mixed
-	 */
-	public function sendCodeceptionOutputToSlack($slackChannel, $slackToken = null, $codeceptionOutputFolder = null)
-	{
-		if (is_null($slackToken))
-		{
-			$this->say('we are in Travis environment, getting token from ENV');
-
-			// Remind to set the token in repo Travis settings,
-			// see: http://docs.travis-ci.com/user/environment-variables/#Using-Settings
-			$slackToken = getenv('SLACK_ENCRYPTED_TOKEN');
-		}
-
-		$result = $this
-			->taskSendCodeceptionOutputToSlack(
-				$slackChannel,
-				$slackToken,
-				$codeceptionOutputFolder
-			)
-			->run();
-
-		return $result;
-	}
-
-	/**
 	 * Downloads and prepares a Joomla CMS site for testing
 	 *
 	 * @return mixed
@@ -230,19 +199,6 @@ class RoboFile extends \Robo\Tasks
 	}
 
 	/**
-	 * This function ensures that you have the latest version of RoboFile in your project.
-	 * All redCOMPONENT RoboFiles are clones. All special needs for a project are stored in a robofile.yml file
-	 *
-	 * @return void
-	 */
-	public function checkRoboFileVersion()
-	{
-		$this->taskCheckRoboFileVersion($this->version)
-		     ->run()
-		     ->stopOnFail();
-	}
-
-	/**
 	 * Downloads Selenium Standalone Server
 	 *
 	 * @return void
@@ -300,32 +256,5 @@ class RoboFile extends \Robo\Tasks
 
 		// Running Selenium server
 		$this->_exec("java -jar $path >> selenium.log 2>&1 &");
-	}
-
-	public function sendScreenshotFromTravisToGithub($cloudName, $apiKey, $apiSecret, $GithubToken)
-	{
-		$this->say('Uploading screenshots...');
-
-		Cloudinary::config(
-			array (
-				'cloud_name' => $cloudName,
-				'api_key'    => $apiKey,
-				'api_secret' => $apiSecret
-			)
-		);
-
-		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/tests/_output/01-InstallJoomlaCept.fail.png'));
-		$this->say('Image sent');
-		$this->say('Creating Github issue');
-		$client = new \Github\Client();
-		$client->authenticate($GithubToken, \Github\Client::AUTH_HTTP_TOKEN);
-		$client
-			->api('issue')
-			->comments()->create('redCOMPONENT-COM', 'redCORE', 551,
-		                         array (
-			                         'title' => 'Test error',
-			                         'body' => '![Screenshot](' . $result['secure_url'] . ')'
-		                         )
-			);
 	}
 }
