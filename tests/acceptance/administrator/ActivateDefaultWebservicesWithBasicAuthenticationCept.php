@@ -17,6 +17,7 @@ $I->waitForText('Plugin Manager: Plugins',30,['css' => 'H1']);
 $I->enablePlugin('Webservices - System plugin');
 $I->searchForItem('Webservices - System plugin');
 $I->click(['link' => 'Webservices - System plugin']);
+$I->waitForText('Plugin Manager: Webservices - System plugin',30,['css' => 'H1']);
 $I->selectOptionInChosen('Enable webservices', 'Yes');
 $I->selectOptionInChosen('Check user permission against','Joomla - Use already defined authorization checks in Joomla');
 $I->click(['xpath' => "//div[@id='toolbar-apply']/button"]);
