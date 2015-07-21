@@ -36,7 +36,6 @@ modules:
             sample data: 'Default English (GB) Sample Data'    # Default Sample Data
             admin email: 'admin@mydomain.com'      # email Id of the Admin
             language: 'English (United Kingdom)'   # Language in which you want the Application to be Installed
-        AcceptanceHelper:
-            repo_folder: '/home/travis/build/joomla-projects/webservices/' # Path to the Extension to be installed via Install from folder
-            package_url: '/home/travis/build/joomla-projects/webservices/.dist/webservices-v1.0.0.zip' # Path to the Extension to be installed via Install from folder
+        \Helper\Acceptance:
+            package_url: http://localhost/.dist/webservices-v1.0.0.zip
 error_level: "E_ALL & ~E_STRICT & ~E_DEPRECATED"
