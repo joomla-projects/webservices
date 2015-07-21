@@ -171,7 +171,7 @@ $userId		= $user->get('id');
 				<a href="#mainComponentWebservices" data-toggle="tab"><?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_INSTALLED_WEBSERVICES'); ?></a>
 			</li>
 			<li role="presentation">
-				<a href="#mainComponentWebservicesXmls" data-toggle="tab">
+				<a href="#mainComponentWebservicesXmls" data-toggle="tab" class="lc-not_installed_webservices">
 					<?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_AVAILABLE_WEBSERVICES'); ?> <span class="badge"><?php echo $this->xmlFilesAvailable; ?></span>
 				</a>
 			</li>
@@ -269,7 +269,7 @@ $userId		= $user->get('id');
 									<td style="word-wrap:break-word;">
 										<?php $folder = !empty($item->path) ? '/' . $item->path : ''; ?>
 										<?php echo JApiHalHelper::getWebservicesRelativePath(); ?>
-										<strong><?php echo $folder . '/' . $item->xmlFile; ?></strong>
+										<strong><?php echo $folder . '/<span class="lc-webservice-file">' . $item->xmlFile; ?></span></strong>
 										<?php if (!JFile::exists(JApiHalHelper::getWebservicesPath() . $folder . '/' . $item->xmlFile)) : ?>
 											<span class="label label-danger"><?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_XML_MISSING'); ?></span>
 										<?php elseif ($item->xmlHashed != md5($item->xml)) : ?>
@@ -328,7 +328,7 @@ $userId		= $user->get('id');
 								</div>
 								<div class="controls">
 									<button
-										class="btn btn-success"
+										class="btn btn-success lc-install_all_webservices"
 										type="button"
 										onclick="setWebservice('', 'all', '', '', 'webservices.installWebservice')">
 										<i class="icon-cogs"></i>
