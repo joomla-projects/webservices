@@ -13,7 +13,7 @@ $I->wantToTest('Activate the default webservices');
 $I->doAdministratorLogin();
 $I->comment('I enable basic authentication');
 $I->amOnPage('administrator/index.php?option=com_plugins');
-$I->waitForText('Plugins: Plugins',30,['css' => 'H1']);
+$I->waitForText('Plugins',30,['css' => 'H1']);
 $I->enablePlugin('Webservices - System plugin');
 $I->searchForItem('Webservices - System plugin');
 $I->click(['link' => 'Webservices - System plugin']);
