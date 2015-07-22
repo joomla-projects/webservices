@@ -12,7 +12,7 @@ $I = new AcceptanceTester($scenario);
 $I->wantTo('Uninstall Webservices Extension');
 $I->doAdministratorLogin();
 $I->amOnPage('/administrator/index.php?option=com_installer&view=manage');
-$I->waitForText('Extension Manager: Manage',30, ['css' => 'H1']);
+$I->waitForText('Extensions: Manage',30, ['css' => 'H1']);
 $I->searchForItem('Webservices package');
 $I->waitForElement(['id' => 'manageList']);
 $I->checkAllResults();
