@@ -575,7 +575,6 @@ class Webservice extends WebserviceBase
 		$isReadItem = $this->apiFillPrimaryKeys($primaryKeys);
 
 		$displayTarget = $isReadItem ? 'item' : 'list';
-		$this->apiDynamicModelClassName = '\\Joomla\\Webservices\\Api\\Hal\\Model\\' . ucfirst($displayTarget);
 		$currentConfiguration = $this->operationConfiguration->{$displayTarget};
 		$model = $this->triggerFunction('loadModel', $this->elementName, $currentConfiguration);
 		$this->assignFiltersList($model);
@@ -723,7 +722,6 @@ class Webservice extends WebserviceBase
 		$this->loadResourceFromConfiguration($this->operationConfiguration);
 
 		// Delete function requires references and not values like we use in call_user_func_array so we use List delete function
-		$this->apiDynamicModelClassName = '\\Joomla\\Webservices\\Api\\Hal\\Model\\List';
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'delete');
 		$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $this->operationConfiguration);

@@ -18,7 +18,7 @@ use Joomla\Webservices\Integrations\Joomla\Table\Table;
  * @subpackage  Base
  * @since       1.3
  */
-class JList extends \JModelList
+class Jlist extends \JModelList
 {
 	/**
 	 * Name of the filter form to load

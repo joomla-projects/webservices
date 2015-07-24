@@ -54,15 +54,6 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 	public $apiDynamicModelClass = null;
 
 	/**
-	 * Dynamic model name used if dataMode="table"
-	 *
-	 * @var    string
-	 * @since  __DEPLOY_VERSION__
-	 */
-	public $apiDynamicModelClassName = '\\Joomla\\Webservices\\Integrations\\Joomla\\Model\\Item';
-
-
-	/**
 	 * Public constructor
 	 *
 	 * @param   Container   $container   The DIC object
@@ -254,9 +245,23 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 			'fields' => $fields,
 		);
 
-		$apiDynamicModelClassName = $this->apiDynamicModelClassName;
+		$baseJoomlaModelClass = '\\Joomla\\Webservices\\Integrations\\Joomla\\Model\\';
+		$apiDynamicModelClassName = '';
 
-		if (class_exists($apiDynamicModelClassName))
+		if ($this->webservice->operation == 'read')
+		{
+			$primaryKeys = array();
+			$isReadItem = $this->webservice->apiFillPrimaryKeys($primaryKeys);
+
+			$displayTarget = $isReadItem ? 'item' : 'jlist';
+			$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst($displayTarget);
+		}
+		elseif ($this->webservice->operation == 'delete')
+		{
+			$apiDynamicModelClassName = $baseJoomlaModelClass . 'List';
+		}
+
+		if (!empty($apiDynamicModelClassName) && class_exists($apiDynamicModelClassName))
 		{
 			$this->apiDynamicModelClass = new $apiDynamicModelClassName($config);
 		}
