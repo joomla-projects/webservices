@@ -68,7 +68,7 @@ class JApiHalDocumentDocument extends JDocument
 		$this->_type = 'hal+' . $this->documentFormat;
 
 		// Set absolute/relative hrefs.
-		$this->absoluteHrefs = isset($options['absoluteHrefs']) ? $options['absoluteHrefs'] : true;
+		$this->absoluteHrefs = isset($options['absoluteHrefs']) ? $options['absoluteHrefs'] : false;
 
 		// Set token if needed
 		$this->uriParams = isset($options['uriParams']) ? $options['uriParams'] : array();
