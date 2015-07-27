@@ -1,0 +1,16 @@
+{
+    "name"       : "joomla-projects/webservices",
+    "description": "The Open Source app that provides a webservices layer for Joomla and its extensions",
+    "license"    : "GPL-2.0+",
+    "require"    : {
+        "php": ">=5.5"
+    },
+    "require-dev": {
+        "codeception/codeception": "~2.1",
+        "joomla-projects/joomla-browser": "dev-develop",
+        "codegyre/robo": "dev-master",
+        "flow/jsonpath": "dev-master",
+        "phing/phing": "~2",
+        "joomla-projects/robo": "dev-master"
+    }
+}
