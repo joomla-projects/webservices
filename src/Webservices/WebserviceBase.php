@@ -85,7 +85,7 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 	 * The text translation object
 	 *
 	 * @var    Text
-	 * @since  __DELPOY_VERSION__
+	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $text = null;
 

@@ -12,7 +12,7 @@ namespace Joomla\Webservices\Webservices;
 /**
  * Configuration for webservices
  *
- * @since  __DELPOY_VERSION__
+ * @since  __DEPLOY_VERSION__
  */
 class WebserviceHelper
 {
@@ -23,7 +23,7 @@ class WebserviceHelper
 	 *
 	 * @return  string
 	 *
-	 * @since   __DELPOY_VERSION__
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public static function getWebservicesPath()
 	{
@@ -35,7 +35,7 @@ class WebserviceHelper
 	 *
 	 * @return  string
 	 *
-	 * @since   __DELPOY_VERSION__
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public static function getWebservicesRelativePath()
 	{

@@ -225,6 +225,7 @@ class Hal extends Base
 		if ($absoluteHrefs && substr($href, 0, 1) == '/')
 		{
 			$href = rtrim($uri->base(), '/') . $href;
+			$uri = Uri::getInstance($href);
 		}
 
 		if (!empty($this->uriParams))

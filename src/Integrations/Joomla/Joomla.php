@@ -349,7 +349,7 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 	 *
 	 * @return  mixed It will return Api helper class or false if it does not exists
 	 *
-	 * @since   __DELPOY_VERSION__
+	 * @since   __DEPLOY_VERSION__
 	 */
 	private function getHelperObject()
 	{

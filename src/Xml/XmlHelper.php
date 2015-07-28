@@ -12,7 +12,7 @@ namespace Joomla\Webservices\Xml;
 /**
  * Simple XML Helper class
  *
- * @since       __DELPOY_VERSION__
+ * @since  __DEPLOY_VERSION__
  */
 class XmlHelper
 {
@@ -25,7 +25,7 @@ class XmlHelper
 	 *
 	 * @return  boolean
 	 *
-	 * @since   __DELPOY_VERSION__
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public static function attributeToString($element, $key, $default = '')
 	{
@@ -48,7 +48,7 @@ class XmlHelper
 	 *
 	 * @return  boolean
 	 *
-	 * @since   __DELPOY_VERSION__
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public static function isAttributeTrue($element, $key, $default = false)
 	{
@@ -68,7 +68,7 @@ class XmlHelper
 	 *
 	 * @return  array
 	 *
-	 * @since   __DELPOY_VERSION__
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public static function getXMLElementAttributes($xmlElement, $onlyAttributes = true)
 	{
