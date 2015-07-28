@@ -50,16 +50,16 @@
         },
         {
             "name": "joomla/application",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/application.git",
-                "reference": "185b68fe55537281385b637a90e11856ea01c8da"
+                "reference": "5825e9fd60681aa77644be85f7eefc8ea3e98285"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/application/zipball/185b68fe55537281385b637a90e11856ea01c8da",
-                "reference": "185b68fe55537281385b637a90e11856ea01c8da",
+                "url": "https://api.github.com/repos/joomla-framework/application/zipball/5825e9fd60681aa77644be85f7eefc8ea3e98285",
+                "reference": "5825e9fd60681aa77644be85f7eefc8ea3e98285",
                 "shasum": ""
             },
             "require": {
@@ -102,7 +102,7 @@
                 "framework",
                 "joomla"
             ],
-            "time": "2015-03-06 17:37:01"
+            "time": "2015-07-17 22:26:06"
         },
         {
             "name": "joomla/authentication",
@@ -345,12 +345,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/event.git",
-                "reference": "808997f3f8143e7bf41e0fb97cbe3bfd77745670"
+                "reference": "97cd86ef67bb04756137ebfad9e3acdbfad9060d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/event/zipball/808997f3f8143e7bf41e0fb97cbe3bfd77745670",
-                "reference": "808997f3f8143e7bf41e0fb97cbe3bfd77745670",
+                "url": "https://api.github.com/repos/joomla-framework/event/zipball/97cd86ef67bb04756137ebfad9e3acdbfad9060d",
+                "reference": "97cd86ef67bb04756137ebfad9e3acdbfad9060d",
                 "shasum": ""
             },
             "require": {
@@ -383,7 +383,7 @@
                 "framework",
                 "joomla"
             ],
-            "time": "2015-03-19 03:11:18"
+            "time": "2015-07-11 16:07:00"
         },
         {
             "name": "joomla/filesystem",
@@ -424,30 +424,29 @@
         },
         {
             "name": "joomla/filter",
-            "version": "1.1.5",
+            "version": "1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/filter.git",
-                "reference": "ed6d695a81e71508782ab8d711498c684465b041"
+                "reference": "b3114bb10b6f58019f4f038cdb7d6da8b94eb584"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/filter/zipball/ed6d695a81e71508782ab8d711498c684465b041",
-                "reference": "ed6d695a81e71508782ab8d711498c684465b041",
+                "url": "https://api.github.com/repos/joomla-framework/filter/zipball/b3114bb10b6f58019f4f038cdb7d6da8b94eb584",
+                "reference": "b3114bb10b6f58019f4f038cdb7d6da8b94eb584",
                 "shasum": ""
             },
             "require": {
+                "joomla/string": "~1.3",
                 "php": ">=5.3.10"
             },
             "require-dev": {
                 "joomla/language": "~1.0",
-                "joomla/string": "~1.0",
                 "phpunit/phpunit": "4.*",
                 "squizlabs/php_codesniffer": "1.*"
             },
             "suggest": {
-                "joomla/language": "Required only if you want to use `OutputFilter::stringURLSafe`.",
-                "joomla/string": "Required only if you want to use `OutputFilter::stringURLSafe` and `OutputFilter::stringURLUnicodeSlug`."
+                "joomla/language": "Required only if you want to use `OutputFilter::stringURLSafe`."
             },
             "type": "joomla-package",
             "extra": {
@@ -472,7 +471,7 @@
                 "framework",
                 "joomla"
             ],
-            "time": "2014-12-12 21:46:44"
+            "time": "2015-07-23 13:26:12"
         },
         {
             "name": "joomla/input",
@@ -680,16 +679,16 @@
         },
         {
             "name": "joomla/string",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/string.git",
-                "reference": "0df8ead8c726a1f648e624d3bcbef8cf05c1d0da"
+                "reference": "1a61294f887a95ec3eb2e4dac12ba18ab6b2bf5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/string/zipball/0df8ead8c726a1f648e624d3bcbef8cf05c1d0da",
-                "reference": "0df8ead8c726a1f648e624d3bcbef8cf05c1d0da",
+                "url": "https://api.github.com/repos/joomla-framework/string/zipball/1a61294f887a95ec3eb2e4dac12ba18ab6b2bf5a",
+                "reference": "1a61294f887a95ec3eb2e4dac12ba18ab6b2bf5a",
                 "shasum": ""
             },
             "require": {
@@ -723,7 +722,7 @@
                 "joomla",
                 "string"
             ],
-            "time": "2015-03-26 01:02:20"
+            "time": "2015-05-03 16:08:20"
         },
         {
             "name": "joomla/uri",
