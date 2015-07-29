@@ -5,10 +5,24 @@
 *~.nib
 *~
 
+# IDE & System Related Files #
+.buildpath
+.project
+.settings
+.DS_Store
+.idea
+
+#CMS
+staging.joomla.org/
+
+
 # Phing
 build.properties
 phing-latest.phar
 .dist
+
+#composer
+vendor/
 
 # Never ignore
 !.gitignore
