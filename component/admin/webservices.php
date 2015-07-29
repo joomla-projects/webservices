@@ -8,8 +8,6 @@
 
 defined('_JEXEC') or die;
 
-JBootstrap::bootstrap();
-
 JLoader::registerPrefix('Webservices', dirname(__FILE__));
 
 $app = JFactory::getApplication();

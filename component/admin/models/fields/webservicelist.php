@@ -68,7 +68,28 @@ class JFormFieldWebservicelist extends JFormFieldList
 	{
 		if (empty($this->cache))
 		{
-			$db = JFactory::getDbo();
+			// We should have already loaded composer in one of the models - but play safe in case
+			if (!defined('JPATH_API'))
+			{
+				$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
+				$composerPath    = $applicationPath . '/vendor/autoload.php';
+
+				define('JPATH_API', $applicationPath);
+				require_once($composerPath);
+			}
+
+			try
+			{
+				$container = (new Joomla\DI\Container)
+					->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider)
+					->registerServiceProvider(new Joomla\Webservices\Service\DatabaseProvider);
+			}
+			catch (\Exception $e)
+			{
+				throw new RuntimeException('Help!', 500);
+			}
+
+			$db = $container->get('db');
 
 			$query = $db->getQuery(true)
 				->select('CONCAT_WS(" ", ' . $db->qn('client') . ', ' . $db->qn('name') . ', ' . $db->qn('version') . ') as displayName')

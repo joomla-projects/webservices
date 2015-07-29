@@ -206,22 +206,20 @@ class SoapHelper
 	 * @param   string  $client          Client
 	 * @param   string  $webserviceName  Name of the webservice
 	 * @param   string  $version         Suffixes to the file name (ex. 1.0.0)
-	 * @param   string  $extension       Extension of the file to search
 	 * @param   string  $path            Path to webservice files
 	 *
 	 * @return  string  The full path to the api file
 	 *
 	 * @since   1.4
 	 */
-	public static function getWebserviceFilePath($client, $webserviceName, $version = '', $extension = 'xml', $path = '')
+	public static function getWsdlFilePath($client, $webserviceName, $version = '', $path = '')
 	{
 		if (!empty($webserviceName))
 		{
 			$version = !empty($version) ? Path::clean($version) : '1.0.0';
 			$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesRelativePath() . '/' . $path : WebserviceHelper::getWebservicesRelativePath();
 
-			$rawPath = $webserviceName . '.' . $version;
-			$rawPath = !empty($extension) ? $rawPath . '.' . $extension : $rawPath;
+			$rawPath = $webserviceName . '.' . $version . '.wsdl';
 			$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
 
 			return $webservicePath . '/' . $rawPath;

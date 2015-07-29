@@ -60,6 +60,12 @@ class WebservicesModelWebservices extends JModelList
 	 */
 	public function __construct($config = array())
 	{
+		$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
+		$composerPath = $applicationPath . '/vendor/autoload.php';
+
+		define ('JPATH_API', $applicationPath);
+		require_once($composerPath);
+
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
@@ -69,6 +75,19 @@ class WebservicesModelWebservices extends JModelList
 				'path', 'w.path',
 			);
 		}
+
+		try
+		{
+			$container = (new Joomla\DI\Container)
+				->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider)
+				->registerServiceProvider(new Joomla\Webservices\Service\DatabaseProvider);
+		}
+		catch (\Exception $e)
+		{
+			throw new RuntimeException('Help!', 500);
+		}
+
+		$config['dbo'] = $container->get('db');
 
 		parent::__construct($config);
 	}
@@ -80,7 +99,7 @@ class WebservicesModelWebservices extends JModelList
 	 */
 	protected function setXmlFiles()
 	{
-		$xmlFiles = JApiHalHelper::getWebservices($client = '', $webserviceName = '', $version = '', $path = '', $showNotifications = true);
+		$xmlFiles = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebservices();
 
 		if (!empty($xmlFiles))
 		{
@@ -231,13 +250,13 @@ class WebservicesModelWebservices extends JModelList
 	 */
 	public function installWebservice($client = '', $webservice = '', $version = '1.0.0', $path = '', $id = 0)
 	{
-		$webserviceXml = JApiHalHelper::getWebservices($client, $webservice, $version, $path, true);
+		$webserviceXml = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebservice($client, $webservice, $version);
 
 		if (!empty($webserviceXml))
 		{
 			$operations = array();
 			$scopes = array();
-			$client = JApiHalHelper::getWebserviceClient($webserviceXml);
+			$client = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceClient($webserviceXml);
 			$version = !empty($webserviceXml->config->version) ? (string) $webserviceXml->config->version : $version;
 
 			if (!empty($webserviceXml->operations))
@@ -270,7 +289,7 @@ class WebservicesModelWebservices extends JModelList
 				}
 			}
 
-			JApiHalHelper::$installedWebservices[$client][$webservice][$version] = array(
+			\Joomla\Webservices\Webservices\ConfigurationHelper::$installedWebservices[$client][$webservice][$version] = array(
 				'name'          => $webservice,
 				'version'       => $version,
 				'title'         => (string) $webserviceXml->name,
@@ -284,9 +303,9 @@ class WebservicesModelWebservices extends JModelList
 				'id'            => $id,
 			);
 
-			/** @var WebservicesTableWebservices $table */
-			$table = JTable::getInstance('Webservice', 'WebservicesTable', array());
-			$table->bind(JApiHalHelper::$installedWebservices[$client][$webservice][$version]);
+			/** @var WebservicesTableWebservice $table */
+			$table = JTable::getInstance('Webservice', 'WebservicesTable', array('dbo' => $this->getDbo()));
+			$table->bind(\Joomla\Webservices\Webservices\ConfigurationHelper::$installedWebservices[$client][$webservice][$version]);
 
 			// Check the data.
 			if (!$table->check())
@@ -324,8 +343,8 @@ class WebservicesModelWebservices extends JModelList
 	 */
 	public function deleteWebservice($client, $webservice = '', $version = '1.0.0', $path = '')
 	{
-		$xmlFilePath = JApiHalHelper::getWebserviceFile($client, strtolower($webservice), $version, 'xml', $path);
-		$helperFilePath = JApiHalHelper::getWebserviceFile($client, strtolower($webservice), $version, 'php', $path);
+		$xmlFilePath = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceConfig($client, strtolower($webservice), $version, $path);
+		$helperFilePath = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceHelper($client, strtolower($webservice), $version, $path);
 
 		try
 		{

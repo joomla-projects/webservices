@@ -16,7 +16,7 @@ JHtml::_('behavior.keepalive');
 
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
-$action = JRoute::_('index.php?option=com_webservices&view=webservices');
+$action     = JRoute::_('index.php?option=com_webservices&view=webservices');
 $user		= JFactory::getUser();
 $userId		= $user->get('id');
 ?>
@@ -240,7 +240,7 @@ $userId		= $user->get('id');
 											<button
 												class="btn btn-xs btn-primary"
 												type="button"
-												<?php if (JApiHalHelper::isAttributeTrue($item->xml->operations->documentation, 'authorizationNeeded', true)) : ?>
+												<?php if (\Joomla\Webservices\Xml\XmlHelper::isAttributeTrue($item->xml->operations->documentation, 'authorizationNeeded', true)) : ?>
 													disabled="disabled"
 												<?php endif; ?>
 												data-remote-format="doc"
@@ -252,7 +252,7 @@ $userId		= $user->get('id');
 											<button
 												class="btn btn-xs btn-primary"
 												type="button"
-												<?php if (JApiHalHelper::isAttributeTrue($item->xml->operations->read, 'authorizationNeeded', true)) : ?>
+												<?php if (\Joomla\Webservices\Xml\XmlHelper::isAttributeTrue($item->xml->operations->read, 'authorizationNeeded', true)) : ?>
 													disabled="disabled"
 												<?php endif; ?>
 												data-remote-format="json"
@@ -268,9 +268,9 @@ $userId		= $user->get('id');
 									</td>
 									<td style="word-wrap:break-word;">
 										<?php $folder = !empty($item->path) ? '/' . $item->path : ''; ?>
-										<?php echo JApiHalHelper::getWebservicesRelativePath(); ?>
+										<?php echo \Joomla\Webservices\Webservices\WebserviceHelper::getWebservicesRelativePath(); ?>
 										<strong><?php echo $folder . '/' . $item->xmlFile; ?></strong>
-										<?php if (!JFile::exists(JApiHalHelper::getWebservicesPath() . $folder . '/' . $item->xmlFile)) : ?>
+										<?php if (!JFile::exists(\Joomla\Webservices\Webservices\WebserviceHelper::getWebservicesPath() . $folder . '/' . $item->xmlFile)) : ?>
 											<span class="label label-danger"><?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_XML_MISSING'); ?></span>
 										<?php elseif ($item->xmlHashed != md5($item->xml)) : ?>
 											<span class="label label-warning"><?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_XML_CHANGED'); ?></span>
@@ -361,7 +361,7 @@ $userId		= $user->get('id');
 							<h3><?php echo JText::_('J' . $clients); ?></h3>
 							<?php foreach ($webserviceNames as $webserviceVersions):
 								foreach ($webserviceVersions as $webservice):
-									$webserviceClient = JApiHalHelper::getWebserviceClient($webservice);
+									$webserviceClient = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceClient($webservice);
 									?>
 									<div class="col-md-4 well">
 										<h4>

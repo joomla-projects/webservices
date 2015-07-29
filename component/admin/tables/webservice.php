@@ -9,73 +9,36 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Database\DatabaseDriver;
+
 /**
  * Webservice table.
  *
  * @package     Redcore.Backend
  * @subpackage  Tables
  * @since       1.4
+ *
+ * @property  int     $id
+ * @property  string  $name
+ * @property  string  $version
+ * @property  string  $title
+ * @property  string  $path
+ * @property  string  $xmlFile
+ * @property  string  $operations
+ * @property  string  $scopes
+ * @property  int     $client
+ * @property  int     $state
  */
 class WebservicesTableWebservice extends JTable
 {
 	/**
-	 * @var  int
-	 */
-	public $id;
-
-	/**
-	 * @var  string
-	 */
-	public $name;
-
-	/**
-	 * @var  string
-	 */
-	public $version;
-
-	/**
-	 * @var  string
-	 */
-	public $title;
-
-	/**
-	 * @var  string
-	 */
-	public $path;
-
-	/**
-	 * @var string
-	 */
-	public $xmlFile;
-
-	/**
-	 * @var string
-	 */
-	public $operations;
-
-	/**
-	 * @var string
-	 */
-	public $scopes;
-
-	/**
-	 * @var int
-	 */
-	public $client;
-
-	/**
-	 * @var int
-	 */
-	public $state;
-
-	/**
 	 * Constructor
 	 *
-	 * @param   JDatabaseDriver  $db  Database driver object.
+	 * @param   DatabaseDriver  $db  Database driver object.
 	 *
 	 * @throws  UnexpectedValueException
 	 */
-	public function __construct(JDatabaseDriver $db)
+	public function __construct(DatabaseDriver $db)
 	{
 		$this->_tableName = '#__webservices';
 		$this->_tbl_key = 'id';
@@ -147,23 +110,6 @@ class WebservicesTableWebservice extends JTable
 		{
 			$this->setError(JText::_('COM_WEBSERVICES_WEBSERVICE_ALREADY_EXISTS'));
 
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Method to store a node in the database table.
-	 *
-	 * @param   boolean  $updateNulls  True to update null values as well.
-	 *
-	 * @return  boolean  True on success.
-	 */
-	public function store($updateNulls = false)
-	{
-		if (!parent::store($updateNulls))
-		{
 			return false;
 		}
 

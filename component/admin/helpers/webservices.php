@@ -269,4 +269,71 @@ class WebservicesHelper extends JHelperContent
 
 		return $type[0];
 	}
+
+	/**
+	 * Returns transform element that is appropriate to db type
+	 *
+	 * @param   string  $type  Database type
+	 *
+	 * @return  string
+	 */
+	public static function getTransformElementByDbType($type)
+	{
+		$type = explode('(', $type);
+		$type = strtoupper(trim($type[0]));
+
+		// We do not test for Varchar because fallback Transform Element String
+		switch ($type)
+		{
+			case 'TINYINT':
+			case 'SMALLINT':
+			case 'MEDIUMINT':
+			case 'INT':
+			case 'BIGINT':
+				return 'int';
+			case 'FLOAT':
+			case 'DOUBLE':
+			case 'DECIMAL':
+				return 'float';
+			case 'DATE':
+			case 'DATETIME':
+			case 'TIMESTAMP':
+			case 'TIME':
+				return 'datetime';
+		}
+
+		return 'string';
+	}
+
+	/**
+	 * Returns list of transform elements
+	 *
+	 * @return  array
+	 */
+	public static function getTransformElements()
+	{
+		static $transformElements = null;
+
+		if (!is_null($transformElements))
+		{
+			return $transformElements;
+		}
+
+		$transformElementsFiles = JFolder::files(JPATH_API . '/src/Api/Hal/Transform', '.php');
+		$transformElements = array();
+
+		foreach ($transformElementsFiles as $transformElement)
+		{
+			if (!in_array($transformElement, array('interface.php', 'base.php')))
+			{
+				$name = str_replace('.php', '', $transformElement);
+				$transformElements[] = array(
+					'value' => $name,
+					'text' => $name,
+				);
+			}
+		}
+
+		return $transformElements;
+	}
 }

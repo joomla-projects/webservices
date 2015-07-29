@@ -69,11 +69,11 @@ class WebservicesViewWebservices extends JViewLegacy
 	{
 		$model = $this->getModel();
 
-		$this->state         = $this->get('State');
-		$this->items         = $this->get('Items');
-		$this->pagination    = $this->get('Pagination');
-		$this->filterForm    = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
+		$this->state         = $model->getState();
+		$this->items         = $model->getItems();
+		$this->pagination    = $model->getPagination();
+		$this->filterForm    = $model->getFilterForm();
+		$this->activeFilters = $model->getActiveFilters();
 
 		$this->xmlFiles = $model->getXmlFiles();
 		$this->xmlFilesAvailable = $model->xmlFilesAvailable;
@@ -81,7 +81,19 @@ class WebservicesViewWebservices extends JViewLegacy
 		$this->return = base64_encode('index.php?option=com_webservices&view=webservices');
 
 		// Check if option is enabled
-		if (JBootstrap::getConfig('enable_webservices', 0) == 0)
+		try
+		{
+			$container = (new Joomla\DI\Container)
+				->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider);
+		}
+		catch (\Exception $e)
+		{
+			throw new RuntimeException('Help!', 500);
+		}
+
+		$config = $container->get("config");
+
+		if ($config->get('enable_webservices', 0) == 0)
 		{
 			JFactory::getApplication()->enqueueMessage(
 				JText::sprintf(

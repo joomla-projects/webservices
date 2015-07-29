@@ -270,11 +270,10 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 		try
 		{
 			// Wet wsdl from webservice location
-			$this->wsdlPath = SoapHelper::getWebserviceFilePath(
+			$this->wsdlPath = SoapHelper::getWsdlFilePath(
 				$this->webservice->client,
 				strtolower($this->webservice->webserviceName),
 				$this->webservice->webserviceVersion,
-				'wsdl',
 				$this->webservice->webservicePath
 			);
 

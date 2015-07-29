@@ -61,7 +61,19 @@ class WebservicesViewWebservice extends JViewLegacy
 		$this->formData = $model->formData;
 
 		// Check if option is enabled
-		if (JBootstrap::getConfig('enable_webservices', 0) == 0)
+		try
+		{
+			$container = (new Joomla\DI\Container)
+				->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider);
+		}
+		catch (\Exception $e)
+		{
+			throw new RuntimeException('Help!', 500);
+		}
+
+		$config = $container->get("config");
+
+		if ($config->get('webservices.enable_webservices', 0) == 0)
 		{
 			JFactory::getApplication()->enqueueMessage(
 				JText::sprintf(

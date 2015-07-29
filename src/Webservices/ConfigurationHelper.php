@@ -15,6 +15,7 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\Language\Text;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Webservices\Webservices\Exception\ConfigurationException;
 use Joomla\Webservices\Xml\XmlHelper;
 
 /**
@@ -82,42 +83,31 @@ class ConfigurationHelper
 	}
 
 	/**
+	 * Returns an array containing all webservices
+	 *
+	 * @throws  \Exception
+	 * @return  array  List of objects
+	 */
+	public static function getWebservices()
+	{
+		self::loadWebservices();
+
+		return self::$webservices;
+	}
+
+	/**
 	 * Loading of webservice XML file
 	 *
 	 * @param   string  $client             Client
 	 * @param   string  $webserviceName     Webservice name
 	 * @param   string  $version            Version of the webservice
-	 * @param   string  $path               Path to webservice files
-	 * @param   bool    $showNotifications  Show notifications
 	 *
 	 * @throws  \Exception
 	 * @return  array  List of objects
 	 */
-	public static function getWebservices($client = '', $webserviceName = '', $version = '1.0.0', $path = '', $showNotifications = false)
+	public static function getWebservice($client = '', $webserviceName = '', $version = '1.0.0')
 	{
-		if (empty(self::$webservices) || (!empty($webserviceName) && empty(self::$webservices[$client][$webserviceName][$version])))
-		{
-			try
-			{
-				self::loadWebservices($client, $webserviceName, $version, $path);
-			}
-			catch (\Exception $e)
-			{
-				if ($showNotifications)
-				{
-					JFactory::getApplication()->enqueueMessage($e->getMessage(), 'message');
-				}
-				else
-				{
-					throw $e;
-				}
-			}
-		}
-
-		if (empty($webserviceName))
-		{
-			return self::$webservices;
-		}
+		self::loadWebservices();
 
 		if (!empty(self::$webservices[$client][$webserviceName][$version]))
 		{
@@ -130,81 +120,44 @@ class ConfigurationHelper
 	/**
 	 * Loading of related XML files
 	 *
-	 * @param   string  $client             Client
-	 * @param   string  $webserviceName     Webservice name
-	 * @param   string  $version            Version of the webservice
-	 * @param   string  $path               Path to webservice files
-	 * @param   bool    $showNotifications  Show notifications
-	 *
-	 * @throws  \Exception
 	 * @return  array  List of objects
 	 */
-	public static function loadWebservices($client = '', $webserviceName = '', $version = '1.0.0', $path = '', $showNotifications = false)
+	public static function loadWebservices()
 	{
-		if (empty($webserviceName))
+		// If we've already run this before then abort
+		if (!empty(self::$webservices))
 		{
-			$folders = Folder::folders(WebserviceHelper::getWebservicesPath(), '.', true);
-			$webserviceXmls[' '] = Folder::files(WebserviceHelper::getWebservicesPath(), '.xml');
-
-			foreach ($folders as $folder)
-			{
-				$webserviceXmls[$folder] = Folder::files(WebserviceHelper::getWebservicesPath() . '/' . $folder, '.xml');
-			}
-
-			foreach ($webserviceXmls as $webserviceXmlPath => $webservices)
-			{
-				foreach ($webservices as $webservice)
-				{
-					try
-					{
-						// Version, Extension and Client are already part of file name
-						$xml = self::loadWebserviceConfiguration($webservice, $version = '', $extension = '', trim($webserviceXmlPath));
-
-						if (!empty($xml))
-						{
-							$client = self::getWebserviceClient($xml);
-							$version = !empty($xml->config->version) ? (string) $xml->config->version : $version;
-							$xml->webservicePath = trim($webserviceXmlPath);
-							self::$webservices[$client][(string) $xml->config->name][$version] = $xml;
-						}
-					}
-					catch (\Exception $e)
-					{
-						if ($showNotifications)
-						{
-							JFactory::getApplication()->enqueueMessage($e->getMessage(), 'message');
-						}
-						else
-						{
-							throw $e;
-						}
-					}
-				}
-			}
+			return;
 		}
-		else
+
+		$folders = Folder::folders(WebserviceHelper::getWebservicesPath(), '.', true);
+		$webserviceXmls[' '] = Folder::files(WebserviceHelper::getWebservicesPath(), '.xml');
+
+		foreach ($folders as $folder)
 		{
-			try
+			$webserviceXmls[$folder] = Folder::files(WebserviceHelper::getWebservicesPath() . '/' . $folder, '.xml');
+		}
+
+		foreach ($webserviceXmls as $webserviceXmlPath => $webservices)
+		{
+			foreach ($webservices as $webservice)
 			{
-				$xml = self::loadWebserviceConfiguration($webserviceName, $version, 'xml', $path, $client);
+				// Version, Extension and Client are already part of file name
+				try
+				{
+					$xml = self::loadWebserviceConfiguration($webservice, '', trim($webserviceXmlPath));
+				}
+				catch (ConfigurationException $e)
+				{
+					$xml = null;
+				}
 
 				if (!empty($xml))
 				{
 					$client = self::getWebserviceClient($xml);
-					$version = !empty($xml->config->version) ? (string) $xml->config->version : $version;
-					$xml->webservicePath = trim($path);
+					$version = !empty($xml->config->version) ? (string) $xml->config->version : '';
+					$xml->webservicePath = trim($webserviceXmlPath);
 					self::$webservices[$client][(string) $xml->config->name][$version] = $xml;
-				}
-			}
-			catch (\Exception $e)
-			{
-				if ($showNotifications)
-				{
-					JFactory::getApplication()->enqueueMessage($e->getMessage(), 'message');
-				}
-				else
-				{
-					throw $e;
 				}
 			}
 		}
@@ -216,38 +169,69 @@ class ConfigurationHelper
 	 * @param   string  $client          Client
 	 * @param   string  $webserviceName  Name of the webservice
 	 * @param   string  $version         Suffixes to the file name (ex. 1.0.0)
-	 * @param   string  $extension       Extension of the file to search
 	 * @param   string  $path            Path to webservice files
 	 *
 	 * @return  string  The full path to the api file
 	 *
 	 * @since   1.2
 	 */
-	public static function getWebserviceFile($client, $webserviceName, $version = '', $extension = 'xml', $path = '')
+	public static function getWebserviceConfig($client, $webserviceName, $version = '', $path = '')
 	{
 		if (!empty($webserviceName))
 		{
-			$version = !empty($version) ? array(Path::clean($version)) : array('1.0.0');
+			$version = !empty($version) ? $version : '1.0.0';
 			$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesPath() . '/' . $path : WebserviceHelper::getWebservicesPath();
 
 			// Search for suffixed versions. Example: content.1.0.0.xml
-			if (!empty($version))
-			{
-				foreach ($version as $suffix)
-				{
-					$rawPath = $webserviceName . '.' . $suffix;
-					$rawPath = !empty($extension) ? $rawPath . '.' . $extension : $rawPath;
-					$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
+			$rawPath = $webserviceName . '.' . $version . '.xml';
+			$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
 
-					if ($configurationFullPath = Path::find($webservicePath, $rawPath))
-					{
-						return $configurationFullPath;
-					}
-				}
+			$configurationFullPath = Path::find($webservicePath, $rawPath);
+
+			if ($configurationFullPath)
+			{
+				return $configurationFullPath;
 			}
 
-			// Standard version
-			$rawPath = !empty($extension) ? $webserviceName . '.' . $extension : $webserviceName;
+			// See if we got passed the actual file name
+			return Path::find($webservicePath, $webserviceName);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Method to finds the full real file path, checking possible overrides
+	 *
+	 * @param   string  $client          Client
+	 * @param   string  $webserviceName  Name of the webservice
+	 * @param   string  $version         Suffixes to the file name (ex. 1.0.0)
+	 * @param   string  $path            Path to webservice files
+	 *
+	 * @return  string  The full path to the api file
+	 *
+	 * @since   1.2
+	 */
+	public static function getWebserviceHelper($client, $webserviceName, $version = '', $path = '')
+	{
+		if (!empty($webserviceName))
+		{
+			$version = !empty($version) ? $version : '1.0.0';
+			$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesPath() . '/' . $path : WebserviceHelper::getWebservicesPath();
+
+			// Search for suffixed versions. Example: content.1.0.0.xml
+			$rawPath = $webserviceName . '.' . $version . '.php';
+			$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
+
+			$configurationFullPath = Path::find($webservicePath, $rawPath);
+
+			if ($configurationFullPath)
+			{
+				return $configurationFullPath;
+			}
+
+			// Fall back to standard version
+			$rawPath = $webserviceName . '.php';
 			$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
 
 			return Path::find($webservicePath, $rawPath);
@@ -260,81 +244,40 @@ class ConfigurationHelper
 	 * Load configuration file and set all Api parameters
 	 *
 	 * @param   array   $webserviceName  Name of the webservice file
-	 * @param   Text    $text            The text object
 	 * @param   string  $version         Suffixes for loading of webservice configuration file
-	 * @param   string  $extension       File extension name
 	 * @param   string  $path            Path to webservice files
 	 * @param   string  $client          Client
 	 *
 	 * @return  \SimpleXMLElement  Loaded configuration object
 	 *
 	 * @since   1.2
-	 * @throws  \Exception
+	 * @throws  ConfigurationException
 	 */
-	public static function loadWebserviceConfiguration($webserviceName, Text $text, $version = '', $extension = 'xml', $path = '', $client = '')
+	public static function loadWebserviceConfiguration($webserviceName, $version = '', $path = '', $client = '')
 	{
 		// Check possible overrides, and build the full path to api file
-		$configurationFullPath = self::getWebserviceFile($client, strtolower($webserviceName), $version, $extension, $path);
+		$configurationFullPath = self::getWebserviceConfig($client, strtolower($webserviceName), $version, $path);
 
 		if (!is_readable($configurationFullPath))
 		{
-			throw new \Exception($text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_CONFIGURATION_FILE_UNREADABLE'));
+			throw new ConfigurationException('The configuration file is unreadable');
 		}
 
 		$content = @file_get_contents($configurationFullPath);
 
 		if (is_string($content))
 		{
-			return new \SimpleXMLElement($content);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Upload Webservices config files to webservices media location
-	 *
-	 * @param   array  $files  The array of Files (file descriptor returned by PHP)
-	 *
-	 * @return  boolean  Returns true if Upload was successful
-	 */
-	public static function uploadWebservice($files = array())
-	{
-		$uploadOptions = array(
-			'allowedFileExtensions' => 'xml',
-			'allowedMIMETypes'      => 'application/xml, text/xml',
-			'overrideExistingFile'  => true,
-		);
-
-		foreach ($files as $key => &$file)
-		{
-			$objectFile = new JObject($file);
-
 			try
 			{
-				$content = file_get_contents($objectFile->tmp_name);
-				$fileContent = null;
-
-				if (is_string($content))
-				{
-					$fileContent = new \SimpleXMLElement($content);
-				}
-
-				$name = (string) $fileContent->config->name;
-				$version = !empty($fileContent->config->version) ? (string) $fileContent->config->version : '1.0.0';
-
-				$client = self::getWebserviceClient($fileContent);
-
-				$file['name'] = $client . '.' . $name . '.' . $version . '.xml';
+				return new \SimpleXMLElement($content);
 			}
 			catch (\Exception $e)
 			{
-				unset($files[$key]);
-				JFactory::getApplication()->enqueueMessage(JText::_('COM_WEBSERVICES_WEBSERVICES_WEBSERVICE_FILE_NOT_VALID'), 'message');
+				throw new ConfigurationException('The XML in the configuration file is invalid', null, $e);
 			}
 		}
 
-		return \WebservicesHelper::uploadFiles($files, WebserviceHelper::getWebservicesPath() . '/upload', $uploadOptions);
+		throw new ConfigurationException('There was an error parsing the contents of the configuration file');
 	}
 
 	/**
@@ -352,7 +295,7 @@ class ConfigurationHelper
 
 			$query = $db->getQuery(true)
 				->select('*')
-				->from('#__webservices')
+				->from($db->quoteName('#__webservices'))
 				->order('created_date ASC');
 
 			$db->setQuery($query);
@@ -513,73 +456,6 @@ class ConfigurationHelper
 		}
 
 		return $options;
-	}
-
-	/**
-	 * Returns list of transform elements
-	 *
-	 * @return  array
-	 */
-	public static function getTransformElements()
-	{
-		static $transformElements = null;
-
-		if (!is_null($transformElements))
-		{
-			return $transformElements;
-		}
-
-		$transformElementsFiles = Folder::files(JPATH_API . '/src/Api/Hal/Transform', '.php');
-		$transformElements = array();
-
-		foreach ($transformElementsFiles as $transformElement)
-		{
-			if (!in_array($transformElement, array('interface.php', 'base.php')))
-			{
-				$name = str_replace('.php', '', $transformElement);
-				$transformElements[] = array(
-					'value' => $name,
-					'text' => $name,
-				);
-			}
-		}
-
-		return $transformElements;
-	}
-
-	/**
-	 * Returns transform element that is appropriate to db type
-	 *
-	 * @param   string  $type  Database type
-	 *
-	 * @return  string
-	 */
-	public static function getTransformElementByDbType($type)
-	{
-		$type = explode('(', $type);
-		$type = strtoupper(trim($type[0]));
-
-		// We do not test for Varchar because fallback Transform Element String
-		switch ($type)
-		{
-			case 'TINYINT':
-			case 'SMALLINT':
-			case 'MEDIUMINT':
-			case 'INT':
-			case 'BIGINT':
-				return 'int';
-			case 'FLOAT':
-			case 'DOUBLE':
-			case 'DECIMAL':
-				return 'float';
-			case 'DATE':
-			case 'DATETIME':
-			case 'TIMESTAMP':
-			case 'TIME':
-				return 'datetime';
-		}
-
-		return 'string';
 	}
 
 	/**
