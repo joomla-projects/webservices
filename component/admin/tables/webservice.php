@@ -15,59 +15,20 @@ defined('_JEXEC') or die;
  * @package     Redcore.Backend
  * @subpackage  Tables
  * @since       1.4
+ * 
+ * @property  int     $id
+ * @property  string  $name
+ * @property  string  $version
+ * @property  string  $title
+ * @property  string  $path
+ * @property  string  $xmlFile
+ * @property  string  $operations
+ * @property  string  $scopes
+ * @property  int     $client
+ * @property  int     $state
  */
 class WebservicesTableWebservice extends JTable
 {
-	/**
-	 * @var  int
-	 */
-	public $id;
-
-	/**
-	 * @var  string
-	 */
-	public $name;
-
-	/**
-	 * @var  string
-	 */
-	public $version;
-
-	/**
-	 * @var  string
-	 */
-	public $title;
-
-	/**
-	 * @var  string
-	 */
-	public $path;
-
-	/**
-	 * @var string
-	 */
-	public $xmlFile;
-
-	/**
-	 * @var string
-	 */
-	public $operations;
-
-	/**
-	 * @var string
-	 */
-	public $scopes;
-
-	/**
-	 * @var int
-	 */
-	public $client;
-
-	/**
-	 * @var int
-	 */
-	public $state;
-
 	/**
 	 * Constructor
 	 *
