@@ -88,7 +88,7 @@ class WebservicesViewWebservices extends JViewLegacy
 		}
 		catch (\Exception $e)
 		{
-			throw new RuntimeException('Help!', 500);
+			throw new RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_CONFIGURATION', $e->getMessage()), 500, $e);
 		}
 
 		$config = $container->get("config");

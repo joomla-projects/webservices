@@ -91,7 +91,7 @@ class WebservicesModelWebservice extends JModelAdmin
 		}
 		catch (\Exception $e)
 		{
-			throw new RuntimeException('Help!', 500);
+			throw new RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
 		}
 
 		$config['dbo'] = $container->get('db');
