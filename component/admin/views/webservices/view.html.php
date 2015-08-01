@@ -93,7 +93,7 @@ class WebservicesViewWebservices extends JViewLegacy
 
 		$config = $container->get("config");
 
-		if ($config->get('enable_webservices', 0) == 0)
+		if ($config->get('webservices.enable_webservices', 0) == 0)
 		{
 			JFactory::getApplication()->enqueueMessage(
 				JText::sprintf(

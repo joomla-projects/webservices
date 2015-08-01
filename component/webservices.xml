@@ -10,24 +10,24 @@
     <version>1.0.0</version>
     <description>COM_WEBSERVICES_DESC</description>
 
-    <install folder="component/admin">
+    <install>
         <sql>
-            <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
+            <file charset="utf8" driver="mysql">sql/install/mysql/install.sql</file>
         </sql>
     </install>
-    <uninstall folder="component/admin">
+    <uninstall>
         <sql>
-            <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
+            <file charset="utf8" driver="mysql">sql/install/mysql/uninstall.sql</file>
         </sql>
     </uninstall>
-    <update folder="component/admin">
+    <update>
         <schemas>
             <schemapath type="mysql">sql/updates/mysql</schemapath>
         </schemas>
     </update>
 
     <administration>
-        <files folder="component/admin">
+        <files folder="admin">
             <folder>controllers</folder>
             <folder>helpers</folder>
             <folder>layouts</folder>
