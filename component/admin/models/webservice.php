@@ -73,12 +73,6 @@ class WebservicesModelWebservice extends JModelAdmin
 	 */
 	public function __construct($config = array())
 	{
-		$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
-		$composerPath = $applicationPath . '/vendor/autoload.php';
-
-		define ('JPATH_API', $applicationPath);
-		require_once($composerPath);
-
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(

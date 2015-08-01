@@ -90,13 +90,6 @@ class WebservicesControllerWebservices extends JControllerAdmin
 	 */
 	public function uploadWebservice()
 	{
-		// Grab required dependencies
-		$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
-		$composerPath = $applicationPath . '/vendor/autoload.php';
-
-		define ('JPATH_API', $applicationPath);
-		require_once($composerPath);
-
 		// Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		$app   = JFactory::getApplication();
@@ -162,13 +155,6 @@ class WebservicesControllerWebservices extends JControllerAdmin
 	 */
 	public function batchWebservices($action)
 	{
-		// Grab dependencies
-		$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
-		$composerPath = $applicationPath . '/vendor/autoload.php';
-
-		define ('JPATH_API', $applicationPath);
-		require_once($composerPath);
-
 		$webservices = Joomla\Webservices\Webservices\ConfigurationHelper::getWebservices();
 
 		if (!empty($webservices))

@@ -52,16 +52,6 @@ class JFormFieldWebservicescopes extends JFormFieldList
 		{
 			static::$cache[$hash] = parent::getOptions();
 
-			// We should have already loaded composer in one of the models - but play safe in case
-			if (!defined('JPATH_API'))
-			{
-				$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
-				$composerPath    = $applicationPath . '/vendor/autoload.php';
-
-				define('JPATH_API', $applicationPath);
-				require_once($composerPath);
-			}
-
 			$options = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceScopes();
 
 			static::$cache[$hash] = array_merge(static::$cache[$hash], $options);

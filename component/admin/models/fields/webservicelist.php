@@ -68,16 +68,6 @@ class JFormFieldWebservicelist extends JFormFieldList
 	{
 		if (empty($this->cache))
 		{
-			// We should have already loaded composer in one of the models - but play safe in case
-			if (!defined('JPATH_API'))
-			{
-				$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
-				$composerPath    = $applicationPath . '/vendor/autoload.php';
-
-				define('JPATH_API', $applicationPath);
-				require_once($composerPath);
-			}
-
 			try
 			{
 				$container = (new Joomla\DI\Container)
