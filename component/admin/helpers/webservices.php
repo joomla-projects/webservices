@@ -75,7 +75,7 @@ class WebservicesHelper extends JHelperContent
 	 * Uploads file to the given media folder.
 	 *
 	 * @param   array   $files              The array of Files (file descriptor returned by PHP)
-	 * @param   string  $destinationFolder  Name of a folder in media/com_redcore/.
+	 * @param   string  $destinationFolder  Name of a subfolder in the webservices path of your application.
 	 * @param   array   $options            Array of options for check
 	 *                         maxFileSize              => Maximum allowed file size. Set 0 to disable check
 	 *                         allowedFileExtensions    => Comma separated string list of allowed file extensions.
@@ -121,7 +121,7 @@ class WebservicesHelper extends JHelperContent
 		{
 			// Trigger the onContentBeforeSave event.
 			$objectFile = new JObject($file);
-			$result = JFactory::getApplication()->triggerEvent('onContentBeforeSave', array('com_redcore.file', &$objectFile, true));
+			$result = JFactory::getApplication()->triggerEvent('onContentBeforeSave', array('com_webservices.file', &$objectFile, true));
 
 			if (in_array(false, $result, true))
 			{
@@ -142,7 +142,7 @@ class WebservicesHelper extends JHelperContent
 			else
 			{
 				// Trigger the onContentAfterSave event.
-				JFactory::getApplication()->triggerEvent('onContentAfterSave', array('com_redcore.file', &$objectFile, true));
+				JFactory::getApplication()->triggerEvent('onContentAfterSave', array('com_webservices.file', &$objectFile, true));
 			}
 
 			$resultFile[] = array(
