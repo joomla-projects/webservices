@@ -102,7 +102,7 @@ $id = WebservicesHelper::getUniqueName($operation);
 				<div class="controls">
 					<?php echo JHtml::_(
 						'select.genericlist',
-						JApiHalHelper::getTransformElements(),
+						WebservicesHelper::getTransformElements(),
 						'transform',
 						' class="required form-control" ',
 						'value',

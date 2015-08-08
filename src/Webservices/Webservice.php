@@ -12,6 +12,7 @@ namespace Joomla\Webservices\Webservices;
 use Joomla\Webservices\Resource\Resource;
 use Joomla\Webservices\Resource\Link;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
+use Joomla\Webservices\Webservices\Exception\ConfigurationException;
 use Joomla\Webservices\Xml\XmlHelper;
 use Joomla\Webservices\Layout\LayoutHelper;
 
@@ -178,9 +179,17 @@ class Webservice extends WebserviceBase
 			}
 
 			$this->webservicePath = $this->webservice['path'];
-			$this->configuration = ConfigurationHelper::loadWebserviceConfiguration(
-				$this->webserviceName, $this->text, $this->webserviceVersion, 'xml', $this->webservicePath, $this->client
-			);
+
+			try
+			{
+				$this->configuration = ConfigurationHelper::loadWebserviceConfiguration(
+					$this->webserviceName, $this->webserviceVersion, $this->webservicePath, $this->client
+				);
+			}
+			catch (ConfigurationException $e)
+			{
+				throw new \RuntimeException($this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_CONFIGURATION_FILE_UNREADABLE'), 500, $e);
+			}
 
 			// Set option and view name
 			$this->setOptionViewName($this->webserviceName, $this->configuration);
@@ -1559,7 +1568,7 @@ class Webservice extends WebserviceBase
 		}
 
 		$version = $this->options->get('webserviceVersion', '');
-		$helperFile = ConfigurationHelper::getWebserviceFile($this->client, strtolower($this->webserviceName), $version, 'php', $this->webservicePath);
+		$helperFile = ConfigurationHelper::getWebserviceHelper($this->client, strtolower($this->webserviceName), $version, $this->webservicePath);
 
 		if (file_exists($helperFile))
 		{

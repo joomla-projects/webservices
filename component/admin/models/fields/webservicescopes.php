@@ -52,7 +52,7 @@ class JFormFieldWebservicescopes extends JFormFieldList
 		{
 			static::$cache[$hash] = parent::getOptions();
 
-			$options = JApiHalHelper::getWebserviceScopes();
+			$options = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceScopes();
 
 			static::$cache[$hash] = array_merge(static::$cache[$hash], $options);
 		}

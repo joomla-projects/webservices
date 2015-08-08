@@ -8,7 +8,10 @@
 
 defined('_JEXEC') or die;
 
-JBootstrap::bootstrap();
+$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
+$composerPath = $applicationPath . '/vendor/autoload.php';
+define ('JPATH_API', $applicationPath);
+require_once($composerPath);
 
 JLoader::registerPrefix('Webservices', dirname(__FILE__));
 

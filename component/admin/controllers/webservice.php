@@ -106,7 +106,7 @@ class WebservicesControllerWebservice extends JControllerForm
 				{
 					$form = array(
 						'name' => $column->Field,
-						'transform' => JApiHalHelper::getTransformElementByDbType($column->Type),
+						'transform' => WebservicesHelper::getTransformElementByDbType($column->Type),
 						'defaultValue' => $column->Default,
 						'isPrimaryField' => $column->Key == 'PRI' ? 'true' : 'false',
 						'description' => $column->Comment,
@@ -156,7 +156,7 @@ class WebservicesControllerWebservice extends JControllerForm
 				{
 					$form = array(
 						'displayName' => $column->Field,
-						'transform' => JApiHalHelper::getTransformElementByDbType($column->Type),
+						'transform' => WebservicesHelper::getTransformElementByDbType($column->Type),
 						'resourceSpecific' => 'rcwsGlobal',
 						'fieldFormat' => '{' . $column->Field . '}',
 						'description' => $column->Comment,

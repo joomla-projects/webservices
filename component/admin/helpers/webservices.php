@@ -75,7 +75,7 @@ class WebservicesHelper extends JHelperContent
 	 * Uploads file to the given media folder.
 	 *
 	 * @param   array   $files              The array of Files (file descriptor returned by PHP)
-	 * @param   string  $destinationFolder  Name of a folder in media/com_redcore/.
+	 * @param   string  $destinationFolder  Name of a subfolder in the webservices path of your application.
 	 * @param   array   $options            Array of options for check
 	 *                         maxFileSize              => Maximum allowed file size. Set 0 to disable check
 	 *                         allowedFileExtensions    => Comma separated string list of allowed file extensions.
@@ -121,7 +121,7 @@ class WebservicesHelper extends JHelperContent
 		{
 			// Trigger the onContentBeforeSave event.
 			$objectFile = new JObject($file);
-			$result = JFactory::getApplication()->triggerEvent('onContentBeforeSave', array('com_redcore.file', &$objectFile, true));
+			$result = JFactory::getApplication()->triggerEvent('onContentBeforeSave', array('com_webservices.file', &$objectFile, true));
 
 			if (in_array(false, $result, true))
 			{
@@ -142,7 +142,7 @@ class WebservicesHelper extends JHelperContent
 			else
 			{
 				// Trigger the onContentAfterSave event.
-				JFactory::getApplication()->triggerEvent('onContentAfterSave', array('com_redcore.file', &$objectFile, true));
+				JFactory::getApplication()->triggerEvent('onContentAfterSave', array('com_webservices.file', &$objectFile, true));
 			}
 
 			$resultFile[] = array(
@@ -268,5 +268,72 @@ class WebservicesHelper extends JHelperContent
 		$type = explode(';', $type);
 
 		return $type[0];
+	}
+
+	/**
+	 * Returns transform element that is appropriate to db type
+	 *
+	 * @param   string  $type  Database type
+	 *
+	 * @return  string
+	 */
+	public static function getTransformElementByDbType($type)
+	{
+		$type = explode('(', $type);
+		$type = strtoupper(trim($type[0]));
+
+		// We do not test for Varchar because fallback Transform Element String
+		switch ($type)
+		{
+			case 'TINYINT':
+			case 'SMALLINT':
+			case 'MEDIUMINT':
+			case 'INT':
+			case 'BIGINT':
+				return 'int';
+			case 'FLOAT':
+			case 'DOUBLE':
+			case 'DECIMAL':
+				return 'float';
+			case 'DATE':
+			case 'DATETIME':
+			case 'TIMESTAMP':
+			case 'TIME':
+				return 'datetime';
+		}
+
+		return 'string';
+	}
+
+	/**
+	 * Returns list of transform elements
+	 *
+	 * @return  array
+	 */
+	public static function getTransformElements()
+	{
+		static $transformElements = null;
+
+		if (!is_null($transformElements))
+		{
+			return $transformElements;
+		}
+
+		$transformElementsFiles = JFolder::files(JPATH_API . '/src/Api/Hal/Transform', '.php');
+		$transformElements = array();
+
+		foreach ($transformElementsFiles as $transformElement)
+		{
+			if (!in_array($transformElement, array('interface.php', 'base.php')))
+			{
+				$name = str_replace('.php', '', $transformElement);
+				$transformElements[] = array(
+					'value' => $name,
+					'text' => $name,
+				);
+			}
+		}
+
+		return $transformElements;
 	}
 }

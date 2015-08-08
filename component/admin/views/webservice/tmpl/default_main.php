@@ -41,7 +41,7 @@ defined('_JEXEC') or die;
 		</div>
 		<div class="controls">
 			<span class="input-group-addon hasTooltip" title="<?php echo JText::_('COM_WEBSERVICES_WEBSERVICE_PATH_DESCRIPTION'); ?>">
-				/<?php echo JApiHalHelper::getWebservicesRelativePath(); ?>/
+				/<?php echo \Joomla\Webservices\Webservices\WebserviceHelper::getWebservicesRelativePath(); ?>/
 			</span>
 			<?php echo $this->form->getInput('path', 'main'); ?>
 			<span class="input-group-addon hasTooltip" title="<?php echo JText::_('COM_WEBSERVICES_WEBSERVICE_FILE_DESCRIPTION'); ?>">

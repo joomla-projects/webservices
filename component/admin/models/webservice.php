@@ -73,6 +73,29 @@ class WebservicesModelWebservice extends JModelAdmin
 	 */
 	public function __construct($config = array())
 	{
+		if (empty($config['filter_fields']))
+		{
+			$config['filter_fields'] = array(
+				'published', 'w.published',
+				'client', 'w.client',
+				'state', 'w.state',
+				'path', 'w.path',
+			);
+		}
+
+		try
+		{
+			$container = (new Joomla\DI\Container)
+				->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider)
+				->registerServiceProvider(new Joomla\Webservices\Service\DatabaseProvider);
+		}
+		catch (\Exception $e)
+		{
+			throw new RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
+		}
+
+		$config['dbo'] = $container->get('db');
+
 		parent::__construct($config);
 
 		if (is_null($this->context))
@@ -171,13 +194,14 @@ class WebservicesModelWebservice extends JModelAdmin
 		$version = $dataRegistry->get('main.version', '1.0.0');
 		$folder = $dataRegistry->get('main.path', '');
 		$folder = !empty($folder) ? JPath::clean('/' . $folder) : '';
+		$webserviceBasePath = \Joomla\Webservices\Webservices\WebserviceHelper::getWebservicesPath();
 
-		if (!JFolder::exists(JApiHalHelper::getWebservicesPath() . $folder))
+		if (!JFolder::exists($webserviceBasePath . $folder))
 		{
-			JFolder::create(JApiHalHelper::getWebservicesPath() . $folder);
+			JFolder::create($webserviceBasePath . $folder);
 		}
 
-		$fullPath = JPath::clean(JApiHalHelper::getWebservicesPath() . $folder . '/' . $client . '.' . $name . '.' . $version . '.xml');
+		$fullPath = JPath::clean($webserviceBasePath . $folder . '/' . $client . '.' . $name . '.' . $version . '.xml');
 
 		$xml = new SimpleXMLElement('<?xml version="1.0"?><apiservice client="' . $client . '"></apiservice>');
 
@@ -245,7 +269,7 @@ class WebservicesModelWebservice extends JModelAdmin
 			if (!empty($item->id))
 			{
 				$folder = !empty($item->path) ? '/' . $item->path : '';
-				$oldPath = JPath::clean(JApiHalHelper::getWebservicesPath() . $folder . '/' . $item->xmlFile);
+				$oldPath = JPath::clean($webserviceBasePath . $folder . '/' . $item->xmlFile);
 
 				if ($oldPath != $fullPath)
 				{
@@ -256,7 +280,7 @@ class WebservicesModelWebservice extends JModelAdmin
 				}
 			}
 
-			$wsdl = JApiSoapHelper::generateWsdl($xml, '');
+			$wsdl = \Joomla\Webservices\Api\Soap\SoapHelper::generateWsdl($xml, '');
 			$domWsdl = dom_import_simplexml($wsdl)->ownerDocument;
 			$domWsdl->preserveWhiteSpace = false;
 			$domWsdl->formatOutput = true;
@@ -466,8 +490,8 @@ class WebservicesModelWebservice extends JModelAdmin
 		{
 			try
 			{
-				$this->xmlFile = JApiHalHelper::loadWebserviceConfiguration(
-					$item->name, $item->version, 'xml', $item->path, $item->client
+				$this->xmlFile = \Joomla\Webservices\Webservices\ConfigurationHelper::loadWebserviceConfiguration(
+					$item->name, $item->version, $item->path, $item->client
 				);
 			}
 			catch (Exception $e)
@@ -816,6 +840,8 @@ class WebservicesModelWebservice extends JModelAdmin
 	 */
 	public function getTable($type = 'Webservice', $prefix = 'WebservicesTable', $config = array())
 	{
+		$config['dbo'] = $this->getDbo();
+
 		return JTable::getInstance($type, $prefix, $config);
 	}
 }

@@ -28,6 +28,8 @@ class WebservicesControllerWebservices extends JControllerAdmin
 		// Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		$app = JFactory::getApplication();
+
+		/** @var WebservicesModelWebservices $model */
 		$model = $this->getModel('webservices');
 
 		$webservice = $app->input->getString('webservice');
@@ -60,6 +62,8 @@ class WebservicesControllerWebservices extends JControllerAdmin
 		// Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		$app   = JFactory::getApplication();
+
+		/** @var WebservicesModelWebservices $model */
 		$model = $this->getModel('webservices');
 
 		$webservice = $app->input->getString('webservice');
@@ -93,7 +97,41 @@ class WebservicesControllerWebservices extends JControllerAdmin
 
 		if (!empty($files))
 		{
-			$uploadedFiles = JApiHalHelper::uploadWebservice($files);
+			$uploadOptions = array(
+				'allowedFileExtensions' => 'xml',
+				'allowedMIMETypes'      => 'application/xml, text/xml',
+				'overrideExistingFile'  => true,
+			);
+
+			foreach ($files as $key => &$file)
+			{
+				$objectFile = new JObject($file);
+
+				try
+				{
+					$content = file_get_contents($objectFile->tmp_name);
+					$fileContent = null;
+
+					if (is_string($content))
+					{
+						$fileContent = new \SimpleXMLElement($content);
+					}
+
+					$name = (string) $fileContent->config->name;
+					$version = !empty($fileContent->config->version) ? (string) $fileContent->config->version : '1.0.0';
+
+					$client = Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceClient($fileContent);
+
+					$file['name'] = $client . '.' . $name . '.' . $version . '.xml';
+				}
+				catch (\Exception $e)
+				{
+					unset($files[$key]);
+					JFactory::getApplication()->enqueueMessage(JText::_('COM_WEBSERVICES_WEBSERVICES_WEBSERVICE_FILE_NOT_VALID'), 'message');
+				}
+			}
+
+			$uploadedFiles = WebservicesHelper::uploadFiles($files, Joomla\Webservices\Webservices\WebserviceHelper::getWebservicesPath() . '/upload', $uploadOptions);
 
 			if (!empty($uploadedFiles))
 			{
@@ -115,14 +153,18 @@ class WebservicesControllerWebservices extends JControllerAdmin
 	 *
 	 * @return  boolean  Returns true if Action was successful
 	 */
-	public function batchWebservices($action = '')
+	public function batchWebservices($action)
 	{
-		$webservices = JApiHalHelper::getWebservices();
+		$webservices = Joomla\Webservices\Webservices\ConfigurationHelper::getWebservices();
 
 		if (!empty($webservices))
 		{
+			/** @var WebservicesModelWebservices $model */
 			$model = $this->getModel('webservices');
-			$installedWebservices = JApiHalHelper::getInstalledWebservices();
+
+			/** @var Joomla\Database\DatabaseDriver $db */
+			$db = $model->getDbo();
+			$installedWebservices = Joomla\Webservices\Webservices\ConfigurationHelper::getInstalledWebservices($db);
 
 			foreach ($webservices as $webserviceNames)
 			{
@@ -130,7 +172,7 @@ class WebservicesControllerWebservices extends JControllerAdmin
 				{
 					foreach ($webserviceVersions as $webservice)
 					{
-						$client = JApiHalHelper::getWebserviceClient($webservice);
+						$client = Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceClient($webservice);
 						$path = $webservice->webservicePath;
 						$name = (string) $webservice->config->name;
 						$version = (string) $webservice->config->version;
