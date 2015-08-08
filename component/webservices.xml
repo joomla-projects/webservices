@@ -39,7 +39,7 @@
             <filename>controller.php</filename>
             <filename>webservices.php</filename>
         </files>
-        <languages folder="component/admin/language">
+        <languages folder="admin/language">
             <language tag="en-GB">en-GB/en-GB.com_webservices.ini</language>
             <language tag="en-GB">en-GB/en-GB.com_webservices.sys.ini</language>
         </languages>
