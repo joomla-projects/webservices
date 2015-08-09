@@ -147,7 +147,7 @@ class Item extends \JModelAdmin
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 */
-	public function validate(\JForm $form, $data, $group = null)
+	public function validate($form, $data, $group = null)
 	{
 		// @todo We should integrate custom validation here as well
 		return $data;
