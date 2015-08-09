@@ -105,9 +105,9 @@ class Hal extends Base
 		$this->app->setHeader('Expires', '0', true);
 		$this->app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
 		$this->app->setHeader('Cache-Control', 'private', false);
-		$this->app->setHeader('Content-type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
-		$this->app->setHeader('Webservice name', $this->webservice->webserviceName, true);
-		$this->app->setHeader('Webservice version', $this->webservice->webserviceVersion, true);
+		$this->app->setHeader('Content-Type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
+		$this->app->setHeader('Webservice-Name', $this->webservice->webserviceName, true);
+		$this->app->setHeader('Webservice-Version', $this->webservice->webserviceVersion, true);
 
 		$this->app->sendHeaders();
 
