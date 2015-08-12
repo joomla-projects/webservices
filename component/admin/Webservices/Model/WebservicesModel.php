@@ -697,8 +697,6 @@ class WebservicesModel extends \JModelDatabase
 		// Check the session for previously entered form data.
 		$data = \JFactory::getApplication()->getUserState($this->context, new \stdClass);
 
-// $this->getState()->get('filter.client')
-
 		// Pre-fill the list options
 		if (!property_exists($data, 'list'))
 		{

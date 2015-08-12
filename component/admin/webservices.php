@@ -14,7 +14,7 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_webservices'))
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
-$applicationPath = realpath('/home/fastslack/mtwProjects/webservices.my');
+$applicationPath = realpath('../../webservices');
 $composerPath = $applicationPath . '/vendor/autoload.php';
 define ('JPATH_API', $applicationPath);
 require_once($composerPath);

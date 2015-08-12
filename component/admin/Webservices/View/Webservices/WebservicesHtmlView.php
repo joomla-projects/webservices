@@ -76,25 +76,20 @@ class WebservicesHtmlView extends DefaultHtmlView
 		{
 			$this->envErrors[] = \JText::_('COM_WEBSERVICES_REQUIREMENT_HTTPS');
 		}
-/*
+
 		// Only process the data if there are no environment errors
 		if (!count($this->envErrors))
 		{
-			$this->state      = $this->model->getState();
-			$this->items      = $this->model->getItems();
-			$this->pagination = $this->model->getPagination();
+			$model = $this->model;
+
+			$this->state         = $model->getState();
+			$this->items         = $model->getItems();
+			$this->pagination    = $model->getPagination();
+			$this->filterForm    = $model->getFilterForm();
+			//$this->activeFilters = $model->getActiveFilters();
 		}
 
 		$this->addToolbar();
-*/
-
-		$model = $this->model;
-
-		$this->state         = $model->getState();
-		$this->items         = $model->getItems();
-		$this->pagination    = $model->getPagination();
-		$this->filterForm    = $model->getFilterForm();
-		//$this->activeFilters = $model->getActiveFilters();
 
 		$this->xmlFiles = $model->getXmlFiles();
 		$this->xmlFilesAvailable = $model->xmlFilesAvailable;
