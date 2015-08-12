@@ -1,20 +1,21 @@
 <?php
 /**
- * @package     Joomla.Administrator
- * @subpackage  com_webservices
+ * Webservices component for Joomla! CMS
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright  Copyright (C) 2004 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later
  */
 
-defined('_JEXEC') or die;
+namespace Webservices;
+
+use Joomla\Registry\Registry;
 
 /**
- * Webservices component helper.
+ * Helper class for the patch tester component
  *
- * @since  1.0
+ * @since  2.0
  */
-class WebservicesHelper extends JHelperContent
+abstract class Helper
 {
 	/**
 	 * Configure the Linkbar.
@@ -27,8 +28,8 @@ class WebservicesHelper extends JHelperContent
 	 */
 	public static function addSubmenu($vName)
 	{
-		JHtmlSidebar::addEntry(
-			JText::_('COM_WEBSERVICES_WEBSERVICES_MANAGE'),
+		\JHtmlSidebar::addEntry(
+			\JText::_('COM_WEBSERVICES_WEBSERVICES_MANAGE'),
 			'index.php?option=com_webservices&view=webservices',
 			$vName == 'webservices'
 		);
@@ -46,11 +47,11 @@ class WebservicesHelper extends JHelperContent
 		// Get a (very!) randomised name
 		if (version_compare(JVERSION, '3.0', 'ge'))
 		{
-			$serverKey = JFactory::getConfig()->get('secret', '');
+			$serverKey = \JFactory::getConfig()->get('secret', '');
 		}
 		else
 		{
-			$serverKey = JFactory::getConfig()->getValue('secret', '');
+			$serverKey = \JFactory::getConfig()->getValue('secret', '');
 		}
 
 		$sig = $name . microtime() . $serverKey;
@@ -106,7 +107,7 @@ class WebservicesHelper extends JHelperContent
 			}
 
 			// Get full path
-			$file['filePath'] = JPath::clean($destinationFolder . '/' . $file['destinationFileName']);
+			$file['filePath'] = \JPath::clean($destinationFolder . '/' . $file['destinationFileName']);
 
 			// Can we upload this file type?
 			if (!self::canUpload($file, $options))
@@ -115,34 +116,35 @@ class WebservicesHelper extends JHelperContent
 			}
 		}
 
-		JPluginHelper::importPlugin('content');
+		\JPluginHelper::importPlugin('content');
 
 		foreach ($files as &$file)
 		{
 			// Trigger the onContentBeforeSave event.
-			$objectFile = new JObject($file);
-			$result = JFactory::getApplication()->triggerEvent('onContentBeforeSave', array('com_webservices.file', &$objectFile, true));
+			// @@ TODO: JObject is deprecated.
+			$objectFile = new \JObject($file);
+			$result = \JFactory::getApplication()->triggerEvent('onContentBeforeSave', array('com_webservices.file', &$objectFile, true));
 
 			if (in_array(false, $result, true))
 			{
 				// There are some errors in the plugins
 				$errors = $objectFile->getErrors();
-				$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_BEFORE_SAVE', implode('<br />', $errors)), 'error');
+				$app->enqueueMessage(\JText::sprintf('LIB_WEBSERVICES_ERROR_BEFORE_SAVE', implode('<br />', $errors)), 'error');
 
 				return false;
 			}
 
-			if (!JFile::upload($objectFile->tmp_name, $objectFile->filePath))
+			if (!\JFile::upload($objectFile->tmp_name, $objectFile->filePath))
 			{
 				// Error in upload
-				$app->enqueueMessage(JText::_('LIB_WEBSERVICES_ERROR_UNABLE_TO_UPLOAD_FILE'), 'error');
+				$app->enqueueMessage(\JText::_('LIB_WEBSERVICES_ERROR_UNABLE_TO_UPLOAD_FILE'), 'error');
 
 				return false;
 			}
 			else
 			{
 				// Trigger the onContentAfterSave event.
-				JFactory::getApplication()->triggerEvent('onContentAfterSave', array('com_webservices.file', &$objectFile, true));
+				\JFactory::getApplication()->triggerEvent('onContentAfterSave', array('com_webservices.file', &$objectFile, true));
 			}
 
 			$resultFile[] = array(
@@ -168,9 +170,9 @@ class WebservicesHelper extends JHelperContent
 	private static function canUpload($file, $options = array())
 	{
 		jimport('joomla.filesystem.file');
-		$app = JFactory::getApplication();
+		$app = \JFactory::getApplication();
 
-		$file['name'] = JFile::makesafe($file['name']);
+		$file['name'] = \JFile::makesafe($file['name']);
 
 		if (empty($file['name']))
 		{
@@ -182,12 +184,12 @@ class WebservicesHelper extends JHelperContent
 		// Allowed file extensions
 		if (!empty($options['allowedFileExtensions']))
 		{
-			$format = strtolower(JFile::getExt($file['name']));
+			$format = strtolower(\JFile::getExt($file['name']));
 			$allowable = array_map('trim', explode(",", $options['allowedFileExtensions']));
 
 			if (!in_array($format, $allowable))
 			{
-				$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_WARNFILETYPE', $format, $options['allowedFileExtensions']), 'error');
+				$app->enqueueMessage(\JText::sprintf('LIB_WEBSERVICES_ERROR_WARNFILETYPE', $format, $options['allowedFileExtensions']), 'error');
 
 				return false;
 			}
@@ -203,7 +205,7 @@ class WebservicesHelper extends JHelperContent
 
 		if ($options['maxFileSize'] != 0 && (int) $file['size'] > $options['maxFileSize'])
 		{
-			$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_WARNFILETOOLARGE', $file['size'], $options['maxFileSize']), 'error');
+			$app->enqueueMessage(\JText::sprintf('LIB_WEBSERVICES_ERROR_WARNFILETOOLARGE', $file['size'], $options['maxFileSize']), 'error');
 
 			return false;
 		}
@@ -227,7 +229,7 @@ class WebservicesHelper extends JHelperContent
 		}
 
 		// If we have a name clash, abort the upload
-		if (empty($options['overrideExistingFile']) && JFile::exists($file['filePath']))
+		if (empty($options['overrideExistingFile']) && \JFile::exists($file['filePath']))
 		{
 			$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_FILE_EXISTS', $file['destinationFileName']), 'error');
 
@@ -319,7 +321,7 @@ class WebservicesHelper extends JHelperContent
 			return $transformElements;
 		}
 
-		$transformElementsFiles = JFolder::files(JPATH_API . '/src/Api/Hal/Transform', '.php');
+		$transformElementsFiles = \JFolder::files(JPATH_API . '/src/Api/Hal/Transform', '.php');
 		$transformElements = array();
 
 		foreach ($transformElementsFiles as $transformElement)

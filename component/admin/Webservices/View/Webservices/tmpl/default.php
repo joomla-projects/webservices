@@ -9,15 +9,15 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
-JHtml::_('behavior.multiselect');
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('behavior.keepalive');
+\JHtml::_('bootstrap.tooltip');
+\JHtml::_('behavior.multiselect');
+\JHtml::_('formbehavior.chosen', 'select');
+\JHtml::_('behavior.keepalive');
 
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
-$action     = JRoute::_('index.php?option=com_webservices&view=webservices');
-$user		= JFactory::getUser();
+$action     = \JRoute::_('index.php?option=com_webservices&view=webservices');
+$user		= \JFactory::getUser();
 $userId		= $user->get('id');
 ?>
 <script type="text/javascript">
@@ -137,7 +137,7 @@ $userId		= $user->get('id');
 </style>
 <form action="<?php echo $action; ?>" id="adminForm" method="post" name="adminForm" autocomplete="off" class="adminForm form-validate form-horizontal" enctype="multipart/form-data">
 	<div id="j-sidebar-container" class="span2">
-		<?php echo $this->sidebar; ?>
+		<?php //echo $this->sidebar; ?>
 	</div>
 	<div id="j-main-container" class="span10">
 		<?php
