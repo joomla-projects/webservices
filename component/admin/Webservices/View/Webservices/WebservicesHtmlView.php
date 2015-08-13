@@ -12,9 +12,9 @@ use Webservices\Helper;
 use Webservices\View\DefaultHtmlView;
 
 /**
- * View class for a list of pull requests.
+ * View class for a list of webservices.
  *
- * @since  2.0
+ * @since  1.0
  */
 class WebservicesHtmlView extends DefaultHtmlView
 {
@@ -22,7 +22,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 	 * Array containing environment errors
 	 *
 	 * @var    array
-	 * @since  2.0
+	 * @since  1.0
 	 */
 	protected $envErrors = array();
 
@@ -30,7 +30,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 	 * Array of open pull requests
 	 *
 	 * @var    array
-	 * @since  2.0
+	 * @since  1.0
 	 */
 	protected $items;
 
@@ -38,7 +38,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 	 * The model object - redeclared for proper type hinting.
 	 *
 	 * @var    \Webservices\Model\WebservicesModel
-	 * @since  2.0
+	 * @since  1.0
 	 */
 	protected $model;
 
@@ -46,7 +46,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 	 * State object
 	 *
 	 * @var    \Joomla\Registry\Registry
-	 * @since  2.0
+	 * @since  1.0
 	 */
 	protected $state;
 
@@ -54,7 +54,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 	 * Pagination object
 	 *
 	 * @var    \JPagination
-	 * @since  2.0
+	 * @since  1.0
 	 */
 	protected $pagination;
 
@@ -63,7 +63,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 	 *
 	 * @return  string  The rendered view.
 	 *
-	 * @since   2.0
+	 * @since   1.0
 	 */
 	public function render()
 	{
@@ -88,8 +88,6 @@ class WebservicesHtmlView extends DefaultHtmlView
 			$this->filterForm    = $model->getFilterForm();
 			//$this->activeFilters = $model->getActiveFilters();
 		}
-
-		$this->addToolbar();
 
 		$this->xmlFiles = $model->getXmlFiles();
 		$this->xmlFilesAvailable = $model->xmlFilesAvailable;
@@ -123,7 +121,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 
 		// Load the submenu.
 		Helper::addSubmenu('webservices');
-		//$this->sidebar = \JHtmlSidebar::render();
+		$this->sidebar = \JHtmlSidebar::render();
 
 		return parent::render();
 	}
@@ -157,7 +155,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 
 		if ($canDo->get('core.create'))
 		{
-			\JToolbarHelper::addNew('webservice.add');
+			\JToolbarHelper::addNew('add');
 		}
 
 		if ($canDo->get('core.edit') || $canDo->get('core.edit.own'))

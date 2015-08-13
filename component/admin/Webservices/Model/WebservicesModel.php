@@ -83,17 +83,6 @@ class WebservicesModel extends \JModelDatabase
 	{
 		parent::__construct($state, $db);
 
-		try
-		{
-			$container = (new \Joomla\DI\Container)
-				->registerServiceProvider(new \Joomla\Webservices\Service\ConfigurationProvider)
-				->registerServiceProvider(new \Joomla\Webservices\Service\DatabaseProvider);
-		}
-		catch (\Exception $e)
-		{
-			throw new RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
-		}
-
 		$this->context    = $context;
 		$this->sortFields = array('w.id');
 	}
@@ -649,7 +638,7 @@ class WebservicesModel extends \JModelDatabase
 
 		// Get the form.
 		\JForm::addFormPath(JPATH_COMPONENT . '/Webservices/Model/Forms');
-		//\JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
+		//\JForm::addFieldPath(JPATH_COMPONENT . '/Webservices/Model/Fields');
 
 		try
 		{
