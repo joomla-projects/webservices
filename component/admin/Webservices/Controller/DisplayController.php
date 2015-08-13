@@ -66,6 +66,58 @@ class DisplayController extends \JControllerBase
 	}
 
 	/**
+	 * Create an database object
+	 *
+	 * @return  JDatabaseDriver
+	 *
+	 * @see     JDatabaseDriver
+	 * @since   11.1
+	 */
+	protected static function createDbo()
+	{
+		try
+		{
+			$container = (new \Joomla\DI\Container)
+				->registerServiceProvider(new \Joomla\Webservices\Service\ConfigurationProvider)
+				->registerServiceProvider(new \Joomla\Webservices\Service\DatabaseProvider);
+		}
+		catch (\Exception $e)
+		{
+			throw new RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
+		}
+
+		$config = $container->get("config")['database'];
+
+		$host = $config->host;
+		$user = $config->user;
+		$password = $config->password;
+		$database = $config->database;
+		$prefix = $config->prefix;
+		$driver = $config->driver;
+		$debug = $config->debug;
+
+		$options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix);
+
+		try
+		{
+			$db = \JDatabaseDriver::getInstance($options);
+		}
+		catch (RuntimeException $e)
+		{
+			if (!headers_sent())
+			{
+				header('HTTP/1.1 500 Internal Server Error');
+			}
+
+			jexit('Database Error: ' . $e->getMessage());
+		}
+
+		$db->setDebug($debug);
+
+		return $db;
+	}
+
+	/**
 	 * Execute the controller.
 	 *
 	 * @return  boolean  True on success
@@ -112,7 +164,7 @@ class DisplayController extends \JControllerBase
 		}
 
 		// Initialize the model class now; need to do it before setting the state to get required data from it
-		$model = new $modelClass($this->context, null, \JFactory::getDbo());
+		$model = new $modelClass($this->context, null, $this->createDbo());
 
 		// Initialize the state for the model
 		$model->setState($this->initializeState($model));
