@@ -24,7 +24,6 @@ use Joomla\DI\ContainerAwareInterface;
 
 use Joomla\Utilities\ArrayHelper;
 
-use Joomla\Webservices\Api\Api;
 use Joomla\Webservices\Api\Soap\SoapHelper;
 
 /**
