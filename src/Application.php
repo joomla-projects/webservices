@@ -127,7 +127,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 		try
 		{
 			$this->clearHeaders();
-			$webserviceClient = $input->getString('webserviceClient');
+			$webserviceClient = $input->getString('webserviceClient', 'administrator');
 			$optionName       = $input->getString('option');
 			$optionName       = strpos($optionName, 'com_') === 0 ? substr($optionName, 4) : $optionName;
 			$viewName         = $input->getString('view');
@@ -139,11 +139,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 			$task    = $this->getTask();
 			$data    = $this->getPostedData();
 			$dataGet = $input->getArray();
-
-			if (empty($webserviceClient))
-			{
-				$webserviceClient = $this->isAdmin() ? 'administrator' : 'site';
-			}
 
 			$options = array(
 				'api'               => $apiName,
@@ -223,17 +218,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 
 		return ($this->get('webservices.enable_webservices', 0) == 1 && $apiName == 'hal')
 		|| ($this->get('webservices.enable_soap', 0) == 1 && $apiName == 'soap');
-	}
-
-	/**
-	 * Checks whether we are in the site or admin of the Joomla CMS.
-	 *
-	 * @return  bool
-	 * @todo    Implement a check here
-	 */
-	public function isAdmin()
-	{
-		return true;
 	}
 
 	/**
