@@ -13,10 +13,58 @@ use Joomla\Registry\Registry;
 /**
  * Helper class for the patch tester component
  *
- * @since  2.0
+ * @since  1.0
  */
 abstract class Helper
 {
+	/**
+	 * Create an webservices database object
+	 *
+	 * @return  JDatabaseDriver
+	 *
+	 * @see     JDatabaseDriver
+	 * @since   1.0
+	 */
+	public static function createDbo()
+	{
+		try
+		{
+			$container = (new \Joomla\DI\Container)
+				->registerServiceProvider(new \Joomla\Webservices\Service\ConfigurationProvider)
+				->registerServiceProvider(new \Joomla\Webservices\Service\DatabaseProvider);
+		}
+		catch (\Exception $e)
+		{
+			throw new RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
+		}
+
+		$config = $container->get("config")['database'];
+
+		$options = array('driver' => $config->driver,
+			'host' => $config->host,
+			'user' => $config->user,
+			'password' => $config->password,
+			'database' => $config->database,
+			'prefix' => $config->prefix
+		);
+
+		try
+		{
+			$db = \JDatabaseDriver::getInstance($options);
+		}
+		catch (RuntimeException $e)
+		{
+			if (!headers_sent())
+			{
+				header('HTTP/1.1 500 Internal Server Error');
+			}
+
+			jexit('Database Error: ' . $e->getMessage());
+		}
+
+		return $db;
+	}
+
 	/**
 	 * Configure the Linkbar.
 	 *

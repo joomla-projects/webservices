@@ -121,7 +121,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 
 		// Load the submenu.
 		Helper::addSubmenu('webservices');
-		$this->sidebar = \JHtmlSidebar::render();
+		//$this->sidebar = \JHtmlSidebar::render();
 
 		return parent::render();
 	}

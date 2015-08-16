@@ -6,27 +6,18 @@
  * @license    GNU General Public License version 2 or later
  */
 
+namespace Webservices\Table;
+
 use Joomla\Database\DatabaseDriver;
 
 /**
  * Webservice table.
  *
- * @package     Redcore.Backend
- * @subpackage  Tables
- * @since       1.4
- *
- * @property  int     $id
- * @property  string  $name
- * @property  string  $version
- * @property  string  $title
- * @property  string  $path
- * @property  string  $xmlFile
- * @property  string  $operations
- * @property  string  $scopes
- * @property  int     $client
- * @property  int     $state
+ * @package     Joomla!
+ * @subpackage  Webservices
+ * @since       1.0
  */
-class WebservicesTableWebservice extends JTable
+class WebserviceTable extends \JTable
 {
 	/**
 	 * Constructor
@@ -35,7 +26,7 @@ class WebservicesTableWebservice extends JTable
 	 *
 	 * @throws  UnexpectedValueException
 	 */
-	public function __construct(DatabaseDriver $db)
+	public function __construct($db)
 	{
 		$this->_tableName = '#__webservices';
 		$this->_tbl_key = 'id';
