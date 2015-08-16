@@ -24,7 +24,6 @@ use Joomla\DI\ContainerAwareInterface;
 
 use Joomla\Utilities\ArrayHelper;
 
-use Joomla\Webservices\Api\Api;
 use Joomla\Webservices\Api\Soap\SoapHelper;
 
 /**
@@ -112,97 +111,95 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 		$languageFactory->getLanguage()->load('lib_webservices');
 		$text = $languageFactory->getText();
 
-		$apiName = $this->input->getString('api');
+		$input = $this->input;
+		$apiName = $input->getString('api');
 
-		if ($this->isApiEnabled($apiName))
+		if (!$this->isApiEnabled($apiName))
 		{
-			$input = $this->input;
+			return;
+		}
 
-			if (!empty($apiName))
+		if (empty($apiName))
+		{
+			return;
+		}
+
+		try
+		{
+			$this->clearHeaders();
+			$webserviceClient = $input->getString('webserviceClient', 'administrator');
+			$optionName       = $input->getString('option');
+			$optionName       = strpos($optionName, 'com_') === 0 ? substr($optionName, 4) : $optionName;
+			$viewName         = $input->getString('view');
+			$version          = $input->getString('webserviceVersion');
+
+			$token = $input->getString($this->get('webservices.oauth2_token_param_name', 'access_token'));
+			$apiName = ucfirst($apiName);
+			$method  = strtoupper($input->getMethod());
+			$task    = $this->getTask();
+			$data    = $this->getPostedData();
+			$dataGet = $input->getArray();
+
+			$options = array(
+				'api'               => $apiName,
+				'optionName'        => $optionName,
+				'viewName'          => $viewName,
+				'webserviceVersion' => $version,
+				'webserviceClient'  => $webserviceClient,
+				'method'            => $method,
+				'task'              => $task,
+				'data'              => $data,
+				'dataGet'           => $dataGet,
+				'accessToken'       => $token,
+				'format'            => $input->getString('format', $this->get('webservices.webservices_default_format', 'hal')),
+				'id'                => $input->getString('id'),
+				'absoluteHrefs'     => $input->getBool('absoluteHrefs', true),
+			);
+
+			$apiClass = 'Joomla\\Webservices\\Api\\' . $apiName . '\\' . $apiName;
+
+			if (!class_exists($apiClass))
 			{
-				try
+				throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_LOAD_API', $options['api']));
+			}
+
+			try
+			{
+				/** @var \Joomla\Webservices\Api\ApiBase $api */
+				$api = new $apiClass($this->getContainer(), new Registry($options));
+			}
+			catch (\RuntimeException $e)
+			{
+				throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_CONNECT_TO_API', $e->getMessage()));
+			}
+
+			// Run the api task
+			$api->execute();
+
+			// Display output
+			$api->render();
+		}
+		catch (\Exception $e)
+		{
+			$code = $e->getCode() > 0 ? $e->getCode() : 500;
+
+			// Set the server response code.
+			$this->header('Status: ' . $code, true, $code);
+
+			if (strtolower($apiName) == 'soap')
+			{
+				$this->setBody(SoapHelper::createSoapFaultResponse($e->getMessage()));
+			}
+			else
+			{
+				// Check for defined constants
+				if (!defined('JSON_UNESCAPED_SLASHES'))
 				{
-					$this->clearHeaders();
-					$webserviceClient = $input->get->getString('webserviceClient', '');
-					$optionName       = $input->get->getString('option', '');
-					$optionName       = strpos($optionName, 'com_') === 0 ? substr($optionName, 4) : $optionName;
-					$viewName         = $input->getString('view', '');
-					$version          = $input->getString('webserviceVersion', '');
-
-					$token = $input->getString($this->get('webservices.oauth2_token_param_name', 'access_token'), '');
-					$apiName = ucfirst($apiName);
-					$method  = strtoupper($input->getMethod());
-					$task    = $this->getTask();
-					$data    = $this->getPostedData();
-					$dataGet = $input->get->getArray();
-
-					if (empty($webserviceClient))
-					{
-						$webserviceClient = $this->isAdmin() ? 'administrator' : 'site';
-					}
-
-					$options = array(
-						'api'               => $apiName,
-						'optionName'        => $optionName,
-						'viewName'          => $viewName,
-						'webserviceVersion' => $version,
-						'webserviceClient'  => $webserviceClient,
-						'method'            => $method,
-						'task'              => $task,
-						'data'              => $data,
-						'dataGet'           => $dataGet,
-						'accessToken'       => $token,
-						'format'            => $input->getString('format', $this->get('webservices.webservices_default_format', 'hal')),
-						'id'                => $input->getString('id', ''),
-						'absoluteHrefs'     => $input->get->getBool('absoluteHrefs', true),
-					);
-
-					$apiClass = 'Joomla\\Webservices\\Api\\' . $apiName . '\\' . $apiName;
-
-					if (!class_exists($apiClass))
-					{
-						throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_LOAD_API', $options['api']));
-					}
-
-					try
-					{
-						/** @var \Joomla\Webservices\Api\ApiBase $api */
-						$api = new $apiClass($this->getContainer(), new Registry($options));
-					}
-					catch (\RuntimeException $e)
-					{
-						throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_CONNECT_TO_API', $e->getMessage()));
-					}
-
-					// Run the api task
-					$api->execute();
-
-					// Display output
-					$api->render();
+					define('JSON_UNESCAPED_SLASHES', 64);
 				}
-				catch (\Exception $e)
-				{
-					$code = $e->getCode() > 0 ? $e->getCode() : 500;
 
-					// Set the server response code.
-					$this->header('Status: ' . $code, true, $code);
-
-					if (strtolower($apiName) == 'soap')
-					{
-						$this->setBody(SoapHelper::createSoapFaultResponse($e->getMessage()));
-					}
-					else
-					{
-						// Check for defined constants
-						if (!defined('JSON_UNESCAPED_SLASHES'))
-						{
-							define('JSON_UNESCAPED_SLASHES', 64);
-						}
-
-						// An exception has been caught, echo the message and exit.
-						$this->setBody(json_encode(array('message' => $e->getMessage(), 'code' => $e->getCode(), 'type' => get_class($e)), JSON_UNESCAPED_SLASHES));
-					}
-				}
+				// An exception has been caught, echo the message and exit.
+				$this->setBody(json_encode(array('message' => $e->getMessage(), 'code' => $e->getCode(), 'type' => get_class($e)), JSON_UNESCAPED_SLASHES));
 			}
 		}
 	}
@@ -221,17 +218,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 
 		return ($this->get('webservices.enable_webservices', 0) == 1 && $apiName == 'hal')
 		|| ($this->get('webservices.enable_soap', 0) == 1 && $apiName == 'soap');
-	}
-
-	/**
-	 * Checks whether we are in the site or admin of the Joomla CMS.
-	 *
-	 * @return  bool
-	 * @todo    Implement a check here
-	 */
-	public function isAdmin()
-	{
-		return true;
 	}
 
 	/**
