@@ -9,7 +9,7 @@
 defined('_JEXEC') or die;
 
 echo \JLayoutHelper::render(
-	'webservice.operation',
+	'operation',
 	array(
 		'view' => $this,
 		'options' => array(
@@ -18,5 +18,6 @@ echo \JLayoutHelper::render(
 			'tabActive' => ' active in ',
 			'fieldList' => array('defaultValue', 'isRequiredField', 'isPrimaryField'),
 		)
-	)
+	),
+	JPATH_COMPONENT_ADMINISTRATOR.'/Webservices/Layout'
 );

@@ -35,8 +35,8 @@ $firstContentActive = true;
 				$fieldList = array_merge($fieldList, array('isFilterField', 'isSearchableField'));
 			}
 
-			echo JLayoutHelper::render(
-				'webservice.operation',
+			echo \JLayoutHelper::render(
+				'operation',
 				array(
 					'view' => $this,
 					'options' => array(
@@ -45,7 +45,8 @@ $firstContentActive = true;
 						'tabActive' => $firstContentActive ? ' active in ' : '',
 						'fieldList' => $fieldList,
 					)
-				)
+				),
+				JPATH_COMPONENT_ADMINISTRATOR.'/Webservices/Layout'
 			);
 
 			$firstContentActive = false;

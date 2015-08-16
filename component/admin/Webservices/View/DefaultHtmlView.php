@@ -22,41 +22,128 @@ class DefaultHtmlView extends \JViewHtml
 	 *
 	 * @return  string  The output of the the template script.
 	 *
-	 * @since   2.0
-	 * @throws  \RuntimeException
+	 * @since   12.2
+	 * @throws  Exception
 	 */
 	public function loadTemplate($tpl = null)
 	{
-		// Get the path to the file
-		//$this->setLayout('Webservices');
+		// Clear prior output
+		$this->_output = null;
 
-		$file = isset($tpl) ? $this->getLayout() . '_' . $tpl : $this->getLayout();
-		$path = $this->getPath($file);
+		$template = \JFactory::getApplication()->getTemplate();
+		$layout = $this->getLayout();
+		$layoutTemplate = $this->getLayoutTemplate();
 
-		if (!$path)
+		// Create the template file name based on the layout
+		$file = isset($tpl) ? $layout . '_' . $tpl : $layout;
+
+		// Clean the file name
+		$file = preg_replace('/[^A-Z0-9_\.-]/i', '', $file);
+		$tpl = isset($tpl) ? preg_replace('/[^A-Z0-9_\.-]/i', '', $tpl) : $tpl;
+
+		// Load the language file for the template
+		$lang = \JFactory::getLanguage();
+		$lang->load('tpl_' . $template, JPATH_BASE, null, false, true)
+			|| $lang->load('tpl_' . $template, JPATH_THEMES . "/$template", null, false, true);
+
+		// Change the template folder if alternative layout is in different template
+		if (isset($layoutTemplate) && $layoutTemplate != '_' && $layoutTemplate != $template)
 		{
-			throw new \RuntimeException(\JText::sprintf('JLIB_APPLICATION_ERROR_LAYOUTFILE_NOT_FOUND', $file), 500);
+			$this->_path['template'] = str_replace($template, $layoutTemplate, $this->_path['template']);
 		}
 
-		// Unset so as not to introduce into template scope
-		unset($tpl);
-		unset($file);
+		// Load the template script
+		jimport('joomla.filesystem.path');
+		$filetofind = $this->_createFileName('template', array('name' => $file));
 
-		// Never allow a 'this' property
-		if (isset($this->this))
+		if (empty($this->paths_arr))
 		{
-			unset($this->this);
+			$paths = $this->paths;
+
+			$this->paths_arr = array();
+			while($paths->valid()){
+
+				$this->paths_arr[] = $paths->current();
+
+			  $paths->next();
+			}
 		}
 
-		// Start an output buffer.
-		ob_start();
+		$this->_template = \JPath::find($this->paths_arr, $filetofind);
 
-		// Load the template.
-		include $path;
+		// If alternate layout can't be found, fall back to default layout
+		if ($this->_template == false)
+		{
+			$filetofind = $this->_createFileName('', array('name' => 'default' . (isset($tpl) ? '_' . $tpl : $tpl)));
 
-		// Get the layout contents.
-		$output = ob_get_clean();
+			$this->_template = \JPath::find($this->paths_arr, $filetofind);
+		}
 
-		return $output;
+		if ($this->_template != false)
+		{
+			// Unset so as not to introduce into template scope
+			unset($tpl);
+			unset($file);
+
+			// Never allow a 'this' property
+			if (isset($this->this))
+			{
+				unset($this->this);
+			}
+
+			// Start capturing output into a buffer
+			ob_start();
+
+			// Include the requested template filename in the local scope
+			// (this will execute the view logic).
+			include $this->_template;
+
+			// Done with the requested template; get the buffer and
+			// clear it.
+			$this->_output = ob_get_contents();
+			ob_end_clean();
+
+			return $this->_output;
+		}
+		else
+		{
+			throw new \Exception(\JText::sprintf('JLIB_APPLICATION_ERROR_LAYOUTFILE_NOT_FOUND', $file), 500);
+		}
+	}
+
+	/**
+	 * Get the layout template.
+	 *
+	 * @return  string  The layout template name
+	 */
+	public function getLayoutTemplate()
+	{
+		return $this->_layoutTemplate;
+	}
+
+	/**
+	 * Create the filename for a resource
+	 *
+	 * @param   string  $type   The resource type to create the filename for
+	 * @param   array   $parts  An associative array of filename information
+	 *
+	 * @return  string  The filename
+	 *
+	 * @since   12.2
+	 */
+	protected function _createFileName($type, $parts = array())
+	{
+		switch ($type)
+		{
+			case 'template':
+				$filename = strtolower($parts['name']) . '.' . $this->_layoutExt;
+				break;
+
+			default:
+				$filename = strtolower($parts['name']) . '.php';
+				break;
+		}
+
+		return $filename;
 	}
 }

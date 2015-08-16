@@ -44,8 +44,8 @@ $firstContentActive = true;
 	<?php foreach ($this->formData as $operation => $operationData): ?>
 		<?php
 		if (substr($operation, 0, strlen('task-')) === 'task-') :
-			echo JLayoutHelper::render(
-				'webservice.operation',
+			echo \JLayoutHelper::render(
+				'operation',
 				array(
 					'view' => $this,
 					'options' => array(
@@ -54,7 +54,8 @@ $firstContentActive = true;
 						'tabActive' => $firstContentActive ? ' active in ' : '',
 						'fieldList' => array('defaultValue', 'isRequiredField', 'isPrimaryField'),
 					)
-				)
+				),
+				JPATH_COMPONENT_ADMINISTRATOR.'/Webservices/Layout'
 			);
 
 			$firstContentActive = false;
