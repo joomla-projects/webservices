@@ -42,13 +42,14 @@ JHtml::_('formbehavior.chosen', 'select');
 			}
 
 			jQuery.ajax({
-				url: 'index.php?option=com_webservices&task=webservice.ajaxGet' + optionType,
+				url: 'index.php?option=com_webservices&task=ajax&type=get' + optionType,
 				data: getData,
 				dataType: 'text',
 				beforeSend: function () {
 					$button.parents('fieldset:first').addClass('opacity-40');
 				}
 			}).done(function (data) {
+
 				$button.parents('fieldset:first').removeClass('opacity-40')
 					.find('.ws-row-list').prepend(data)
 					.find('.fields-edit-row:first').click();
@@ -101,13 +102,14 @@ JHtml::_('formbehavior.chosen', 'select');
 			if (getData['taskName'] != '')
 			{
 				jQuery.ajax({
-					url: 'index.php?option=com_webservices&task=webservice.ajaxGetTask',
+					url: 'index.php?option=com_webservices&task=ajax&type=getTask',
 					data: getData,
 					dataType: 'text',
 					beforeSend: function () {
 						$button.parents('#webserviceTabTask').addClass('opacity-40');
 					}
 				}).done(function (data) {
+
 					$button.parents('#webserviceTabTask').removeClass('opacity-40')
 						.find('.tab-content:first').prepend(data);
 

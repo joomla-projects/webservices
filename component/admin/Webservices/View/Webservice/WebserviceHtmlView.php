@@ -83,6 +83,9 @@ class WebserviceHtmlView extends DefaultHtmlView
 
 		$this->form	= $model->getForm();
 		$this->state         = $model->getState();
+		$this->fields = $model->fields;
+		$this->resources = $model->resources;
+		$this->formData = $model->formData;
 
 		// Check if option is enabled
 		try
@@ -147,18 +150,18 @@ class WebserviceHtmlView extends DefaultHtmlView
 		// For new records, check the create permission.
 		if ($user->authorise('core.admin', 'com_webservices'))
 		{
-			\JToolbarHelper::apply('webservice.apply');
-			\JToolbarHelper::save('webservice.save');
-			\JToolbarHelper::save2new('webservice.save2new');
+			\JToolbarHelper::apply('apply');
+			\JToolbarHelper::save('save');
+			\JToolbarHelper::save2new('save2new');
 		}
 
 		if (empty($this->item->id))
 		{
-			\JToolbarHelper::cancel('webservice.cancel');
+			\JToolbarHelper::cancel('cancel');
 		}
 		else
 		{
-			\JToolbarHelper::cancel('webservice.cancel', 'JTOOLBAR_CLOSE');
+			\JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
 
 		\JToolbarHelper::divider();

@@ -12,6 +12,7 @@ use Joomla\Registry\Registry;
 
 use Webservices\Helper;
 use Webservices\Model\FormModel;
+use Webservices\Model\WebservicesModel;
 
 jimport('joomla.filesystem.folder');
 
@@ -51,10 +52,8 @@ class WebserviceModel extends FormModel
 			return false;
 		}
 
-		/** @var WebservicesModelWebservices $model */
-		require_once 'webservices.php';
-
-		$model = \JModelList::getInstance('Webservices', 'WebservicesModel', array());
+		// Get Webservices model
+		$model = new WebservicesModel($this->context);
 
 		if ($id = $model->installWebservice(
 				$data['main']['client'],
@@ -106,8 +105,8 @@ class WebserviceModel extends FormModel
 		$name = $dataRegistry->get('main.name', '');
 		$version = $dataRegistry->get('main.version', '1.0.0');
 		$folder = $dataRegistry->get('main.path', '');
-		$folder = !empty($folder) ? JPath::clean('/' . $folder) : '';
-		$webserviceBasePath = Helper::getWebservicesPath();
+		$folder = !empty($folder) ? \JPath::clean('/' . $folder) : '';
+		$webserviceBasePath = \Joomla\Webservices\Webservices\WebserviceHelper::getWebservicesPath();
 
 		if (!\JFolder::exists($webserviceBasePath . $folder))
 		{

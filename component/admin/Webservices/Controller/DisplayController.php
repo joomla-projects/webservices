@@ -153,8 +153,6 @@ class DisplayController extends \JControllerBase
 		$params = \JComponentHelper::getParams('com_webservices');
 
 		$state->set('params', $params);
-		//$state->set('github_user', $params->get('org', 'joomla'));
-		//$state->set('github_repo', $params->get('repo', 'joomla-cms'));
 
 		// Pre-fill the limits
 		$limit = $this->getApplication()->getUserStateFromRequest('global.list.limit', 'limit', $this->getApplication()->get('list_limit'), 'uint');

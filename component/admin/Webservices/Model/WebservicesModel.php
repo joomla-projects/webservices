@@ -310,8 +310,8 @@ class WebservicesModel extends \JModelDatabase
 				'id'            => $id,
 			);
 
-			/** @var WebservicesTableWebservice $table */
-			$table = \JTable::getInstance('Webservice', 'WebservicesTable', array('dbo' => $this->getDb()));
+			// Get the WebservicesTable object
+			$table = new \Webservices\Table\WebserviceTable(Helper::createDbo());
 			$table->bind(\Joomla\Webservices\Webservices\ConfigurationHelper::$installedWebservices[$client][$webservice][$version]);
 
 			// Check the data.
@@ -330,7 +330,11 @@ class WebservicesModel extends \JModelDatabase
 				return false;
 			}
 
-			$this->setState($this->getName() . '.id', $table->id);
+			$name = $this->context . '.id';
+
+			$state = new JRegistry(array('context' => $name, 'id' => $table->id));
+
+			$this->setState($state);
 
 			return $table->id;
 		}

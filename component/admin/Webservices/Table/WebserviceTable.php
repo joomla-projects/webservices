@@ -72,7 +72,7 @@ class WebserviceTable extends \JTable
 			// No match, invalid
 			if (!$matched)
 			{
-				$this->setError(JText::_('COM_WEBSERVICES_WEBSERVICE_VERSION_WRONG_FORMAT'));
+				$this->setError(\JText::_('COM_WEBSERVICES_WEBSERVICE_VERSION_WRONG_FORMAT'));
 
 				return false;
 			}
@@ -82,21 +82,21 @@ class WebserviceTable extends \JTable
 
 		if (empty($this->name))
 		{
-			$this->setError(JText::_('COM_WEBSERVICES_WEBSERVICE_NAME_FIELD_CANNOT_BE_EMPTY'));
+			$this->setError(\JText::_('COM_WEBSERVICES_WEBSERVICE_NAME_FIELD_CANNOT_BE_EMPTY'));
 
 			return false;
 		}
 
 		if (empty($this->client))
 		{
-			$this->setError(JText::_('COM_WEBSERVICES_WEBSERVICE_CLIENT_FIELD_CANNOT_BE_EMPTY'));
+			$this->setError(\JText::_('COM_WEBSERVICES_WEBSERVICE_CLIENT_FIELD_CANNOT_BE_EMPTY'));
 
 			return false;
 		}
 
 		if ($client->load(array('client' => $this->client, 'name' => $this->name, 'version' => $this->version)) && $client->id != $this->id)
 		{
-			$this->setError(JText::_('COM_WEBSERVICES_WEBSERVICE_ALREADY_EXISTS'));
+			$this->setError(\JText::_('COM_WEBSERVICES_WEBSERVICE_ALREADY_EXISTS'));
 
 			return false;
 		}
