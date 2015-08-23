@@ -48,11 +48,31 @@ class JFormFieldWebservicescopes extends JFormFieldList
 		// Accepted modifiers
 		$hash = md5($this->element);
 
+		try
+		{
+			$container = (new Joomla\DI\Container)
+				->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider)
+				->registerServiceProvider(new Joomla\Language\Service\LanguageFactoryProvider)
+				->registerServiceProvider(new Joomla\Webservices\Service\DatabaseProvider);
+		}
+		catch (\Exception $e)
+		{
+			throw new RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
+		}
+
+		/** @var \Joomla\Database\DatabaseDriver $db */
+		$db = $container->get('db');
+
+		/** @var \Joomla\Language\LanguageFactory $languageFactory */
+		$languageFactory = $container->get('Joomla\\Language\\LanguageFactory');
+		$languageFactory->getLanguage()->load('lib_webservices');
+		$text = $languageFactory->getText();
+
 		if (!isset(static::$cache[$hash]))
 		{
 			static::$cache[$hash] = parent::getOptions();
 
-			$options = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceScopes();
+			$options = \Joomla\Webservices\Webservices\ConfigurationHelper::getWebserviceScopes($text, array(), $db);
 
 			static::$cache[$hash] = array_merge(static::$cache[$hash], $options);
 		}
