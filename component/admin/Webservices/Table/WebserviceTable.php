@@ -16,6 +16,16 @@ use Joomla\Database\DatabaseDriver;
  * @package     Joomla!
  * @subpackage  Webservices
  * @since       1.0
+ *
+ * @property  string  $name
+ * @property  string  $version
+ * @property  string  $title
+ * @property  string  $path
+ * @property  string  $xmlFile
+ * @property  string  $operations
+ * @property  string  $scopes
+ * @property  int     $client
+ * @property  int     $state
  */
 class WebserviceTable extends \JTable
 {
