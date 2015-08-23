@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f12e6d4e0b51c336c922a6c91daf633b",
+    "hash": "b13d9c97f2b3f1c88b625557f8b59517",
     "packages": [
         {
             "name": "ircmaxell/password-compat",
@@ -629,55 +629,6 @@
             "time": "2015-03-28 17:54:38"
         },
         {
-            "name": "joomla/session",
-            "version": "dev-rewrite",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/joomla-framework/session.git",
-                "reference": "a384b29d054df4d02e88a2aa1f3f759a46aeef36"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/session/zipball/a384b29d054df4d02e88a2aa1f3f759a46aeef36",
-                "reference": "a384b29d054df4d02e88a2aa1f3f759a46aeef36",
-                "shasum": ""
-            },
-            "require": {
-                "joomla/event": "2.0.*@dev",
-                "php": ">=5.4"
-            },
-            "require-dev": {
-                "joomla/database": "2.0.*@dev",
-                "joomla/filesystem": "2.0.*@dev",
-                "joomla/test": "~1.0",
-                "phpunit/dbunit": "~1.2",
-                "phpunit/phpunit": "4.*",
-                "squizlabs/php_codesniffer": "1.*"
-            },
-            "suggest": {
-                "joomla/database": "Install joomla/database if you want to use Database session storage.",
-                "joomla/filesystem": "Install joomla/filesystem if you want to use file based session storage."
-            },
-            "type": "joomla-package",
-            "autoload": {
-                "psr-4": {
-                    "Joomla\\Session\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "description": "Joomla Session Package",
-            "homepage": "https://github.com/joomla-framework/session",
-            "keywords": [
-                "framework",
-                "joomla",
-                "session"
-            ],
-            "time": "2015-06-19 00:07:29"
-        },
-        {
             "name": "joomla/string",
             "version": "1.3.1",
             "source": {
@@ -852,7 +803,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "joomla/event": 20,
-        "joomla/session": 20,
         "joomla/authentication": 20,
         "joomla/date": 20,
         "joomla/language": 20

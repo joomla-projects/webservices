@@ -67,15 +67,6 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		// Constant that is checked in included files to prevent direct access.
 		define('_JEXEC', 1);
 
-		// Don't let the session load twice! So inject ours into Joomla
-		/** @var \Joomla\Session\Session $session */
-		$session =  $container->get("session");
-		$data = array(
-			'session' => false,
-			'session_name' => $session->getName()
-		);
-
-		$applicationConfig = new Registry($data);
 		$client = $webservice->options->get('webserviceClient', 'site');
 
 		// Get the CMS base data and load the application
@@ -84,14 +75,14 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 			define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
 			require_once JPATH_BASE . '/includes/defines.php';
 			require_once JPATH_BASE . '/includes/framework.php';
-			$app = new \JApplicationAdministrator(null, $applicationConfig);
+			$app = new \JApplicationAdministrator;
 		}
 		else
 		{
 			define('JPATH_BASE',      JPATH_CMS);
 			require_once JPATH_BASE . '/includes/defines.php';
 			require_once JPATH_BASE . '/includes/framework.php';
-			$app = new \JApplicationSite(null, $applicationConfig);
+			$app = new \JApplicationSite;
 		}
 
 		/** @var \Joomla\Language\LanguageFactory $languageFactory */
@@ -105,12 +96,6 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		// Set the application and language objects into JFactory.
 		\JFactory::$application = $app;
 		\JFactory::$language = $joomlaLang;
-
-		/**
-		 * Set the session object into JFactory now. Note that we are injecting
-		 * our framework session used here and not a JSession object.
-		 */
-		\JFactory::$session = $container->get("session");
 
 		/**
 		 * Set the application instance into the instances property of JApplicationCms for when some

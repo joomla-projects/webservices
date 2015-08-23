@@ -12,7 +12,6 @@
         "joomla/input": "~1.2",
 		"joomla/filter": "~1.1",
 		"joomla/event": "2.*@dev",
-        "joomla/session": "dev-rewrite",
         "joomla/uri": "~1.1",
         "joomla/filesystem": "~1.2",
         "joomla/authentication": "dev-AbstractStrategy",

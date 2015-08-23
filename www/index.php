@@ -30,8 +30,7 @@ try
 		->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider)
 		->registerServiceProvider(new Joomla\Webservices\Service\DatabaseProvider)
 		->registerServiceProvider(new Joomla\Language\Service\LanguageFactoryProvider)
-		->registerServiceProvider(new Joomla\Webservices\Service\EventProvider)
-		->registerServiceProvider(new Joomla\Webservices\Service\SessionProvider);
+		->registerServiceProvider(new Joomla\Webservices\Service\EventProvider);
 
 	// Set error reporting based on config
 	$errorReporting = (int) $container->get('config')->get('errorReporting', 0);

@@ -91,9 +91,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 			->set('Joomla\\Input\\Input', $this->input)
 			->set('Joomla\\DI\\Container', $container);
 
-		$session = $container->get('session');
-		$this->session = $session;
-
 		$this->setContainer($container);
 	}
 
@@ -288,9 +285,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 			return;
 		}
 
-		// For empty queue, if messages exists in the session, enqueue them first.
-		$this->getMessageQueue();
-
 		// Enqueue the message.
 		$this->messageQueue[] = array('message' => $msg, 'type' => strtolower($type));
 	}
@@ -304,19 +298,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 */
 	public function getMessageQueue()
 	{
-		// For empty queue, if messages exists in the session, enqueue them.
-		if (!count($this->messageQueue))
-		{
-			$sessionQueue = $this->session->get('application.queue');
-
-			// Check if we have any messages in the session from a previous page
-			if (count($sessionQueue))
-			{
-				$this->messageQueue = $sessionQueue;
-				$this->session->set('application.queue', null);
-			}
-		}
-
 		return $this->messageQueue;
 	}
 
@@ -332,12 +313,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 */
 	public function redirect($url, $moved = false)
 	{
-		// Persist messages if they exist.
-		if (count($this->messageQueue))
-		{
-			$this->session->set('application.queue', $this->messageQueue);
-		}
-
 		// Hand over processing to the parent now
 		parent::redirect($url, $moved);
 	}
