@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-/** @var \Joomla\Webservices\Api\Hal\Hal $view */
+/** @var \Joomla\Webservices\Webservices\Webservice $view */
 $view = !empty($displayData['view']) ? $displayData['view'] : null;
 
 $xml = !empty($displayData['options']['xml']) ? $displayData['options']['xml'] : array();
