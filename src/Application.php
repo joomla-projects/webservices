@@ -14,7 +14,6 @@ use Joomla\Application\Web\WebClient;
 use Joomla\Input\Input;
 use Joomla\Filter\InputFilter;
 use Joomla\Registry\Registry;
-use Joomla\Session\Session;
 
 use Joomla\Authentication\Authentication;
 
@@ -37,14 +36,6 @@ use Joomla\Webservices\Api\Soap\SoapHelper;
 class Application extends AbstractWebApplication implements ContainerAwareInterface
 {
 	use ContainerAwareTrait;
-
-	/**
-	 * The session object
-	 *
-	 * @var    Session
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $session;
 
 	/**
 	 * The application message queue.
@@ -299,22 +290,6 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	public function getMessageQueue()
 	{
 		return $this->messageQueue;
-	}
-
-	/**
-	 * Redirect to another URL overriden to ensure all messages are enqueued into the session
-	 *
-	 * @param   string   $url    The URL to redirect to. Can only be http/https URL
-	 * @param   boolean  $moved  True if the page is 301 Permanently Moved, otherwise 303 See Other is assumed.
-	 *
-	 * @return  void
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function redirect($url, $moved = false)
-	{
-		// Hand over processing to the parent now
-		parent::redirect($url, $moved);
 	}
 
 	/**
