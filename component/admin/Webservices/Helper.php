@@ -11,7 +11,7 @@ namespace Webservices;
 use Joomla\Registry\Registry;
 
 /**
- * Helper class for the patch tester component
+ * Helper class for the Webservices component
  *
  * @since  1.0
  */
