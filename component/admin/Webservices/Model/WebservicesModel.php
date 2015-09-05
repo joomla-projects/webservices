@@ -332,7 +332,7 @@ class WebservicesModel extends \JModelDatabase
 
 			$name = $this->context . '.id';
 
-			$state = new JRegistry(array('context' => $name, 'id' => $table->id));
+			$state = new \JRegistry(array('context' => $name, 'id' => $table->id));
 
 			$this->setState($state);
 

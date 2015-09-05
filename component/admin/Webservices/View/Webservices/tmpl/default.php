@@ -316,7 +316,7 @@ $userId		= $user->get('id');
 									<button
 										class="btn btn-success"
 										type="button"
-										onclick="setWebservice('', '', '', '', 'webservices.uploadWebservice')">
+										onclick="setWebservice('', '', '', '', 'upload')">
 										<i class="icon-upload"></i>
 										<?php echo JText::_('JTOOLBAR_UPLOAD') ?>
 									</button>
@@ -330,14 +330,14 @@ $userId		= $user->get('id');
 									<button
 										class="btn btn-success"
 										type="button"
-										onclick="setWebservice('', 'all', '', '', 'webservices.installWebservice')">
+										onclick="setWebservice('', 'all', '', '', 'install')">
 										<i class="icon-cogs"></i>
 										<?php echo JText::_('JTOOLBAR_INSTALL'); ?>
 									</button>
 									<button
 										class="btn btn-danger"
 										type="button"
-										onclick="setWebservice('', 'all', '', '', 'webservices.deleteWebservice')">
+										onclick="setWebservice('', 'all', '', '', 'delete')">
 										<i class="icon-remove"></i>
 										<?php echo JText::_('JTOOLBAR_DELETE') ?>
 									</button>
@@ -399,7 +399,7 @@ $userId		= $user->get('id');
 										<button
 											class="btn btn-xs btn-success"
 											type="button"
-											onclick="setWebservice('<?php echo $webserviceClient; ?>', '<?php echo $webservice->config->name; ?>', '<?php echo $webservice->config->version; ?>', '<?php echo $webservice->webservicePath; ?>', 'webservices.installWebservice')">
+											onclick="setWebservice('<?php echo $webserviceClient; ?>', '<?php echo $webservice->config->name; ?>', '<?php echo $webservice->config->version; ?>', '<?php echo $webservice->webservicePath; ?>', 'install')">
 											<i class="icon-cogs"></i>
 											<?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_WEBSERVICE_INSTALL_XML') ?>
 										</button>
