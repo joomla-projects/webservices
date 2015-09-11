@@ -22,6 +22,14 @@
         "joomla/language": "2.*@dev",
         "psr/log": "~1.0"
     },
+    "require-dev": {
+        "codeception/codeception": "~2.1",
+        "joomla-projects/joomla-browser": "dev-develop",
+        "codegyre/robo": "dev-master",
+        "flow/jsonpath": "dev-master",
+        "phing/phing": "~2",
+        "joomla-projects/robo": "dev-master"
+    },
     "autoload": {
         "psr-4": {
             "Joomla\\Webservices\\": "src/"

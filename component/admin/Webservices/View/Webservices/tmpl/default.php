@@ -171,7 +171,7 @@ $userId		= $user->get('id');
 				<a href="#mainComponentWebservices" data-toggle="tab"><?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_INSTALLED_WEBSERVICES'); ?></a>
 			</li>
 			<li role="presentation">
-				<a href="#mainComponentWebservicesXmls" data-toggle="tab">
+				<a href="#mainComponentWebservicesXmls" data-toggle="tab" class="lc-not_installed_webservices">
 					<?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_AVAILABLE_WEBSERVICES'); ?> <span class="badge"><?php echo $this->xmlFilesAvailable; ?></span>
 				</a>
 			</li>
@@ -328,7 +328,7 @@ $userId		= $user->get('id');
 								</div>
 								<div class="controls">
 									<button
-										class="btn btn-success"
+										class="btn btn-success lc-install_all_webservices"
 										type="button"
 										onclick="setWebservice('', 'all', '', '', 'install')">
 										<i class="icon-cogs"></i>
