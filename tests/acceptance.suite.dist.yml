@@ -37,5 +37,5 @@ modules:
             admin email: 'admin@mydomain.com'      # email Id of the Admin
             language: 'English (United Kingdom)'   # Language in which you want the Application to be Installed
         \Helper\Acceptance:
-            package_url: http://localhost/tests/joomla-cms3/package/webservices-v1.0.0.zip
+            repo_folder: http://localhost/tests/joomla-cms3/package/webservices-v1.0.0.zip
 error_level: "E_ALL & ~E_STRICT & ~E_DEPRECATED"

@@ -3,8 +3,8 @@
     "driver"   : "mysqli",
     "host"     : "localhost",
     "user"     : "root",
-    "password" : "",
-    "database" : "webservices",
+    "password" : "root",
+    "database" : "test_webservices2",
 	"prefix"   : "jos_",
     "debug"    : false
   },

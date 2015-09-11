@@ -13,5 +13,5 @@ $I = new \AcceptanceTester($scenario);
 $I->am('Administrator');
 $I->wantToTest('Webservices installation in Joomla 3');
 $I->doAdministratorLogin();
-$url = $I->getConfiguration('package_url');
-$I->installExtensionFromUrl($url);
+$path = $I->getConfiguration('repo_folder');
+$I->installExtensionFromDirectory($path);

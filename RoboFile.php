@@ -57,7 +57,7 @@ class RoboFile extends \Robo\Tasks
 	}
 
 	/**
-	 * Executes Selenium System Tests in your machine
+	 * Executes Selenium System Test in your machine
 	 *
 	 * @param   array  $options  Use -h to see available options
 	 *
@@ -141,8 +141,6 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function runTests($options = ['selenium_path' => null])
 	{
-		$this->_exec('vendor/bin/phing -f extension_packager.xml autopack');
-
 		$this->prepareSiteForSystemTests();
 
 		if (!$options['selenium_path'])
@@ -150,7 +148,10 @@ class RoboFile extends \Robo\Tasks
 			$this->getSelenium();
 		}
 
-		$this->_copyDir(__DIR__.'/.dist', __DIR__.'/tests/joomla-cms3/package');
+		$this->_copyDir(__DIR__.'/vendor', __DIR__.'/tests/joomla-cms3/vendor/');
+		$this->_copyDir(__DIR__.'/www', __DIR__.'/tests/joomla-cms3/www/');
+		$this->_copyDir(__DIR__.'/src', __DIR__.'/tests/joomla-cms3/src/');
+		$this->_copy(__DIR__.'/config.json', __DIR__.'/tests/joomla-cms3/config.json');
 
 		$this->getComposer();
 
@@ -213,7 +214,7 @@ class RoboFile extends \Robo\Tasks
 			$this->_exec('curl'
 			             . ' -sS'
 			             . ' --retry 3 --retry-delay 5'
-			             . ' http://selenium-release.storage.googleapis.com/2.46/selenium-server-standalone-2.46.0.jar'
+			             . ' http://selenium-release.storage.googleapis.com/2.47/selenium-server-standalone-2.47.1.jar'
 			             . ' > selenium-server-standalone.jar');
 		}
 	}
