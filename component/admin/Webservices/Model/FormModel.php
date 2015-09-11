@@ -379,6 +379,8 @@ class FormModel extends \JModelDatabase
 	 */
 	public function getItem($pk = null)
 	{
+		$pk = (!empty($pk)) ? $pk : (int) \JFactory::getApplication()->input->get('id');
+
 		if (!$item = $this->_getItem($pk))
 		{
 			return $item;

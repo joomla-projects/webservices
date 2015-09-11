@@ -225,7 +225,7 @@ $userId		= $user->get('id');
 											<?php echo JHtml::_('jgrid.checkedout', $i, $item->checked_out, $item->checked_out_time, 'webservices.', $canCheckin); ?>
 										<?php endif; ?>
 										<?php if ($canEdit || $canEditOwn) : ?>
-											<a href="<?php echo JRoute::_('index.php?option=com_webservices&task=webservice.edit&id=' . $item->id); ?>">
+											<a href="<?php echo JRoute::_('index.php?option=com_webservices&task=edit&id=' . $item->id); ?>">
 												<?php echo $this->escape($item->title); ?></a>
 										<?php else : ?>
 											<?php echo $this->escape($item->title); ?>

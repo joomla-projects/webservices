@@ -160,23 +160,23 @@ class WebservicesHtmlView extends DefaultHtmlView
 
 		if ($canDo->get('core.edit') || $canDo->get('core.edit.own'))
 		{
-			\JToolbarHelper::editList('webservice.edit');
+			\JToolbarHelper::editList('edit');
 		}
 
 		if ($canDo->get('core.edit.state'))
 		{
-			\JToolbarHelper::publish('webservices.publish', 'JTOOLBAR_PUBLISH', true);
-			\JToolbarHelper::unpublish('webservices.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+			\JToolbarHelper::publish('publish', 'JTOOLBAR_PUBLISH', true);
+			\JToolbarHelper::unpublish('unpublish', 'JTOOLBAR_UNPUBLISH', true);
 		}
 
 		if (\JFactory::getUser()->authorise('core.admin'))
 		{
-			\JToolbarHelper::checkin('webservices.checkin');
+			\JToolbarHelper::checkin('checkin');
 		}
 
 		if ($canDo->get('core.delete'))
 		{
-			\JToolbarHelper::deleteList('', 'webservices.delete', 'JTOOLBAR_EMPTY_TRASH');
+			\JToolbarHelper::deleteList('', 'delete', 'JTOOLBAR_EMPTY_TRASH');
 		}
 	}
 
