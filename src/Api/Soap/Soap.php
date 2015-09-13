@@ -29,6 +29,12 @@ use Joomla\Registry\Registry;
 class Soap extends ApiBase  implements DispatcherAwareInterface
 {
 	/**
+	 * @var    string  Name of the Api
+	 * @since  1.2
+	 */
+	public $apiName = 'soap';
+
+	/**
 	 * @var    string  Operation that will be preformed with this Api call
 	 * @since  1.2
 	 */
@@ -78,16 +84,15 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object
+	 * @param   Renderer   $renderer   Renderer object.
 	 * @param   Registry   $options    Optional custom options to load
 	 *
 	 * @throws  \Exception
 	 * @since   1.4
 	 */
-	public function __construct(Container $container, Registry $options)
+	public function __construct(Container $container, $renderer, Registry $options)
 	{
 		parent::__construct($container, $options);
-
-		$this->setApi($this->options->get('api', 'soap'));
 
 		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
 

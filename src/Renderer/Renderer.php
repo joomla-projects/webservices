@@ -10,6 +10,7 @@
 namespace Joomla\Webservices\Renderer;
 
 use Joomla\Webservices\Application;
+use Joomla\Webservices\Renderer\RendererInterface;
 
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
@@ -20,7 +21,7 @@ use Joomla\DI\ContainerAwareInterface;
  *
  * @since  __DELPOY_VERSION__
  */
-abstract class Base implements ContainerAwareInterface
+abstract class Renderer implements ContainerAwareInterface, RendererInterface
 {
 	use ContainerAwareTrait;
 

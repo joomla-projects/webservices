@@ -1,6 +1,6 @@
 <?php
 /**
- * Entry file for Joomla webservices application.
+ * CLI entry file for Joomla webservices application.
  *
  * @package    Webservices
  * @copyright  Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
@@ -16,8 +16,7 @@ define('JPATH_ROOT',	JPATH_CMS);
 // Ensure we've initialized Composer
 if (!file_exists(JPATH_API . '/vendor/autoload.php'))
 {
-	header('HTTP/1.1 500 Internal Server Error', null, 500);
-	echo 'Composer is not set up properly, please run "composer install".';
+	echo 'Composer is not set up properly, please run "composer install".' . "\n";
 
 	exit;
 }
@@ -31,7 +30,8 @@ try
 		->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider)
 		->registerServiceProvider(new Joomla\Webservices\Service\DatabaseProvider)
 		->registerServiceProvider(new Joomla\Language\Service\LanguageFactoryProvider)
-		->registerServiceProvider(new Joomla\Webservices\Service\EventProvider);
+		->registerServiceProvider(new Joomla\Webservices\Service\EventProvider)
+		->registerServiceProvider(new Joomla\Webservices\Service\SessionProvider);
 
 	// Set error reporting based on config
 	$errorReporting = (int) $container->get('config')->get('errorReporting', 0);
@@ -39,9 +39,7 @@ try
 }
 catch (\Exception $e)
 {
-	header('HTTP/1.1 500 Internal Server Error', null, 500);
-	header('Content-Type: text/html; charset=utf-8');
-	echo 'An error occurred while booting the application: ' . $e->getMessage();
+	echo 'An error occurred while booting the application: ' . $e->getMessage() . "\n";
 
 	exit;
 }
@@ -49,13 +47,12 @@ catch (\Exception $e)
 // Execute the application
 try
 {
-	(new Joomla\Webservices\WebApplication($container))->execute();
+	(new Joomla\Webservices\CliApplication($container))->execute();
 }
 catch (\Exception $e)
 {
-	header('HTTP/1.1 500 Internal Server Error', null, 500);
-	header('Content-Type: text/html; charset=utf-8');
-	echo 'An error occurred while executing the application: ' . $e->getMessage();
+	echo 'An error occurred while executing the application: ' . $e->getMessage() . "\n";
 
 	exit;
 }
+

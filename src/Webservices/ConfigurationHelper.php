@@ -120,7 +120,7 @@ class ConfigurationHelper
 	/**
 	 * Loading of related XML files
 	 *
-	 * @return  array  List of objects
+	 * @return  void
 	 */
 	public static function loadWebservices()
 	{
@@ -214,30 +214,30 @@ class ConfigurationHelper
 	 */
 	public static function getWebserviceHelper($client, $webserviceName, $version = '', $path = '')
 	{
-		if (!empty($webserviceName))
+		if (empty($webserviceName))
 		{
-			$version = !empty($version) ? $version : '1.0.0';
-			$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesPath() . '/' . $path : WebserviceHelper::getWebservicesPath();
-
-			// Search for suffixed versions. Example: content.1.0.0.xml
-			$rawPath = $webserviceName . '.' . $version . '.php';
-			$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
-
-			$configurationFullPath = Path::find($webservicePath, $rawPath);
-
-			if ($configurationFullPath)
-			{
-				return $configurationFullPath;
-			}
-
-			// Fall back to standard version
-			$rawPath = $webserviceName . '.php';
-			$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
-
-			return Path::find($webservicePath, $rawPath);
+			return null;
 		}
 
-		return null;
+		$version = !empty($version) ? $version : '1.0.0';
+		$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesPath() . '/' . $path : WebserviceHelper::getWebservicesPath();
+
+		// Search for suffixed versions. Example: content.1.0.0.xml
+		$rawPath = $webserviceName . '.' . $version . '.php';
+		$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
+
+		$configurationFullPath = Path::find($webservicePath, $rawPath);
+
+		if ($configurationFullPath)
+		{
+			return $configurationFullPath;
+		}
+
+		// Fall back to standard version
+		$rawPath = $webserviceName . '.php';
+		$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
+
+		return Path::find($webservicePath, $rawPath);
 	}
 
 	/**
@@ -328,12 +328,12 @@ class ConfigurationHelper
 		// Initialise Installed webservices
 		$webservices = self::getInstalledWebservices($db);
 
-		if (!empty($webservices[$client][$webserviceName][$version]))
+		if (empty($webservices[$client][$webserviceName][$version]))
 		{
-			return $webservices[$client][$webserviceName][$version];
+			return null;
 		}
 
-		return null;
+		return $webservices[$client][$webserviceName][$version];
 	}
 
 	/**
@@ -350,19 +350,19 @@ class ConfigurationHelper
 	{
 		$installedWebservices = self::getInstalledWebservices($db);
 
-		if (!empty($installedWebservices))
+		if (empty($installedWebservices))
 		{
-			if (empty($version))
-			{
-				$version = self::getNewestWebserviceVersion($client, $webserviceName, $db);
-			}
-
-			$webservice = $installedWebservices[$client][$webserviceName][$version];
-
-			return !empty($webservice['state']);
+			return false;
 		}
 
-		return false;
+		if (empty($version))
+		{
+			$version = self::getNewestWebserviceVersion($client, $webserviceName, $db);
+		}
+
+		$webservice = $installedWebservices[$client][$webserviceName][$version];
+
+		return !empty($webservice['state']);
 	}
 
 	/**
@@ -378,16 +378,16 @@ class ConfigurationHelper
 	{
 		$installedWebservices = self::getInstalledWebservices($db);
 
-		if (!empty($installedWebservices) && isset($installedWebservices[$client][$webserviceName]))
+		if (empty($installedWebservices) || !isset($installedWebservices[$client][$webserviceName]))
 		{
-			// First element is always newest
-			foreach ($installedWebservices[$client][$webserviceName] as $version => $webservice)
-			{
-				return $version;
-			}
+			return '1.0.0';
 		}
 
-		return '1.0.0';
+		// First element is always newest
+		foreach ($installedWebservices[$client][$webserviceName] as $version => $webservice)
+		{
+			return $version;
+		}
 	}
 
 	/**

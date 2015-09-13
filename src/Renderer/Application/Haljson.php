@@ -7,8 +7,9 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Renderer;
+namespace Joomla\Webservices\Renderer\Application;
 
+use Joomla\Webservices\Renderer\Renderer;
 use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Resource\Resource;
 
@@ -23,8 +24,16 @@ use Joomla\Webservices\Uri\Uri;
  * @see         http://stateless.co/hal_specification.html
  * @since       1.2
  */
-class Hal extends Base
+class Haljson extends Renderer
 {
+	/**
+	 * API interaction style.
+	 *
+	 * @var    string
+	 * @since  __DELPOY_VERSION__
+	 */
+	protected $style = 'rest';
+
 	/**
 	 * Render all hrefs as absolute, relative is default
 	 *
@@ -32,14 +41,6 @@ class Hal extends Base
 	 * @since  __DELPOY_VERSION__
 	 */
 	protected $absoluteHrefs = false;
-
-	/**
-	 * Document format (xml or json)
-	 *
-	 * @var    string
-	 * @since  __DEPLOY__VERSION__
-	 */
-	protected $documentFormat;
 
 	/**
 	 * Webservice object
@@ -61,25 +62,27 @@ class Hal extends Base
 	{
 		parent::__construct($container, $options);
 
-		$this->documentFormat = $options['documentFormat'];
-
-		// Sanity check - fall back to XML format
-		if (!in_array($this->documentFormat, array('xml', 'json')))
-		{
-			$this->documentFormat = 'json';
-		}
-
 		// Set default mime type.
-		$this->setMimeEncoding('application/hal+' . $this->documentFormat, false);
+		$this->setMimeEncoding('application/hal+json', false);
 
 		// Set document type.
-		$this->setType('hal+' . $this->documentFormat);
+		$this->setType('hal+json');
 
 		// Set absolute/relative hrefs.
 		$this->absoluteHrefs = isset($options['absoluteHrefs']) ? $options['absoluteHrefs'] : false;
 
 		// Set token if needed
 		$this->uriParams = isset($options['uriParams']) ? $options['uriParams'] : array();
+	}
+
+	/**
+	 * Get API interaction style.
+	 * 
+	 * @return  string
+	 */
+	public function getInteractionStyle()
+	{
+		return $this->style;
 	}
 
 	/**
@@ -108,8 +111,9 @@ class Hal extends Base
 		$this->app->setHeader('Content-Type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
 		$this->app->setHeader('Webservice-Name', $this->webservice->webserviceName, true);
 		$this->app->setHeader('Webservice-Version', $this->webservice->webserviceVersion, true);
+		$this->app->setHeader('Webservice-Renderer', 'Haljson', true);
 
-		$this->app->sendHeaders();
+//		$this->app->sendHeaders();
 
 		// Get the HAL object from the buffer.
 		/* @var $hal \Joomla\Webservices\Resource\Resource */
@@ -122,14 +126,7 @@ class Hal extends Base
 			$this->relToAbs($hal, $this->absoluteHrefs);
 		}
 
-		if ($this->documentFormat == 'xml')
-		{
-			return $hal->getXML()->asXML();
-		}
-		else
-		{
-			return (string) $hal;
-		}
+		return (string) $hal;
 	}
 
 	/**
@@ -141,7 +138,7 @@ class Hal extends Base
 	 *
 	 * @since  1.2
 	 */
-	public function setHal(Webservice $webservice)
+	public function setWebservice(Webservice $webservice)
 	{
 		$this->webservice = $webservice;
 

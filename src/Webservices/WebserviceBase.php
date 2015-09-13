@@ -18,6 +18,8 @@ use Joomla\Event\DispatcherAwareInterface;
 use Joomla\Event\DispatcherInterface;
 
 use Joomla\Webservices\Application;
+use Joomla\Webservices\Resource\Resource;
+use Joomla\Webservices\Webservices\Profile;
 use Joomla\Language\Text;
 
 /**
@@ -53,7 +55,7 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 	 * @var    Registry
 	 * @since  1.2
 	 */
-	public $options = null;
+	private $options = null;
 
 	/**
 	 * @var    string  Operation that will be preformed with this Api call. supported: CREATE, READ, UPDATE, DELETE
@@ -143,17 +145,17 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object
-	 * @param   mixed      $options    Optional custom options to load. JRegistry or array format
+	 * @param   Registry   $options    Options to load.
 	 *
 	 * @since   1.2
 	 */
-	public function __construct(Container $container, $options = null)
+	public function __construct(Container $container, Registry $options)
 	{
 		$this->app = $container->get('app');
 		$this->text = $container->get('Joomla\\Language\\LanguageFactory')->getText();
 
 		// Initialise / Load options
-		$this->setOptions($options);
+		$this->options = $options;
 
 		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
 
@@ -162,39 +164,14 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 
 	/**
 	 * Execute the Api operation.
-	 *
-	 * @return  $this
+	 * 
+	 * @param   Profile  $profile  A profile which will shape the resource.
+	 * 
+	 * @return  Resource  A populated Resource object.
 	 *
 	 * @throws  \Exception
 	 */
-	abstract public function execute();
-
-	/**
-	 * Set the options
-	 *
-	 * @param   mixed  $options  Array / Registry object with the options to load
-	 *
-	 * @return  $this
-	 */
-	public function setOptions($options = null)
-	{
-		// Received JRegistry
-		if ($options instanceof Registry)
-		{
-			$this->options = $options;
-		}
-		// Received array
-		elseif (is_array($options))
-		{
-			$this->options = new Registry($options);
-		}
-		else
-		{
-			$this->options = new Registry;
-		}
-
-		return $this;
-	}
+	abstract public function execute(Profile $profile);
 
 	/**
 	 * Set status code for current api call
@@ -239,12 +216,6 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 	 */
 	public function getOptions()
 	{
-		// Always return a JRegistry instance
-		if (!($this->options instanceof Registry))
-		{
-			$this->resetOptions();
-		}
-
 		return $this->options;
 	}
 
@@ -260,22 +231,9 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 	 */
 	public function setOption($key, $value)
 	{
-		$this->getOptions();
 		$this->options->set($key, $value);
 
 		return $this;
-	}
-
-	/**
-	 * Function to empty all the options
-	 *
-	 * @return  $this
-	 *
-	 * @since   1.2
-	 */
-	public function resetOptions()
-	{
-		return $this->setOptions(null);
 	}
 
 	/**

@@ -38,14 +38,6 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 	private $webservice;
 
 	/**
-	 * Helper class object
-	 *
-	 * @var    object
-	 * @since  __DEPLOY_VERSION__
-	 */
-	public $apiHelperClass = null;
-
-	/**
 	 * Dynamic model class object
 	 *
 	 * @var    object
@@ -67,20 +59,20 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		// Constant that is checked in included files to prevent direct access.
 		define('_JEXEC', 1);
 
-		$client = $webservice->options->get('webserviceClient', 'site');
+		$client = $webservice->getOptions()->get('webserviceClient', 'site');
 
 		// Get the CMS base data and load the application
 		if ($client == 'administrator')
 		{
 			define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
-			require_once JPATH_BASE . '/includes/defines.php';
+			require_once __DIR__ . '/defines.php';
 			require_once JPATH_BASE . '/includes/framework.php';
 			$app = new \JApplicationAdministrator;
 		}
 		else
 		{
 			define('JPATH_BASE',      JPATH_CMS);
-			require_once JPATH_BASE . '/includes/defines.php';
+			require_once __DIR__ . '/defines.php';
 			require_once JPATH_BASE . '/includes/framework.php';
 			$app = new \JApplicationSite;
 		}
@@ -139,7 +131,8 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 
 		if ($dataMode == 'helper')
 		{
-			return $this->getHelperObject();
+			$version = $this->webservice->getOptions()->get('webserviceVersion', '');
+			return Factory::getHelper($version, $this->webservice->client, $this->webservice->webserviceName, $this->webservice->webservicePath);
 		}
 
 		if ($dataMode == 'table')
@@ -327,39 +320,6 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		|| $lang->load($option, $path . "/components/$option", $lang->getDefault(), false, false);
 
 		return $this;
-	}
-
-	/**
-	 * Gets instance of helper object class if exists
-	 *
-	 * @return  mixed It will return Api helper class or false if it does not exists
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	private function getHelperObject()
-	{
-		if (!empty($this->apiHelperClass))
-		{
-			return $this->apiHelperClass;
-		}
-
-		$version = $this->webservice->options->get('webserviceVersion', '');
-		$helperFile = ConfigurationHelper::getWebserviceHelper($this->webservice->client, strtolower($this->webservice->webserviceName), $version, $this->webservice->webservicePath);
-
-		if (file_exists($helperFile))
-		{
-			require_once $helperFile;
-		}
-
-		$webserviceName = preg_replace('/[^A-Z0-9_\.]/i', '', $this->webservice->webserviceName);
-		$helperClassName = '\\JWebserviceHelper' . ucfirst($this->webservice->client) . ucfirst(strtolower($webserviceName));
-
-		if (class_exists($helperClassName))
-		{
-			$this->apiHelperClass = new $helperClassName;
-		}
-
-		return $this->apiHelperClass;
 	}
 
 	/**

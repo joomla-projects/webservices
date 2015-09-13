@@ -39,7 +39,7 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	 * @var    Registry
 	 * @since  1.2
 	 */
-	public $options = null;
+	private $options = null;
 
 	/**
 	 * Debug information messages
@@ -68,6 +68,14 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $app = null;
+
+	/**
+	 * Renderer Object
+	 *
+	 * @var    Renderer
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $renderer = null;
 
 	/**
 	 * Standard status codes for RESTfull api
@@ -122,49 +130,19 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param   Container  $container  The DIC object
-	 * @param   Registry   $options    Optional custom options to load
+	 * @param   Container  $container  Dependency injection container object.
+	 * @param   Registry   $options    Options to load.
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
-	public function __construct(Container $container, $options = null)
+	public function __construct(Container $container, Registry $options)
 	{
-		if ($options === null)
-		{
-			$options = new Registry;
-		}
-
-		$this->setOptions($options);
+		$this->options = $options;
 
 		$this->app = $container->get('app');
+		$this->renderer = $container->get('renderer');
+
 		$this->setContainer($container);
-	}
-
-	/**
-	 * Set the options
-	 *
-	 * @param   mixed  $options  Array / Registry object with the options to load
-	 *
-	 * @return  $this
-	 */
-	public function setOptions($options = null)
-	{
-		// Received JRegistry
-		if ($options instanceof Registry)
-		{
-			$this->options = $options;
-		}
-		// Received array
-		elseif (is_array($options))
-		{
-			$this->options = new Registry($options);
-		}
-		else
-		{
-			$this->options = new Registry;
-		}
-
-		return $this;
 	}
 
 	/**
@@ -210,12 +188,6 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	 */
 	public function getOptions()
 	{
-		// Always return a JRegistry instance
-		if (!($this->options instanceof Registry))
-		{
-			$this->resetOptions();
-		}
-
 		return $this->options;
 	}
 
@@ -231,35 +203,8 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	 */
 	public function setOption($key, $value)
 	{
-		$this->getOptions();
 		$this->options->set($key, $value);
 
 		return $this;
-	}
-
-	/**
-	 * Function to empty all the options
-	 *
-	 * @return  $this
-	 *
-	 * @since   1.2
-	 */
-	public function resetOptions()
-	{
-		return $this->setOptions(null);
-	}
-
-	/**
-	 * Change the Api
-	 *
-	 * @param   string  $apiName  Api instance to render
-	 *
-	 * @return  void
-	 *
-	 * @since   1.2
-	 */
-	public function setApi($apiName)
-	{
-		$this->apiName = $apiName;
 	}
 }
