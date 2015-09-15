@@ -11,6 +11,7 @@ namespace Joomla\Webservices\Renderer;
 
 use Joomla\Webservices\Application;
 use Joomla\Webservices\Renderer\RendererInterface;
+use Joomla\Webservices\Resource\Resource;
 
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
@@ -607,16 +608,27 @@ abstract class Renderer implements ContainerAwareInterface, RendererInterface
 	}
 
 	/**
-	 * Outputs the document
-	 *
-	 * @param   boolean  $cache   If true, cache the output
-	 * @param   array    $params  Associative array of attributes
-	 *
-	 * @return  string  The rendered data
-	 *
-	 * @since   11.1
+	 * Get API interaction style.
+	 * 
+	 * @return  string
 	 */
-	public function render($cache = false, $params = array())
+	public function getInteractionStyle()
+	{
+		return $this->style;
+	}
+
+	/**
+	 * Render the document.
+	 * 
+	 * This defers to resource-specific render methods.
+	 *
+	 * @param   Resource  $resource  A populated resource object.
+	 *
+	 * @return  string   The rendered data
+	 *
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public function render(Resource $resource)
 	{
 		if ($mdate = $this->getModifiedDate())
 		{
@@ -625,5 +637,13 @@ abstract class Renderer implements ContainerAwareInterface, RendererInterface
 
 		$this->app->mimeType = $this->getMimeEncoding();
 		$this->app->charSet  = $this->getCharset();
+
+		$this->app->setHeader('Content-Type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
+
+		// Determine the resource-specific render method.
+		$methodName = 'render' . (new \ReflectionClass($resource))->getShortName();
+
+		// Defer to the resource-specific render method.
+		return $this->$methodName($resource);
 	}
 }

@@ -10,9 +10,9 @@
 namespace Joomla\Webservices\Webservices;
 
 use Joomla\Utilities\ArrayHelper;
-use Joomla\Webservices\Resource\Home;
-use Joomla\Webservices\Resource\Item;
-use Joomla\Webservices\Resource\Link;
+use Joomla\Webservices\Resource\ResourceHome;
+use Joomla\Webservices\Resource\ResourceItem;
+use Joomla\Webservices\Resource\ResourceLink;
 use Joomla\Webservices\Resource\Resource;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\Webservices\Xml\XmlHelper;
@@ -78,13 +78,13 @@ class Read extends Webservice
 		}
 
 		// Instantiate a new Home resource.
-		$this->resource = new Home($this->profile);
+		$this->resource = new ResourceHome($this->profile);
 
 		// Add standard Joomla namespace as curie.
-		$documentationCurieAdmin = new Link('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=administrator',
+		$documentationCurieAdmin = new ResourceLink('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=administrator',
 			'curies', 'Documentation Admin', 'Admin', null, true
 		);
-		$documentationCurieSite = new Link('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=site',
+		$documentationCurieSite = new ResourceLink('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=site',
 			'curies', 'Documentation Site', 'Site', null, true
 		);
 
@@ -93,7 +93,7 @@ class Read extends Webservice
 		$this->resource->setLink($documentationCurieSite, false, true);
 
 		$uri = Uri::getInstance();
-		$this->resource->setLink(new Link($uri->base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
+		$this->resource->setLink(new ResourceLink($uri->base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
 
 		$webservices = ConfigurationHelper::getInstalledWebservices($this->getContainer()->get('db'));
 
@@ -119,7 +119,7 @@ class Read extends Webservice
 
 						// We will fetch only top level webservice
 						$this->resource->setLink(
-							new Link(
+							new ResourceLink(
 								$webserviceUrlPath . '&webserviceClient=' . $webserviceClient,
 								$documentation . ':' . $webservice['name'],
 								$webservice['title']
@@ -140,7 +140,7 @@ class Read extends Webservice
 	 *
 	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
-	 * @since   1.2
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function apiRead()
 	{
@@ -165,6 +165,8 @@ class Read extends Webservice
 
 	/**
 	 * Execute the API read operation for a list.
+	 * 
+	 * Data is retrieved from the model
 	 * 
 	 * @param   array              $primaryKeys  Array of primary keys.
 	 * @param   mixed              $model        A model from the integration.
@@ -261,21 +263,60 @@ class Read extends Webservice
 	}
 
 	/**
+	 * We set filters and List parameters to the model object
+	 *
+	 * @param   object  &$model  Model object
+	 *
+	 * @return  array
+	 */
+	public function assignFiltersList(&$model)
+	{
+		if (method_exists($model, 'getState'))
+		{
+			// To initialize populateState
+			$model->getState();
+		}
+
+		// Set state for Filters and List
+		if (method_exists($model, 'setState'))
+		{
+			$dataGet = $this->getOptions()->get('dataGet', array());
+
+			if (is_object($dataGet))
+			{
+				$dataGet = ArrayHelper::fromObject($dataGet);
+			}
+
+			if (isset($dataGet['list']))
+			{
+				foreach ($dataGet['list'] as $key => $value)
+				{
+					$model->setState('list.' . $key, $value);
+				}
+			}
+
+			if (isset($dataGet['filter']))
+			{
+				foreach ($dataGet['filter'] as $key => $value)
+				{
+					$model->setState('filter.' . $key, $value);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Set document content for Item view
 	 *
-	 * @param   object|array       $item           Item content.
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object.
+	 * @param   object|array       $item         Item content.
+	 * @param   \SimpleXMLElement  $subprofile   Profile for the read item.
 	 *
 	 * @return  Resource  A populated resource object.
 	 * @throws  \Exception
 	 */
-	public function bindDataToResourceItem($item, $configuration)
+	public function bindDataToResourceItem($item, $subprofile)
 	{
-		$this->resource = new Item($this->profile);
-
-		// Get resource profile from configuration.
-		$profile = $this->getResourceProfile($configuration);
-
+		// If the item is not valid, then return a 404 Not found response.
 		if (empty($item) || !(is_array($item) || is_object($item)))
 		{
 			// 404 => 'Not found'
@@ -284,14 +325,22 @@ class Read extends Webservice
 			throw new \Exception($this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_NO_CONTENT'), 404);
 		}
 
-		// Filter out all fields that are not in resource list and apply appropriate transform rules.
+		$this->resource = new ResourceItem($this->profile);
+
+		// Get resource profile from configuration.
+		$profile = $this->getResourceProfile($subprofile);
+
+		// Filter out all fields that are not in the profile and apply appropriate transform rules.
 		foreach ($item as $key => $value)
 		{
+			// If the property is present in the profile then determine its value.
 			if (!empty($profile['rcwsGlobal'][$key]))
 			{
+				// Determine value from the item data and from global data.
 				$value = $this->assignValueToResource($profile['rcwsGlobal'][$key], $item);
 			}
 
+			// Copy the value into the global data buffer.
 			$this->setData($this->assignGlobalValueToResource($key), $value);
 		}
 
@@ -299,29 +348,29 @@ class Read extends Webservice
 	}
 
 	/**
-	 * Set document content for List view
+	 * Set document content for List view.
 	 *
-	 * @param   array              $items          List of items.
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object.
+	 * @param   array              $items        List of items.
+	 * @param   \SimpleXMLElement  $subprofile   Profile for the read item.
 	 *
 	 * @return  Resource  A populated resource object.
 	 * @throws  \Exception
 	 */
-	public function bindDataToResourceList($items, $configuration)
+	public function bindDataToResourceList($items, $subprofile)
 	{
-		$this->resource = new Item($this->profile);
-
-		// Get resource profile from configuration.
-		$profile = $this->getResourceProfile($configuration);
-
-		$listResourcesKeys = array_keys($profile['listItem']);
-
 		if (empty($items))
 		{
 			return;
 		}
 
-		// Filter out all fields that are not in resource list and apply appropriate transform rules.
+		$this->resource = new ResourceItem($this->profile);
+
+		// Get resource profile from configuration.
+		$profile = $this->getResourceProfile($subprofile);
+
+		$listResourcesKeys = array_keys($profile['listItem']);
+
+		// Filter out all fields that are not in the profile and apply appropriate transform rules.
 		foreach ($items as $itemValue)
 		{
 			$item = ArrayHelper::fromObject($itemValue);
@@ -339,7 +388,7 @@ class Read extends Webservice
 				);
 			}
 
-			$embedItem = new Item('item', $item);
+			$embedItem = new ResourceItem('item', $item);
 			$embedItem = $this->setDataValueToResource($embedItem, $profile, $itemValue, 'listItem');
 			$this->resource->setEmbedded('item', $embedItem);
 		}

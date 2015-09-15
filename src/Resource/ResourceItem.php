@@ -9,12 +9,14 @@
 
 namespace Joomla\Webservices\Resource;
 
+use Joomla\Webservices\Resource\ResourceLink;
+
 /**
  * Object to represent a hypermedia resource in HAL.
  *
  * @since  1.2
  */
-class Item extends Resource
+class ResourceItem extends Resource
 {
 	/**
 	 * Json option
@@ -32,24 +34,6 @@ class Item extends Resource
 	protected $jsonNumericCheck = self::JSON_NUMERIC_CHECK_OFF;
 
 	/**
-	 * Internal storage of Link objects
-	 * @var array
-	 */
-	protected $links = array();
-
-	/**
-	 * Internal storage of primitive types
-	 * @var array
-	 */
-	protected $data = array();
-
-	/**
-	 * Internal storage of `Resource` objects
-	 * @var array
-	 */
-	protected $embedded = array();
-
-	/**
 	 * Constructor.
 	 *
 	 * @param   string       $href      Href
@@ -64,102 +48,14 @@ class Item extends Resource
 	}
 
 	/**
-	 * Gets self link
-	 *
-	 * @return  Link
-	 */
-	public function getSelf()
-	{
-		return $this->links['self'];
-	}
-
-	/**
-	 * Gets all links
-	 *
-	 * @return array
-	 */
-	public function getLinks()
-	{
-		return $this->links;
-	}
-
-	/**
-	 * Gets all Embedded elements
-	 *
-	 * @return array
-	 */
-	public function getEmbedded()
-	{
-		return $this->embedded;
-	}
-
-	/**
-	 * Add a link to the resource.
-	 *
-	 * Per the JSON-HAL specification, a link relation can reference a
-	 * single link or an array of links. By default, two or more links with
-	 * the same relation will be treated as an array of links. The $singular
-	 * flag will force links with the same relation to be overwritten. The
-	 * $plural flag will force links with only one relation to be treated
-	 * as an array of links. The $plural flag has no effect if $singular
-	 * is set to true.
-	 *
-	 * @param   Link  $link      Link
-	 * @param   bool  $singular  Force overwrite of the existing link
-	 * @param   bool  $plural    Force plural mode even if only one link is present
-	 *
-	 * @return  $this
-	 */
-	public function setLink(Link $link, $singular = false, $plural = false)
-	{
-		$rel = $link->getRel();
-
-		if ($singular || (!isset($this->links[$rel]) && !$plural))
-		{
-			$this->links[$rel] = $link;
-		}
-		else
-		{
-			if (isset($this->links[$rel]) && !is_array($this->links[$rel]))
-			{
-				$orig_link = $this->links[$rel];
-				$this->links[$rel] = array($orig_link);
-			}
-
-			$this->links[$rel][] = $link;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Set multiple links at once
-	 *
-	 * @param   array  $links     List of links
-	 * @param   bool   $singular  Force overwrite of the existing link
-	 * @param   bool   $plural    Force plural mode even if only one link is present
-	 *
-	 * @return  $this
-	 */
-	public function setLinks(array $links, $singular = false, $plural = false)
-	{
-		foreach ($links as $link)
-		{
-			$this->setLink($link, $singular, $plural);
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Replace existing link to the resource.
 	 *
-	 * @param   Link  $link   Link
-	 * @param   mixed $group  Groupped link container
+	 * @param   ResourceLink  $link   Link
+	 * @param   mixed         $group  Groupped link container
 	 *
 	 * @return  $this
 	 */
-	public function setReplacedLink(Link $link, $group = '')
+	public function setReplacedLink(ResourceLink $link, $group = '')
 	{
 		$rel = $link->getRel();
 
@@ -170,31 +66,6 @@ class Item extends Resource
 		else
 		{
 			$this->links[$rel] = $link;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Sets data to the resource
-	 *
-	 * @param   string  $rel   Rel element
-	 * @param   mixed   $data  Data for the resource
-	 *
-	 * @return  $this
-	 */
-	public function setData($rel, $data = null)
-	{
-		if (is_array($rel) && null === $data)
-		{
-			foreach ($rel as $k => $v)
-			{
-				$this->data[$k] = $v;
-			}
-		}
-		else
-		{
-			$this->data[$rel] = $data;
 		}
 
 		return $this;
@@ -226,29 +97,6 @@ class Item extends Resource
 			}
 
 			$this->data[$rel][$key] = $data;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Sets Embedded resource
-	 *
-	 * @param   string    $rel       Relation of the resource
-	 * @param   Resource  $resource  Resource
-	 * @param   bool      $singular  Force overwrite of the existing embedded element
-	 *
-	 * @return  $this
-	 */
-	public function setEmbedded($rel, Resource $resource = null, $singular = false)
-	{
-		if ($singular)
-		{
-			$this->embedded[$rel] = $resource;
-		}
-		else
-		{
-			$this->embedded[$rel][] = $resource;
 		}
 
 		return $this;

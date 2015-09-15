@@ -12,6 +12,8 @@ namespace Joomla\Webservices\Renderer\Application;
 use Joomla\Webservices\Renderer\Renderer;
 use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Resource\Resource;
+use Joomla\Webservices\Resource\ResourceHome;
+use Joomla\Webservices\Resource\ResourceItem;
 
 use Joomla\DI\Container;
 use Joomla\Webservices\Uri\Uri;
@@ -30,7 +32,7 @@ class Haljson extends Renderer
 	 * API interaction style.
 	 *
 	 * @var    string
-	 * @since  __DELPOY_VERSION__
+	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $style = 'rest';
 
@@ -38,17 +40,9 @@ class Haljson extends Renderer
 	 * Render all hrefs as absolute, relative is default
 	 *
 	 * @var    boolean
-	 * @since  __DELPOY_VERSION__
+	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $absoluteHrefs = false;
-
-	/**
-	 * Webservice object
-	 *
-	 * @var    Webservice
-	 * @since  1.2
-	 */
-	public $webservice = null;
 
 	/**
 	 * Class constructor
@@ -71,78 +65,93 @@ class Haljson extends Renderer
 		// Set absolute/relative hrefs.
 		$this->absoluteHrefs = isset($options['absoluteHrefs']) ? $options['absoluteHrefs'] : false;
 
-		// Set token if needed
+		// Set token if needed.
 		$this->uriParams = isset($options['uriParams']) ? $options['uriParams'] : array();
-	}
-
-	/**
-	 * Get API interaction style.
-	 * 
-	 * @return  string
-	 */
-	public function getInteractionStyle()
-	{
-		return $this->style;
 	}
 
 	/**
 	 * Render the document.
 	 *
-	 * @param   boolean  $cache   If true, cache the output
-	 * @param   array    $params  Associative array of attributes
+	 * @param   Resource  $resource  A populated resource object.
 	 *
 	 * @return  string   The rendered data
 	 *
-	 * @since  1.2
+	 * @since  __DEPLOY_VERSION__
 	 */
-	public function render($cache = false, $params = array())
+	public function render(Resource $resource)
 	{
-		parent::render($cache, $params);
-		$runtime = microtime(true) - $this->app->startTime;
+		// Adjust hrefs in the _links object.
+		$this->relToAbs($resource, $this->absoluteHrefs);
 
-		$this->app->setHeader('Status', $this->webservice->statusCode . ' ' . $this->webservice->statusText, true);
-		$this->app->setHeader('Server', '', true);
-		$this->app->setHeader('X-Runtime', $runtime, true);
-		$this->app->setHeader('Access-Control-Allow-Origin', '*', true);
-		$this->app->setHeader('Pragma', 'public', true);
-		$this->app->setHeader('Expires', '0', true);
-		$this->app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
-		$this->app->setHeader('Cache-Control', 'private', false);
-		$this->app->setHeader('Content-Type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
-		$this->app->setHeader('Webservice-Name', $this->webservice->webserviceName, true);
-		$this->app->setHeader('Webservice-Version', $this->webservice->webserviceVersion, true);
-		$this->app->setHeader('Webservice-Renderer', 'Haljson', true);
-
-//		$this->app->sendHeaders();
-
-		// Get the HAL object from the buffer.
-		/* @var $hal \Joomla\Webservices\Resource\Resource */
-		$hal = $this->getBuffer();
-
-		// If required, change relative links to absolute.
-		if (is_object($hal))
-		{
-			// Adjust hrefs in the _links object.
-			$this->relToAbs($hal, $this->absoluteHrefs);
-		}
-
-		return (string) $hal;
+		return parent::render($resource);
 	}
 
 	/**
-	 * Sets HAL object to the document
+	 * Render a representation of a ResourceHome object.
 	 *
-	 * @param   Webservice  $webservice  Webservice object
+	 * @param   Resource  $resource  A resource home object.
 	 *
-	 * @return  $this
-	 *
-	 * @since  1.2
+	 * @return  A representation of the object.
 	 */
-	public function setWebservice(Webservice $webservice)
+	public function renderResourceHome(Resource $resource)
 	{
-		$this->webservice = $webservice;
+		return $this->renderResourceItem($resource);
+	}
 
-		return $this;
+	/**
+	 * Render a representation of a ResourceItem object.
+	 *
+	 * @param   Resource  $resource  A resource item object.
+	 *
+	 * @return  A representation of the object.
+	 */
+	public function renderResourceItem(Resource $resource)
+	{
+		$properties = array();
+
+		// Iterate through the metadata properties and add them to the top-level array.
+//		foreach ($resource->getMetadata() as $name => $property)
+//		{
+//			$properties[$name] = $property;
+//		}
+
+		// Iterate through the links and add them to the _links element.
+		foreach ($resource->getLinks() as $rel => $link)
+		{
+			if ($link instanceof Resource)
+			{
+				$properties['_links'][$rel] = $this->render($link);
+			}
+		}
+
+		// Iterate through the data properties and add them to the top-level array.
+		foreach ($resource->getData() as $name => $property)
+		{
+			$properties[$name] = $property;
+		}
+
+		// Iterate through the embedded resources and add them to the _embedded element.
+		foreach ($resource->getEmbedded() as $rel => $embedded)
+		{
+			if ($embedded instanceof Resource)
+			{
+				$properties['_embedded'][$rel] = $this->render($embedded);
+			}
+		}
+
+		return json_encode($properties);
+	}
+
+	/**
+	 * Render a representation of a ResourceLink object.
+	 *
+	 * @param   Resource  $resource  A resource item object.
+	 *
+	 * @return  A representation of the object.
+	 */
+	public function renderResourceLink(Resource $resource)
+	{
+		return $resource->toArray();
 	}
 
 	/**
@@ -155,50 +164,44 @@ class Haljson extends Renderer
 	 */
 	protected function relToAbs(Resource $resource, $absoluteHrefs)
 	{
-		if ($links = $resource->getLinks())
+		// Adjust hrefs in the _links object.
+		foreach ($resource->getLinks() as $link)
 		{
-			// Adjust hrefs in the _links object.
-			foreach ($links as $link)
+			if (is_array($link))
 			{
-				if (is_array($link))
+				/* @var $arrayLink \Joomla\Webservices\Resource\Link */
+				foreach ($link as $group => $arrayLink)
 				{
-					/* @var $arrayLink \Joomla\Webservices\Resource\Link */
-					foreach ($link as $group => $arrayLink)
-					{
-						$href = $arrayLink->getHref();
-						$href = $this->addUriParameters($href, $absoluteHrefs);
-						$arrayLink->setHref($href);
-						$resource->setReplacedLink($arrayLink, $group);
-					}
-				}
-				else
-				{
-					/* @var $link \Joomla\Webservices\Resource\Link */
-					$href = $link->getHref();
+					$href = $arrayLink->getHref();
 					$href = $this->addUriParameters($href, $absoluteHrefs);
-					$link->setHref($href);
-					$resource->setReplacedLink($link);
+					$arrayLink->setHref($href);
+					$resource->setReplacedLink($arrayLink, $group);
 				}
+			}
+			else
+			{
+				/* @var $link \Joomla\Webservices\Resource\Link */
+				$href = $link->getHref();
+				$href = $this->addUriParameters($href, $absoluteHrefs);
+				$link->setHref($href);
+				$resource->setReplacedLink($link);
 			}
 		}
 
 		// Adjust hrefs in the _embedded object (if there is one).
-		if ($embedded = $resource->getEmbedded())
+		foreach ($resource->getEmbedded() as $resources)
 		{
-			foreach ($embedded as $resources)
+			if (is_object($resources))
 			{
-				if (is_object($resources))
+				$this->relToAbs($resources, $absoluteHrefs);
+			}
+			elseif (is_array($resources))
+			{
+				foreach ($resources as $resource)
 				{
-					$this->relToAbs($resources, $absoluteHrefs);
-				}
-				elseif (is_array($resources))
-				{
-					foreach ($resources as $resource)
+					if (is_object($resource))
 					{
-						if (is_object($resource))
-						{
-							$this->relToAbs($resource, $absoluteHrefs);
-						}
+						$this->relToAbs($resource, $absoluteHrefs);
 					}
 				}
 			}

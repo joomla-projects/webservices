@@ -70,14 +70,6 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 	protected $app = null;
 
 	/**
-	 * Renderer Object
-	 *
-	 * @var    Renderer
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $renderer = null;
-
-	/**
 	 * Standard status codes for RESTfull api
 	 *
 	 * @var    array
@@ -140,7 +132,6 @@ abstract class ApiBase implements ApiInterface, ContainerAwareInterface
 		$this->options = $options;
 
 		$this->app = $container->get('app');
-		$this->renderer = $container->get('renderer');
 
 		$this->setContainer($container);
 	}

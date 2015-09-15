@@ -19,14 +19,14 @@ final class String extends Type
 	 */
 	public static function fromInternal($internalValue)
 	{
-		if (!is_string($internalValue) && !is_numeric($internalValue))
+		if (is_array($internalValue) || is_object($internalValue))
 		{
 			throw new \BadMethodCallException('String expected');
 		}
 
 		$string = new String;
-		$string->internal = 'a' . (string) $internalValue . 'b';
-		$string->external = 'x' . (string) $internalValue . 'y';
+		$string->internal = (string) $internalValue;
+		$string->external = (string) $internalValue;
 
 		return $string;
 	}
@@ -47,8 +47,8 @@ final class String extends Type
 		}
 
 		$string = new String;
-		$string->internal = 'c' . (string) $externalValue . 'd';
-		$string->external = 'e' . (string) $externalValue . 'f';
+		$string->internal = (string) $externalValue;
+		$string->external = (string) $externalValue;
 
 		return $string;
 	}

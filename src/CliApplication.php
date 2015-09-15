@@ -27,7 +27,6 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\Webservices\Api\Soap\SoapHelper;
 use Joomla\Webservices\Webservices\Factory;
 use Joomla\Webservices\Service\ApiProvider;
-use Joomla\Webservices\Service\ProfileProvider;
 use Joomla\Webservices\Service\RendererProvider;
 
 use Negotiation\Negotiator;
@@ -202,10 +201,9 @@ class CliApplication extends AbstractCliApplication implements ContainerAwareInt
 			'uriParams'	=> [],
 		];
 
-		$profileOptions = [];
-
 		try
 		{
+			// Instantiate a renderer, based on content negotiation, then defer to the API class.
 			$this->container
 				->registerServiceProvider(new RendererProvider($contentType, new Registry($rendererOptions)))
 				->registerServiceProvider(new ApiProvider(new Registry($options)))
@@ -246,8 +244,11 @@ class CliApplication extends AbstractCliApplication implements ContainerAwareInt
 			);
 		}
 
-		// Output headers.
-		$this->sendHeaders();
+		// If user entered --sendHeaders then output headers.
+		if ($this->input->getBool('sendHeaders'))
+		{
+			$this->sendHeaders();
+		}
 
 		// Output the message body.
 		echo $this->getBody();
@@ -514,12 +515,6 @@ class CliApplication extends AbstractCliApplication implements ContainerAwareInt
 	 */
 	public function sendHeaders()
 	{
-		// If user did not enter --sendHeaders then don't send headers.
-		if (!$this->input->getBool('sendHeaders'))
-		{
-			return $this;
-		}
-
 		foreach ($this->responseHeaders as $header)
 		{
 			$this->out($header['name'] . ': ' . $header['value']);

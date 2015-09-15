@@ -196,30 +196,24 @@ class Rest extends ApiBase
 			$this->webservice->setUriParams('webserviceClient', $client);
 		}
 
-//		if ($renderer == 'doc')
-//		{
-			// This is already in HTML format
-//			$this->app->setBody($this->webservice->documentation);
+		// Calculate runtime to this point.
+		$runtime = microtime(true) - $this->app->startTime;
 
-//			return;
-//		}
-
-//		$documentOptions = array(
-//			'absoluteHrefs' => $this->getOptions()->get('absoluteHrefs', false),
-//			'documentFormat' => $renderer,
-//			'uriParams' => $this->webservice->uriParams,
-//		);
-
-//		$document = Factory::getRenderer($this->getContainer(), $renderer, new Registry($documentOptions));
-
-		$body = $this->webservice->getBody();
+		// Set headers.
+		$this->app->setHeader('Status', $this->webservice->statusCode . ' ' . $this->webservice->statusText, true);
+		$this->app->setHeader('Server', '', true);
+		$this->app->setHeader('X-Runtime', $runtime, true);
+		$this->app->setHeader('Access-Control-Allow-Origin', '*', true);
+		$this->app->setHeader('Pragma', 'public', true);
+		$this->app->setHeader('Expires', '0', true);
+		$this->app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
+		$this->app->setHeader('Cache-Control', 'private', false);
+		$this->app->setHeader('Webservice-Name', $this->webservice->webserviceName, true);
+		$this->app->setHeader('Webservice-Version', $this->webservice->webserviceVersion, true);
 
 		// Push results into the document.
 		$this->app->setBody(
-			$this->renderer
-				->setWebservice($this->webservice)
-				->setBuffer($body)
-				->render(false)
+			$this->getContainer()->get('renderer')->render($this->resource)
 		);
 	}
 }

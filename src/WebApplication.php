@@ -111,7 +111,7 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 		/** @var \Joomla\Language\LanguageFactory $languageFactory */
 		$languageFactory = $this->getContainer()->get('Joomla\\Language\\LanguageFactory');
 		$languageFactory->getLanguage()->load('lib_webservices');
-		$text = $languageFactory->getText();
+		$this->getContainer()->set('text', $languageFactory->getText());
 
 		$input = $this->input;
 
@@ -126,13 +126,18 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 		$optionName = $input->getString('option', 'home');
 		$resourceName = strpos($optionName, 'com_') === 0 ? substr($optionName, 4) : $optionName;
 
+		$version = $input->getString('webserviceVersion');
+
+		// @deprecated There should be only one API.
+		$client  = $input->getString('webserviceClient', 'administrator');
+
 		$this->clearHeaders();
 
 		$options = array(
 			'optionName'        => $resourceName,
 			'viewName'          => $input->getString('view'),
-			'webserviceVersion' => $input->getString('webserviceVersion'),
-			'webserviceClient'  => $input->getString('webserviceClient', 'administrator'),
+			'webserviceVersion' => $version,
+			'webserviceClient'  => $client,
 			'method'            => strtoupper($input->getCmd('method', 'GET')),
 			'task'              => $input->getCmd('task'),
 			'data'              => $this->getPostedData(),
@@ -142,10 +147,21 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 			'absoluteHrefs'     => $input->getBool('absoluteHrefs', true),
 		);
 
+		$rendererOptions = [
+			'charset'	=> 'utf-8',
+			'language'	=> 'en-GB',
+			'direction'	=> 'ltr',
+			'link'		=> '',
+			'base'		=> '',
+			'absoluteHrefs'	=> $input->getBool('absoluteHrefs', true),
+			'uriParams'	=> [],
+		];
+
 		try
 		{
+			// Instantiate a renderer, based on content negotiation, then defer to the API class.
 			$this->container
-				->registerServiceProvider(new RendererProvider($contentType, new Registry($options)))
+				->registerServiceProvider(new RendererProvider($contentType, new Registry($rendererOptions)))
 				->registerServiceProvider(new ApiProvider(new Registry($options)))
 				->get('api')->execute()->render()
 				;
@@ -226,7 +242,9 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 		$authenticate = new Authentication();
 
 		foreach ($strategies as $name => $strategy)
-		$authenticate->addStrategy($name, $strategy);
+		{
+			$authenticate->addStrategy($name, $strategy);
+		}
 
 		return $authenticate->authenticate();
 	}

@@ -10,8 +10,8 @@
 namespace Joomla\Webservices\Webservices;
 
 use Joomla\Webservices\Resource\Resource;
-use Joomla\Webservices\Resource\Item;
-use Joomla\Webservices\Resource\Link;
+use Joomla\Webservices\Resource\ResourceItem;
+use Joomla\Webservices\Resource\ResourceLink;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 use Joomla\Webservices\Webservices\Exception\ConfigurationException;
 use Joomla\Webservices\Xml\XmlHelper;
@@ -162,7 +162,6 @@ abstract class Webservice extends WebserviceBase
 
 		$this->client = $options->get('webserviceClient', 'administrator');
 		$this->webserviceVersion = $options->get('webserviceVersion', '');
-//		$this->resource = new Item('');
 		$this->webserviceName = $options->get('optionName');
 
 		if (!empty($this->webserviceName))
@@ -422,7 +421,7 @@ abstract class Webservice extends WebserviceBase
 				$linkPlural = $linkRel == 'curies';
 
 				$resourceDocument->setLink(
-					new Link(
+					new ResourceLink(
 						$this->assignValueToResource($resource, $data),
 						$linkRel,
 						$resource['linkTitle'],
@@ -489,7 +488,7 @@ abstract class Webservice extends WebserviceBase
 				$resource['description'] = $resourceXML->description;
 			}
 
-			$resource = Item::defaultResourceField($resource);
+			$resource = ResourceItem::defaultResourceField($resource);
 			$resourceName = $resource['displayName'];
 			$resourceSpecific = $resource['resourceSpecific'];
 
@@ -551,6 +550,7 @@ abstract class Webservice extends WebserviceBase
 	 * @return  string  Api call output
 	 *
 	 * @since   1.2
+	 * @deprecated
 	 */
 	public function getBody($data = array())
 	{
@@ -583,7 +583,7 @@ abstract class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Sets data for resource binding
+	 * Saves data into the global data buffer.
 	 *
 	 * @param   string  $key   Rel element
 	 * @param   mixed   $data  Data for the resource
@@ -1192,11 +1192,15 @@ abstract class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Assign global value to Resource.
+	 * Determine the value of a resource property using data from the global data buffer.
+	 * 
+	 * The template contains substitution codes that determine which global data values
+	 * will comprise the property value.  Note that this does not transform data,
+	 * because global data has already been transformed.
 	 *
 	 * @param   string  $format  Template to parse. (eg. "{id}").
 	 *
-	 * @return  string
+	 * @return  string value of the resource property using the template.
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
@@ -1235,16 +1239,6 @@ abstract class Webservice extends WebserviceBase
 	 */
 	public function transformField($fieldType, $value, $directionExternal = true)
 	{
-//		if (is_array($value))
-//		{
-//			echo 'Transforming array ' . $fieldType;
-//			print_r($value);
-//		}
-//		else
-//		{
-//			echo 'Transforming ' . $fieldType . ' value: ' . $value . ' direction: ' . ($directionExternal ? 'external' : 'internal') . "\n";
-//		}
-
 		$className = 'Joomla\\Webservices\\Type\\' . ucfirst($fieldType);
 
 		// If there is no data type, return the value as a string.
@@ -1256,11 +1250,13 @@ abstract class Webservice extends WebserviceBase
 			return (string) $value;
 		}
 
+		// Convert an internal value to its external equivalent.
 		if ($directionExternal)
 		{
 			return $className::fromInternal($value)->getExternal();
 		}
 
+		// Convert an external value to its internal equivalent.
 		return $className::fromExternal($value)->getInternal();
 	}
 
@@ -1398,49 +1394,6 @@ abstract class Webservice extends WebserviceBase
 		}
 
 		return $args;
-	}
-
-	/**
-	 * We set filters and List parameters to the model object
-	 *
-	 * @param   object  &$model  Model object
-	 *
-	 * @return  array
-	 */
-	public function assignFiltersList(&$model)
-	{
-		if (method_exists($model, 'getState'))
-		{
-			// To initialize populateState
-			$model->getState();
-		}
-
-		// Set state for Filters and List
-		if (method_exists($model, 'setState'))
-		{
-			$dataGet = $this->getOptions()->get('dataGet', array());
-
-			if (is_object($dataGet))
-			{
-				$dataGet = ArrayHelper::fromObject($dataGet);
-			}
-
-			if (isset($dataGet['list']))
-			{
-				foreach ($dataGet['list'] as $key => $value)
-				{
-					$model->setState('list.' . $key, $value);
-				}
-			}
-
-			if (isset($dataGet['filter']))
-			{
-				foreach ($dataGet['filter'] as $key => $value)
-				{
-					$model->setState('filter.' . $key, $value);
-				}
-			}
-		}
 	}
 
 	/**

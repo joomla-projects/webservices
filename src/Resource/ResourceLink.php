@@ -14,7 +14,7 @@ namespace Joomla\Webservices\Resource;
  *
  * @since  1.2
  */
-class Link extends Resource
+class ResourceLink extends Resource
 {
 	/**
 	 * For labeling the destination of a link with a human-readable identifier.

@@ -47,7 +47,7 @@ class ApiProvider implements ServiceProviderInterface
 			{
 				// Get the renderer given the content type.
 				$renderer = $container->get('renderer');
-		
+
 				// Get the interaction style from the renderer.
 				$apiStyle = ucfirst($renderer->getInteractionStyle());
 		
