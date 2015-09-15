@@ -10,11 +10,17 @@
   },
   "webservices": {
     "enable_webservices" : 1,
-    "webservices_default_format" : "hal",
     "webservices_default_page_authorization": 0,
     "webservices_permission_check" : 1,
     "debug_webservices" : 0,
-    "enable_soap" : 1
+    "enable_soap" : 1,
+    "content_types": [
+		"application/hal+json",
+		"application/hal+xml",
+		"application/json",
+		"application/soap+xml",
+		"application/xml"
+    ]
   },
   "language" : {
     "basedir" : "",
