@@ -171,7 +171,7 @@ $userId		= $user->get('id');
 				<a href="#mainComponentWebservices" data-toggle="tab"><?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_INSTALLED_WEBSERVICES'); ?></a>
 			</li>
 			<li role="presentation">
-				<a href="#mainComponentWebservicesXmls" data-toggle="tab">
+				<a href="#mainComponentWebservicesXmls" data-toggle="tab" class="lc-not_installed_webservices">
 					<?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_AVAILABLE_WEBSERVICES'); ?> <span class="badge"><?php echo $this->xmlFilesAvailable; ?></span>
 				</a>
 			</li>
@@ -269,7 +269,8 @@ $userId		= $user->get('id');
 									<td style="word-wrap:break-word;">
 										<?php $folder = !empty($item->path) ? '/' . $item->path : ''; ?>
 										<?php echo \Joomla\Webservices\Webservices\WebserviceHelper::getWebservicesRelativePath(); ?>
-										<strong><?php echo $folder . '/' . $item->xmlFile; ?></strong>
+										<strong><?php echo $folder . '/<span class="lc-webservice_file">' . $item->xmlFile; ?></span></strong>
+
 										<?php if (!JFile::exists(\Joomla\Webservices\Webservices\WebserviceHelper::getWebservicesPath() . $folder . '/' . $item->xmlFile)) : ?>
 											<span class="label label-danger"><?php echo JText::_('COM_WEBSERVICES_WEBSERVICES_XML_MISSING'); ?></span>
 										<?php elseif ($item->xmlHashed != md5($item->xml)) : ?>
@@ -328,7 +329,7 @@ $userId		= $user->get('id');
 								</div>
 								<div class="controls">
 									<button
-										class="btn btn-success"
+										class="btn btn-success lc-install_all_webservices"
 										type="button"
 										onclick="setWebservice('', 'all', '', '', 'install')">
 										<i class="icon-cogs"></i>
@@ -397,7 +398,7 @@ $userId		= $user->get('id');
 											</tbody>
 										</table>
 										<button
-											class="btn btn-xs btn-success"
+											class="btn btn-xs btn-success lc-install_webservice_<?php echo $webserviceClient; ?>_<?php echo $webservice->config->name; ?>"
 											type="button"
 											onclick="setWebservice('<?php echo $webserviceClient; ?>', '<?php echo $webservice->config->name; ?>', '<?php echo $webservice->config->version; ?>', '<?php echo $webservice->webservicePath; ?>', 'install')">
 											<i class="icon-cogs"></i>

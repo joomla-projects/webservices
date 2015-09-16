@@ -1,3 +1,24 @@
+# OSX
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# PHPStorm
+.idea/
+
+# Sublime Text
+*.sublime*
+
+# Eclipse
+.buildpath
+.project
+.settings
+
 # Temp files
 *.tmp
 *.bak
@@ -5,26 +26,35 @@
 *~.nib
 *~
 
-# IDE & System Related Files #
-.buildpath
-.project
-.settings
-.DS_Store
-.idea
-
-#CMS
-staging.joomla.org/
-
-
 # Phing
 build.properties
 phing-latest.phar
 .dist
 
-#composer
-vendor/
+# composer
+composer.phar
+vendor/*
+
+# Robo
+robo.phar
+
+# Test related files
+tests/acceptance.suite.yml
+tests/functional.suite.yml
+tests/unit.suite.yml
+tests/api.suite.yml
+tests/*/*Tester.php
+tests/joomla-cms3*
+tests/_output
+selenium-server-standalone.jar
+codecept.phar
+selenium.log
+selenium-errors.log
+tests/_support/_generated/*
 
 # Never ignore
 !.gitignore
 !index.html
 !index.php
+
+tests/_output/*

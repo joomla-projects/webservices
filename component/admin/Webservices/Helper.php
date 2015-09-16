@@ -35,7 +35,7 @@ abstract class Helper
 		}
 		catch (\Exception $e)
 		{
-			throw new RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
+			throw new \RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
 		}
 
 		$config = $container->get("config")['database'];
