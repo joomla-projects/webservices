@@ -14,13 +14,21 @@
         "joomla/event": "2.*@dev",
         "joomla/uri": "~1.1",
         "joomla/filesystem": "~1.2",
-        "joomla/authentication": "dev-AbstractStrategy",
+        "joomla/authentication": "^1.1.1",
         "joomla/registry": "~1.4",
         "joomla/di": "~1.3",
         "joomla/utilities": "~1.3",
         "joomla/date": "2.*@dev",
         "joomla/language": "2.*@dev",
         "psr/log": "~1.0"
+    },
+    "require-dev": {
+        "codeception/codeception": "~2.1",
+        "joomla-projects/joomla-browser": "dev-develop",
+        "codegyre/robo": "dev-master",
+        "flow/jsonpath": "dev-master",
+        "phing/phing": "~2",
+        "joomla-projects/robo": "dev-master"
     },
     "autoload": {
         "psr-4": {
