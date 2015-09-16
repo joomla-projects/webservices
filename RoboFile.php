@@ -34,9 +34,7 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function sayHelloWorld()
 	{
-		$result = $this->taskHelloWorld()->run();
-
-		return $result;
+		$this->say('HelloWorld');
 	}
 
 	/**
