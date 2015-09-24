@@ -13,7 +13,7 @@ $I->wantToTest('Activate the default webservices');
 $I->doAdministratorLogin();
 $I->comment('I enable basic authentication');
 $I->amOnPage('administrator/index.php?option=com_webservices');
-$I->waitForText('Webservice Manager', 30, ['css' => 'H1']);
+$I->waitForText('Webservice Manager', 30, ['class' => 'page-title']);
 $I->click(['class' => 'lc-not_installed_webservices']);
 $I->click(['class' => 'lc-install_webservice_administrator_contact']);
 $I->waitForElement(['id' => 'mainComponentWebservices'], 30);
