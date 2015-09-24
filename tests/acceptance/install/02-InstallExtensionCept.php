@@ -14,4 +14,4 @@ $I->am('Administrator');
 $I->wantToTest('Webservices installation in Joomla 3');
 $I->doAdministratorLogin();
 $path = $I->getConfiguration('repo_folder');
-$I->installExtensionFromDirectory($path);
+$I->installExtensionFromFolder($path);
