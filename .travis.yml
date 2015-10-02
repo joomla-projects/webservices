@@ -33,4 +33,5 @@ script:
 - vendor/bin/robo run:tests
 - ls tests/_output/
 - cat tests/_output/ActivateContactWebserviceCept.fail.html
+- php --version
 - vendor/bin/robo send:screenshot joomla 673897375717573 1g-GaXe1F6tyJwGmXXgc0KHh_L4
