@@ -51,10 +51,10 @@ codecept.phar
 selenium.log
 selenium-errors.log
 tests/_support/_generated/*
+tests/_output/*
 
 # Never ignore
 !.gitignore
 !index.html
 !index.php
 
-tests/_output/*
