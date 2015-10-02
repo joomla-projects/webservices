@@ -259,7 +259,8 @@ class RoboFile extends \Robo\Tasks
 				// Avoid sending system files or html files
 				if ('.' === substr($errorSnapshot, 0, 1)
 					|| 'html' == substr($errorSnapshot, -4)
-					|| 'log' == substr($errorSnapshot, -3))
+					|| 'log' == substr($errorSnapshot, -3)
+					|| 'failed' == substr($errorSnapshot, -6))
 				{
 					continue;
 				}
