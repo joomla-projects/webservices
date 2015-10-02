@@ -4,4 +4,4 @@ modules:
       - \Helper\Api
       - REST:
           depends: PhpBrowser
-          url: http://localhost/tests/joomla-cms3/
+          url: http://localhost/tests/joomla-cms3/www/
