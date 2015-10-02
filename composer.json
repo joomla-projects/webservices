@@ -29,7 +29,8 @@
         "flow/jsonpath": "dev-master",
         "phing/phing": "~2",
         "joomla-projects/robo": "dev-master",
-        "joomla-projects/selenium-server-standalone": "v2.47.1"
+        "joomla-projects/selenium-server-standalone": "v2.47.1",
+        "cloudinary/cloudinary_php": "1.1.1"
     },
     "autoload": {
         "psr-4": {

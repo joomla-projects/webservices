@@ -247,4 +247,37 @@ class RoboFile extends \Robo\Tasks
 	{
 		$this->_exec("vendor/bin/selenium-server-standalone >> selenium.log 2>&1 &");
 	}
+
+
+	public function sendScreenshotToCloudinary($cloudName, $apiKey, $apiSecret)
+	{
+		// Loop throught Codeception snapshots
+		if ($handler = opendir('tests/_output'))
+		{
+			while (false !== ($errorSnapshot = readdir($handler)))
+			{
+				// Avoid sending system files or html files
+				if ('.' === substr($errorSnapshot, 0, 1)
+					|| 'html' == substr($errorSnapshot, -4)
+					|| 'log' == substr($errorSnapshot, -3))
+				{
+					continue;
+				}
+
+				$this->say('Uploading screenshots...');
+
+				Cloudinary::config(
+					array(
+						'cloud_name' => $cloudName,
+						'api_key'    => $apiKey,
+						'api_secret' => $apiSecret
+					)
+				);
+
+				$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/tests/_output/' . $errorSnapshot));
+				$this->say($result);
+				$this->say($errorSnapshot . 'Image sent');
+			}
+		}
+	}
 }

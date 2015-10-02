@@ -31,3 +31,4 @@ script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - mv tests/api.suite.dist.yml tests/api.suite.yml
 - vendor/bin/robo run:tests
+- vendor/bin/robo send:screenshot joomla 673897375717573 1g-GaXe1F6tyJwGmXXgc0KHh_L4
