@@ -3,7 +3,7 @@
     "driver"   : "mysqli",
     "host"     : "localhost",
     "user"     : "root",
-    "password" : "root",
+    "password" : "",
     "database" : "test_webservices",
 	"prefix"   : "jos_",
     "debug"    : false
