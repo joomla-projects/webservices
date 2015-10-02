@@ -30,7 +30,7 @@ before_script:
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - mv tests/api.suite.dist.yml tests/api.suite.yml
-- vendor/bin/robo run:tests
+- php vendor/bin/robo run:tests
 - ls tests/_output/
 - cat tests/_output/ActivateContactWebserviceCept.fail.html
 - php --version
