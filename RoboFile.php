@@ -50,8 +50,17 @@ class RoboFile extends \Robo\Tasks
 			$this->taskDeleteDir('tests/joomla-cms3')->run();
 		}
 
-		$this->_exec('git clone -b staging --single-branch --depth 1 https://github.com/joomla/joomla-cms.git tests/joomla-cms3');
-		$this->say('Joomla CMS site created at tests/joomla-cms3');
+		$version = 'staging';
+
+		/*
+		 * When joomla Staging branch has a bug you can uncomment the following line as a tmp fix for the tests layer.
+		 * Use as $version value the latest tagged stable version at: https://github.com/joomla/joomla-cms/releases
+		 */
+		$version = '3.4.4';
+
+		$this->_exec("git clone -b $version --single-branch --depth 1 https://github.com/joomla/joomla-cms.git tests/joomla-cms3");
+
+		$this->say("Joomla CMS ($version) site created at tests/joomla-cms3");
 	}
 
 	/**
@@ -62,25 +71,26 @@ class RoboFile extends \Robo\Tasks
 	 * @return mixed
 	 */
 	public function runTest($options = [
-		'test'         => null,
-		'suite'         => 'acceptance',
-		'selenium_path' => null
+		'test'	    => null,
+		'suite'	    => 'acceptance'
 	])
 	{
-		if (!$options['selenium_path'])
-		{
-			$this->getSelenium();
-		}
-
 		$this->getComposer();
 
 		$this->taskComposerInstall()->run();
 
-		$this->runSelenium($options['selenium_path']);
+		if (isset($options['suite']) && 'api' === $options['suite'])
+		{
+			// Do not launch selenium when running API tests
+		}
+		else
+		{
+			$this->runSelenium();
 
-		$this->taskWaitForSeleniumStandaloneServer()
-		     ->run()
-		     ->stopOnFail();
+			$this->taskWaitForSeleniumStandaloneServer()
+				->run()
+				->stopOnFail();
+		}
 
 		// Make sure to Run the Build Command to Generate AcceptanceTester
 		$this->_exec("vendor/bin/codecept build");
@@ -121,13 +131,16 @@ class RoboFile extends \Robo\Tasks
 		$pathToTestFile = 'tests/' . $options['suite'] . '/' . $options['test'];
 
 		$this->taskCodecept()
-		     ->test($pathToTestFile)
-		     ->arg('--steps')
-		     ->arg('--debug')
-		     ->run()
-		     ->stopOnFail();
+			->test($pathToTestFile)
+			->arg('--steps')
+			->arg('--debug')
+			->run()
+			->stopOnFail();
 
-		$this->killSelenium();
+		if (!'api' == $options['suite'])
+		{
+			$this->killSelenium();
+		}
 	}
 
 	/**
@@ -137,14 +150,9 @@ class RoboFile extends \Robo\Tasks
 	 *
 	 * @return void
 	 */
-	public function runTests($options = ['selenium_path' => null])
+	public function runTests()
 	{
 		$this->prepareSiteForSystemTests();
-
-		if (!$options['selenium_path'])
-		{
-			$this->getSelenium();
-		}
 
 		$this->_copyDir(__DIR__.'/vendor', __DIR__.'/tests/joomla-cms3/vendor/');
 		$this->_copyDir(__DIR__.'/www', __DIR__.'/tests/joomla-cms3/www/');
@@ -155,11 +163,11 @@ class RoboFile extends \Robo\Tasks
 
 		$this->taskComposerInstall()->run();
 
-		$this->runSelenium($options['selenium_path']);
+		$this->runSelenium();
 
 		$this->taskWaitForSeleniumStandaloneServer()
-		     ->run()
-		     ->stopOnFail();
+			->run()
+			->stopOnFail();
 
 		// Make sure to Run the Build Command to Generate AcceptanceTester
 		$this->_exec("vendor/bin/codecept build");
@@ -200,29 +208,11 @@ class RoboFile extends \Robo\Tasks
 	}
 
 	/**
-	 * Downloads Selenium Standalone Server
-	 *
-	 * @return void
-	 */
-	private function getSelenium()
-	{
-		if (!file_exists('selenium-server-standalone.jar'))
-		{
-			$this->say('Downloading Selenium Server, this may take a while.');
-			$this->_exec('curl'
-			             . ' -sS'
-			             . ' --retry 3 --retry-delay 5'
-			             . ' http://selenium-release.storage.googleapis.com/2.47/selenium-server-standalone-2.47.1.jar'
-			             . ' > selenium-server-standalone.jar');
-		}
-	}
-
-	/**
 	 * Stops Selenium Standalone Server
 	 *
 	 * @return void
 	 */
-	private function killSelenium()
+	public function killSelenium()
 	{
 		$this->_exec('curl http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer');
 	}
@@ -242,20 +232,12 @@ class RoboFile extends \Robo\Tasks
 	}
 
 	/**
-	 * Runs Selenium Standalone Server
-	 *
-	 * @param   string  $path  Optional path to selenium standalone server
+	 * Runs Selenium Standalone Server.
 	 *
 	 * @return void
 	 */
-	private function runSelenium($path = null)
+	public function runSelenium()
 	{
-		if (!$path)
-		{
-			$path = 'selenium-server-standalone.jar';
-		}
-
-		// Running Selenium server
-		$this->_exec("java -jar $path >> selenium.log 2>&1 &");
+		$this->_exec("vendor/bin/selenium-server-standalone >> selenium.log 2>&1 &");
 	}
 }
