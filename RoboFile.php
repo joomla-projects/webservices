@@ -157,7 +157,14 @@ class RoboFile extends \Robo\Tasks
 		$this->_copyDir(__DIR__.'/vendor', __DIR__.'/tests/joomla-cms3/vendor/');
 		$this->_copyDir(__DIR__.'/www', __DIR__.'/tests/joomla-cms3/www/');
 		$this->_copyDir(__DIR__.'/src', __DIR__.'/tests/joomla-cms3/src/');
-		$this->_copy(__DIR__.'/config.json', __DIR__.'/tests/joomla-cms3/config.json');
+		if (file_exists('./config.json'))
+		{
+			$this->_copy(__DIR__.'/config.json', __DIR__.'/tests/joomla-cms3/config.json');
+		}
+		else
+		{
+			$this->_copy(__DIR__.'/config.dist.json', __DIR__.'/tests/joomla-cms3/config.json');
+		}
 
 		$this->getComposer();
 
