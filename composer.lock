@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "joomla/application",
-            "version": "1.4.1",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/application.git",
-                "reference": "5825e9fd60681aa77644be85f7eefc8ea3e98285"
+                "reference": "a50d524bdc31488aad46da0da8cb59b1767fc4fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/application/zipball/5825e9fd60681aa77644be85f7eefc8ea3e98285",
-                "reference": "5825e9fd60681aa77644be85f7eefc8ea3e98285",
+                "url": "https://api.github.com/repos/joomla-framework/application/zipball/a50d524bdc31488aad46da0da8cb59b1767fc4fd",
+                "reference": "a50d524bdc31488aad46da0da8cb59b1767fc4fd",
                 "shasum": ""
             },
             "require": {
@@ -61,7 +61,7 @@
                 "framework",
                 "joomla"
             ],
-            "time": "2015-07-17 22:26:06"
+            "time": "2015-10-09 12:10:44"
         },
         {
             "name": "joomla/authentication",
@@ -306,16 +306,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/event.git",
-                "reference": "1a372a65a5b1e9f4e7238348a5323cf62cdb4dac"
+                "reference": "e4015a4fb7381ad8719ea51a4ae3b95fa871bf13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/event/zipball/1a372a65a5b1e9f4e7238348a5323cf62cdb4dac",
-                "reference": "1a372a65a5b1e9f4e7238348a5323cf62cdb4dac",
+                "url": "https://api.github.com/repos/joomla-framework/event/zipball/e4015a4fb7381ad8719ea51a4ae3b95fa871bf13",
+                "reference": "e4015a4fb7381ad8719ea51a4ae3b95fa871bf13",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.10"
+                "php": ">=5.4"
             },
             "require-dev": {
                 "phpunit/phpunit": "4.*",
@@ -344,7 +344,7 @@
                 "framework",
                 "joomla"
             ],
-            "time": "2015-08-22 19:16:38"
+            "time": "2015-10-15 18:07:06"
         },
         {
             "name": "joomla/filesystem",
@@ -546,16 +546,16 @@
         },
         {
             "name": "joomla/registry",
-            "version": "1.4.5",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/registry.git",
-                "reference": "4f926ba961ca45eb95076a1598c3ae689cb02fc5"
+                "reference": "db55cf426bd27524557affbe95b18d6a2f959657"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/registry/zipball/4f926ba961ca45eb95076a1598c3ae689cb02fc5",
-                "reference": "4f926ba961ca45eb95076a1598c3ae689cb02fc5",
+                "url": "https://api.github.com/repos/joomla-framework/registry/zipball/db55cf426bd27524557affbe95b18d6a2f959657",
+                "reference": "db55cf426bd27524557affbe95b18d6a2f959657",
                 "shasum": ""
             },
             "require": {
@@ -596,7 +596,7 @@
                 "joomla",
                 "registry"
             ],
-            "time": "2015-03-28 17:54:38"
+            "time": "2015-10-14 17:01:46"
         },
         {
             "name": "joomla/string",
@@ -907,12 +907,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codegyre/Robo.git",
-                "reference": "eb25e4e79e26681a912e2fdb8c8b0d8d9727df83"
+                "reference": "6af37990f10825e9ae45ca53111770ef2093a4b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codegyre/Robo/zipball/eb25e4e79e26681a912e2fdb8c8b0d8d9727df83",
-                "reference": "eb25e4e79e26681a912e2fdb8c8b0d8d9727df83",
+                "url": "https://api.github.com/repos/Codegyre/Robo/zipball/6af37990f10825e9ae45ca53111770ef2093a4b0",
+                "reference": "6af37990f10825e9ae45ca53111770ef2093a4b0",
                 "shasum": ""
             },
             "require": {
@@ -950,7 +950,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2015-09-25 19:40:04"
+            "time": "2015-10-11 01:54:43"
         },
         {
             "name": "doctrine/instantiator",
@@ -1055,12 +1055,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FlowCommunications/JSONPath.git",
-                "reference": "c6df4b11332d90bdf053ba1d9c46534539e02553"
+                "reference": "e064398010089f9efb46044f85ee63c458ae89e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FlowCommunications/JSONPath/zipball/c6df4b11332d90bdf053ba1d9c46534539e02553",
-                "reference": "c6df4b11332d90bdf053ba1d9c46534539e02553",
+                "url": "https://api.github.com/repos/FlowCommunications/JSONPath/zipball/e064398010089f9efb46044f85ee63c458ae89e1",
+                "reference": "e064398010089f9efb46044f85ee63c458ae89e1",
                 "shasum": ""
             },
             "require-dev": {
@@ -1085,7 +1085,7 @@
                 }
             ],
             "description": "JSONPath implementation for parsing, searching and flattening arrays",
-            "time": "2015-10-02 11:01:36"
+            "time": "2015-10-12 07:39:47"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1151,16 +1151,16 @@
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "97fe7210def29451ec74923b27e552238defd75a"
+                "reference": "b1e1c0d55f8083c71eda2c28c12a228d708294ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/97fe7210def29451ec74923b27e552238defd75a",
-                "reference": "97fe7210def29451ec74923b27e552238defd75a",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/b1e1c0d55f8083c71eda2c28c12a228d708294ea",
+                "reference": "b1e1c0d55f8083c71eda2c28c12a228d708294ea",
                 "shasum": ""
             },
             "require": {
@@ -1198,7 +1198,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2015-08-15 19:37:21"
+            "time": "2015-10-15 22:28:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -1325,12 +1325,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-projects/joomla-browser.git",
-                "reference": "c4cc829b61eb88b869708520f94e2d6f9b69b501"
+                "reference": "3cfe403c0866ea8ec74e985cd6f6b9710f4f37fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-projects/joomla-browser/zipball/c4cc829b61eb88b869708520f94e2d6f9b69b501",
-                "reference": "c4cc829b61eb88b869708520f94e2d6f9b69b501",
+                "url": "https://api.github.com/repos/joomla-projects/joomla-browser/zipball/3cfe403c0866ea8ec74e985cd6f6b9710f4f37fa",
+                "reference": "3cfe403c0866ea8ec74e985cd6f6b9710f4f37fa",
                 "shasum": ""
             },
             "require": {
@@ -1368,7 +1368,7 @@
                 "acceptance testing",
                 "joomla"
             ],
-            "time": "2015-10-02 06:07:51"
+            "time": "2015-10-07 10:06:16"
         },
         {
             "name": "joomla-projects/robo",
@@ -1650,16 +1650,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "2.2.3",
+            "version": "2.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "ef1ca6835468857944d5c3b48fa503d5554cff2f"
+                "reference": "eabf68b476ac7d0f73793aada060f1c1a9bf8979"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/ef1ca6835468857944d5c3b48fa503d5554cff2f",
-                "reference": "ef1ca6835468857944d5c3b48fa503d5554cff2f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/eabf68b476ac7d0f73793aada060f1c1a9bf8979",
+                "reference": "eabf68b476ac7d0f73793aada060f1c1a9bf8979",
                 "shasum": ""
             },
             "require": {
@@ -1708,7 +1708,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-09-14 06:51:16"
+            "time": "2015-10-06 15:47:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1890,16 +1890,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.10",
+            "version": "4.8.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "463163747474815c5ccd4ae12b5b355ec12158e8"
+                "reference": "b4900675926860bef091644849305399b986efa2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/463163747474815c5ccd4ae12b5b355ec12158e8",
-                "reference": "463163747474815c5ccd4ae12b5b355ec12158e8",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b4900675926860bef091644849305399b986efa2",
+                "reference": "b4900675926860bef091644849305399b986efa2",
                 "shasum": ""
             },
             "require": {
@@ -1958,7 +1958,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-10-01 09:14:30"
+            "time": "2015-10-17 15:03:30"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2299,16 +2299,16 @@
         },
         {
             "name": "sebastian/global-state",
-            "version": "1.0.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/global-state.git",
-                "reference": "c7428acdb62ece0a45e6306f1ae85e1c05b09c01"
+                "reference": "bc37d50fea7d017d3d340f230811c9f1d7280af4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/c7428acdb62ece0a45e6306f1ae85e1c05b09c01",
-                "reference": "c7428acdb62ece0a45e6306f1ae85e1c05b09c01",
+                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/bc37d50fea7d017d3d340f230811c9f1d7280af4",
+                "reference": "bc37d50fea7d017d3d340f230811c9f1d7280af4",
                 "shasum": ""
             },
             "require": {
@@ -2346,7 +2346,7 @@
             "keywords": [
                 "global state"
             ],
-            "time": "2014-10-06 09:23:50"
+            "time": "2015-10-12 03:26:01"
         },
         {
             "name": "sebastian/recursion-context",
