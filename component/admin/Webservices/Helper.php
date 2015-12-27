@@ -35,7 +35,7 @@ abstract class Helper
 		}
 		catch (\Exception $e)
 		{
-			throw new \RuntimeException(JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
+			throw new \RuntimeException(\JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
 		}
 
 		$config = $container->get("config")['database'];
@@ -138,7 +138,7 @@ abstract class Helper
 	{
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.path');
-		$app = JFactory::getApplication();
+		$app = \JFactory::getApplication();
 		$resultFile = array();
 
 		foreach ($files as &$file)
@@ -146,12 +146,12 @@ abstract class Helper
 			// Get unique name
 			if (!empty($options['setUniqueFileName']))
 			{
-				$fileExtension = JFile::getExt($file['name']);
+				$fileExtension = \JFile::getExt($file['name']);
 				$file['destinationFileName'] = self::getUniqueName($file['name']) . '.' . $fileExtension;
 			}
 			else
 			{
-				$file['destinationFileName'] = JFile::makeSafe($file['name']);
+				$file['destinationFileName'] = \JFile::makeSafe($file['name']);
 			}
 
 			// Get full path
@@ -224,7 +224,7 @@ abstract class Helper
 
 		if (empty($file['name']))
 		{
-			$app->enqueueMessage(JText::_('LIB_WEBSERVICES_ERROR_WARNFILENAME'), 'error');
+			$app->enqueueMessage(\JText::_('LIB_WEBSERVICES_ERROR_WARNFILENAME'), 'error');
 
 			return false;
 		}
@@ -268,7 +268,7 @@ abstract class Helper
 			if (strlen($file['mimeTypeName']) && !in_array($file['mimeTypeName'], $validFileTypes))
 			{
 				$app->enqueueMessage(
-					JText::sprintf('LIB_WEBSERVICES_ERROR_WARNINVALID_MIME', $file['mimeTypeName'], $options['allowedMIMETypes']),
+					\JText::sprintf('LIB_WEBSERVICES_ERROR_WARNINVALID_MIME', $file['mimeTypeName'], $options['allowedMIMETypes']),
 					'error'
 				);
 
@@ -279,7 +279,7 @@ abstract class Helper
 		// If we have a name clash, abort the upload
 		if (empty($options['overrideExistingFile']) && \JFile::exists($file['filePath']))
 		{
-			$app->enqueueMessage(JText::sprintf('LIB_WEBSERVICES_ERROR_FILE_EXISTS', $file['destinationFileName']), 'error');
+			$app->enqueueMessage(\JText::sprintf('LIB_WEBSERVICES_ERROR_FILE_EXISTS', $file['destinationFileName']), 'error');
 
 			return false;
 		}
