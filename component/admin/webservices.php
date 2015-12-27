@@ -1,37 +1,40 @@
 <?php
 /**
- * @package    Redcore.Admin
+ * Webservices component for Joomla! CMS
  *
- * @copyright  Copyright (C) 2008 - 2015 redCOMPONENT.com. All rights reserved.
- * @license    GNU General Public License version 2 or later, see LICENSE.
+ * @copyright  Copyright (C) 2004 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later
  */
 
 defined('_JEXEC') or die;
 
-$applicationPath = realpath(JPATH_ROOT . '/../../webservices');
+// Access check.
+if (!JFactory::getUser()->authorise('core.manage', 'com_webservices'))
+{
+	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+}
+
+$applicationPath = realpath(JPATH_ROOT);
 $composerPath = $applicationPath . '/vendor/autoload.php';
 define ('JPATH_API', $applicationPath);
 require_once($composerPath);
 
-JLoader::registerPrefix('Webservices', dirname(__FILE__));
-
+// Application reference
 $app = JFactory::getApplication();
 
-// Check access.
-if (!JFactory::getUser()->authorise('core.manage', 'com_webservices'))
+// Register the component namespace to the autoloader
+JLoader::registerNamespace('Webservices', __DIR__);
+
+// Build the controller class name based on task
+$task = $app->input->getCmd('task', 'display');
+
+// If $task is an empty string, apply our default since JInput might not
+if ($task === '')
 {
-	$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-
-	return false;
+	$task = 'display';
 }
+$class = '\\Webservices\\Controller\\' . ucfirst(strtolower($task)) . 'Controller';
 
-// Load specific js component
-JHtml::_('jquery.framework');
-JHtml::_('script', 'webservices/component.min.js', true, true);
-
-require_once JPATH_COMPONENT . '/helpers/webservices.php';
-
-// Instanciate and execute the front controller.
-$controller = JControllerLegacy::getInstance('Webservices');
-$controller->execute($app->input->get('task'));
-$controller->redirect();
+// Instantiate and execute the controller
+$controller = new $class($app->input, $app);
+$controller->execute();

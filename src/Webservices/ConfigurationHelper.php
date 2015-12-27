@@ -540,10 +540,10 @@ class ConfigurationHelper
 			}
 		}
 
-		if (isset($server['PHP_AUTH_USER']))
+		if (isset($_SERVER['PHP_AUTH_USER']))
 		{
-			$headers['PHP_AUTH_USER'] = $server['PHP_AUTH_USER'];
-			$headers['PHP_AUTH_PW'] = isset($server['PHP_AUTH_PW']) ? $server['PHP_AUTH_PW'] : '';
+			$headers['PHP_AUTH_USER'] = $_SERVER['PHP_AUTH_USER'];
+			$headers['PHP_AUTH_PW'] = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
 		}
 		else
 		{
@@ -561,13 +561,13 @@ class ConfigurationHelper
 
 			$authorizationHeader = null;
 
-			if (isset($server['HTTP_AUTHORIZATION']))
+			if (isset($_SERVER['HTTP_AUTHORIZATION']))
 			{
-				$authorizationHeader = $server['HTTP_AUTHORIZATION'];
+				$authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'];
 			}
-			elseif (isset($server['REDIRECT_HTTP_AUTHORIZATION']))
+			elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']))
 			{
-				$authorizationHeader = $server['REDIRECT_HTTP_AUTHORIZATION'];
+				$authorizationHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
 			}
 			elseif (function_exists('apache_request_headers'))
 			{
