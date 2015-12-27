@@ -1,0 +1,24 @@
+{
+  "database": {
+    "driver"   : "mysqli",
+    "host"     : "localhost",
+    "user"     : "root",
+    "password" : "",
+    "database" : "test_webservices",
+	"prefix"   : "jos_",
+    "debug"    : false
+  },
+  "webservices": {
+    "enable_webservices" : 1,
+    "webservices_default_format" : "hal",
+    "webservices_default_page_authorization": 0,
+    "webservices_permission_check" : 1,
+    "debug_webservices" : 0,
+    "enable_soap" : 1
+  },
+  "language" : {
+    "basedir" : "",
+    "default" : "en-GB"
+  },
+  "errorReporting": -1
+}
