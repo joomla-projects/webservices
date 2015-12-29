@@ -491,9 +491,9 @@ class FormModel extends \JModelDatabase
 			// Bind the data.
 			if (!$table->bind($data))
 			{
-	      $this->setError($table->getError());
+				$this->setError($table->getError());
 
-	      return false;
+				return false;
 			}
 
 			// Prepare the row for saving
@@ -502,31 +502,31 @@ class FormModel extends \JModelDatabase
 			// Check the data.
 			if (!$table->check())
 			{
-	      $this->setError($table->getError());
+				$this->setError($table->getError());
 
-	      return false;
+				return false;
 			}
 
 			// Store the data.
 			if (!$table->store())
 			{
-	      $this->setError($table->getError());
+				$this->setError($table->getError());
 
-	      return false;
+				return false;
 			}
 		}
 		catch (\Exception $e)
 		{
-      $this->setError($e->getMessage());
+			$this->setError($e->getMessage());
 
-      return false;
+			return false;
 		}
 
 		$state = new Registry;
 
 		if (isset($table->$key))
 		{
-      $state->set($this->getName() . '.id', $table->$key);
+			$state->set($this->getName() . '.id', $table->$key);
 		}
 
 		$state->set($this->getName() . '.new', $isNew);
@@ -535,53 +535,53 @@ class FormModel extends \JModelDatabase
 
 		if ($this->associationsContext && \JLanguageAssociations::isEnabled())
 		{
-      $associations = $data['associations'];
+			$associations = $data['associations'];
 
-      // Unset any invalid associations
-      foreach ($associations as $tag => $id)
-      {
-        if (!(int) $id)
-        {
-          unset($associations[$tag]);
-        }
-      }
+			// Unset any invalid associations
+			foreach ($associations as $tag => $id)
+			{
+				if (!(int) $id)
+				{
+					unset($associations[$tag]);
+				}
+			}
 
-      // Show a notice if the item isn't assigned to a language but we have associations.
-      if ($associations && ($table->language == '*'))
-      {
-        \JFactory::getApplication()->enqueueMessage(
-          \JText::_(strtoupper($this->option) . '_ERROR_ALL_LANGUAGE_ASSOCIATED'),
-          'notice'
-        );
-      }
+			// Show a notice if the item isn't assigned to a language but we have associations.
+			if ($associations && ($table->language == '*'))
+			{
+				\JFactory::getApplication()->enqueueMessage(
+					\JText::_(strtoupper($this->option) . '_ERROR_ALL_LANGUAGE_ASSOCIATED'),
+					'notice'
+				);
+			}
 
-      // Adding self to the association
-      $associations[$table->language] = (int) $table->$key;
+			// Adding self to the association
+			$associations[$table->language] = (int) $table->$key;
 
-      // Deleting old association for these items
-      $db    = $this->getDbo();
-      $query = $db->getQuery(true)
-              ->delete($db->qn('#__associations'))
-              ->where($db->qn('context') . ' = ' . $db->quote($this->associationsContext))
-              ->where($db->qn('id') . ' IN (' . implode(',', $associations) . ')');
-      $db->setQuery($query);
-      $db->execute();
+			// Deleting old association for these items
+			$db    = $this->getDbo();
+			$query = $db->getQuery(true)
+				->delete($db->qn('#__associations'))
+				->where($db->qn('context') . ' = ' . $db->quote($this->associationsContext))
+				->where($db->qn('id') . ' IN (' . implode(',', $associations) . ')');
+			$db->setQuery($query);
+			$db->execute();
 
-      if ((count($associations) > 1) && ($table->language != '*'))
-      {
-        // Adding new association for these items
-        $key   = md5(json_encode($associations));
-        $query = $db->getQuery(true)
-                ->insert('#__associations');
+			if ((count($associations) > 1) && ($table->language != '*'))
+			{
+				// Adding new association for these items
+				$key   = md5(json_encode($associations));
+				$query = $db->getQuery(true)
+					->insert('#__associations');
 
-        foreach ($associations as $id)
-        {
-          $query->values($id . ',' . $db->quote($this->associationsContext) . ',' . $db->quote($key));
-        }
+				foreach ($associations as $id)
+				{
+					$query->values($id . ',' . $db->quote($this->associationsContext) . ',' . $db->quote($key));
+				}
 
-        $db->setQuery($query);
-        $db->execute();
-      }
+				$db->setQuery($query);
+				$db->execute();
+			}
 		}
 
 	  return true;
