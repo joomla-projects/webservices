@@ -5,6 +5,14 @@
     <author>Jooma Project</author>
     <copyright>Copyright (C) 2015 Open Source Matters, Inc. All rights reserved.</copyright>
     <description>API configuration for web service "home page"</description>
+    <description>API home page</description>
+    <config>
+        <!-- This will be used for automatic model and table instance in CRUD methods and for Api helper class -->
+        <name>home</name>
+        <version>1.0.0</version>
+        <!-- authorizationAssetName is used with Joomla authorization when performing checks against ACL (if not authorized by scope) -->
+        <authorizationAssetName>com_{webserviceName}</authorizationAssetName>
+    </config>
     <operations>
         <!-- Documentation can be included from various sources:
             auto: documentation is auto generated using this XML as template

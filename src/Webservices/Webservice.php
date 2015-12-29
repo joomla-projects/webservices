@@ -1288,6 +1288,7 @@ abstract class Webservice extends WebserviceBase
 		// We will add this instance of the object as last argument for manipulation in plugin and helper
 		$temp[] = &$this;
 
+		// @TODO: The event name should not be tied to HAL.
 		$event = new Event('JApiHalBefore' . $functionName, $temp);
 		$result = $this->dispatcher->triggerEvent($event);
 
@@ -1306,6 +1307,7 @@ abstract class Webservice extends WebserviceBase
 			$result = call_user_func_array(array($this, $functionName), $temp);
 		}
 
+		// @TODO: The event name should not be tied to HAL.
 		$event = new EventImmutable('JApiHalAfter' . $functionName, $temp);
 		$this->dispatcher->triggerEvent($event);
 

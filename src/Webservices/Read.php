@@ -13,6 +13,7 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\Webservices\Resource\ResourceHome;
 use Joomla\Webservices\Resource\ResourceItem;
 use Joomla\Webservices\Resource\ResourceLink;
+use Joomla\Webservices\Resource\ResourceList;
 use Joomla\Webservices\Resource\Resource;
 use Joomla\Webservices\Uri\Uri;
 use Joomla\Webservices\Xml\XmlHelper;
@@ -27,7 +28,7 @@ class Read extends Webservice
 	/**
 	 * Execute the Api operation.
 	 * 
-	 * @param   Profile $profile  A profile which shapes the resource.
+	 * @param   Profile  $profile  A profile which shapes the resource.
 	 * 
 	 * @return  Resource  A populated Resource object.
 	 *
@@ -105,8 +106,6 @@ class Read extends Webservice
 				{
 					if ($webservice['state'] == 1)
 					{
-						$documentation = $webserviceClient == 'site' ? 'Site' : 'Admin';
-
 						// Set option and view name
 						$this->setOptionViewName($webservice['name'], $this->configuration);
 						$webserviceUrlPath = '/index.php?option=' . $this->optionName
@@ -117,11 +116,12 @@ class Read extends Webservice
 							$webserviceUrlPath .= '&view=' . $this->viewName;
 						}
 
-						// We will fetch only top level webservice
+						// We will fetch only top level webservices.
 						$this->resource->setLink(
 							new ResourceLink(
 								$webserviceUrlPath . '&webserviceClient=' . $webserviceClient,
-								$documentation . ':' . $webservice['name'],
+								$webservice['name'],
+								$webservice['name'],
 								$webservice['title']
 							)
 						);
@@ -312,6 +312,7 @@ class Read extends Webservice
 	 * @param   \SimpleXMLElement  $subprofile   Profile for the read item.
 	 *
 	 * @return  Resource  A populated resource object.
+	 * 
 	 * @throws  \Exception
 	 */
 	public function bindDataToResourceItem($item, $subprofile)
@@ -354,6 +355,7 @@ class Read extends Webservice
 	 * @param   \SimpleXMLElement  $subprofile   Profile for the read item.
 	 *
 	 * @return  Resource  A populated resource object.
+	 * 
 	 * @throws  \Exception
 	 */
 	public function bindDataToResourceList($items, $subprofile)
@@ -363,7 +365,7 @@ class Read extends Webservice
 			return;
 		}
 
-		$this->resource = new ResourceItem($this->profile);
+		$this->resource = new ResourceList($this->profile);
 
 		// Get resource profile from configuration.
 		$profile = $this->getResourceProfile($subprofile);
@@ -390,7 +392,7 @@ class Read extends Webservice
 
 			$embedItem = new ResourceItem('item', $item);
 			$embedItem = $this->setDataValueToResource($embedItem, $profile, $itemValue, 'listItem');
-			$this->resource->setEmbedded('item', $embedItem);
+			$this->resource->setEmbedded($this->webserviceName, $embedItem);
 		}
 
 		return $this->resource;

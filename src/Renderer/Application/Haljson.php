@@ -155,6 +155,73 @@ class Haljson extends Renderer
 	}
 
 	/**
+	 * Render a representation of a ResourceList object.
+	 *
+	 * @param   Resource  $resource  A resource list object.
+	 *
+	 * @return  A representation of the object.
+	 */
+	public function renderResourceList(Resource $resource)
+	{
+		$properties = array();
+		$data = $resource->getData();
+
+		// Iterate through the metadata properties and add them to the top-level array.
+//		foreach ($resource->getMetadata() as $name => $property)
+//		{
+//			$properties[$name] = $property;
+//		}
+
+		// Iterate through the links and add them to the _links element.
+		foreach ($resource->getLinks() as $rel => $link)
+		{
+			// Drop first and previous page links on first page.
+			if ($data['page'] == 1)
+			{
+				if ($rel == 'first' || $rel == 'previous')
+				{
+					continue;
+				}
+			}
+
+			// Drop last and next page links on last page.
+			if ($data['page'] == $data['totalPages'])
+			{
+				if ($rel == 'last' || $rel == 'next')
+				{
+					continue;
+				}
+			}
+
+			// Add link to _links element.
+			if ($link instanceof Resource)
+			{
+				$properties['_links'][$rel] = $this->render($link);
+			}
+		}
+
+		// Iterate through the data properties and add them to the top-level array.
+		foreach ($resource->getData() as $name => $property)
+		{
+			$properties[$name] = $property;
+		}
+
+		// Iterate through the embedded resources and add them to the _embedded element.
+		foreach ($resource->getEmbedded() as $rel => $embedded)
+		{
+			foreach ($embedded as $item)
+			{
+				if ($item instanceof ResourceItem)
+				{
+					$properties['_embedded'][$rel][] = json_decode($this->render($item));
+				}
+			}
+		}
+
+		return json_encode($properties);
+	}
+
+	/**
 	 * Method to convert relative to absolute links.
 	 *
 	 * @param   Resource  $resource       Resource object which contains links (_links).
