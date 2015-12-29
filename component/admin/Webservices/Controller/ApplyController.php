@@ -50,7 +50,7 @@ class ApplyController extends DisplayController
 			}
 
 			$type = 'message';
-			$url = 'index.php?option=com_webservices&view=webservice&id=' . $id;
+			$url = 'index.php?option=com_webservices&task=edit&id=' . $id;
 		}
 		catch (\Exception $e)
 		{
