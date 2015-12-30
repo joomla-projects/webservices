@@ -5,8 +5,22 @@ This is a lab for investigating adding a layer of webservices to Joomla
 
 For more details join #webservices channel at https://glip.com/
 
-
 How to install
+====
+* Install a full current Joomla somewhere
+* git clone https://github.com/joomla-projects/webservices.git OR https://github.com/chrisdavenport/webservices.git
+* Zip or tar-gzip everything in the /component directory
+* Install component package file as an extension in the usual way
+* Copy all the files from the github clone to the web root of the CMS
+* sudo composer require willdurand/Negotiation (don't know why this is needed, but it is)
+* sudo composer install
+* Copy config.dist.json to config.json
+* Edit config.json database credentials
+* Log in to Administrator and go to Components -> Webservices
+* Install web services one-by-one because batch doesn't work.
+* Test
+
+How to install [OLD - These instructions don't work at present]
 ====
 
 1. Download release from releases packages and install
