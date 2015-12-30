@@ -192,13 +192,14 @@ class CliApplication extends AbstractCliApplication implements ContainerAwareInt
 		);
 
 		$rendererOptions = [
-			'charset'	=> 'utf-8',
-			'language'	=> 'en-GB',
-			'direction'	=> 'ltr',
-			'link'		=> '',
-			'base'		=> '',
+			'charset'		=> 'utf-8',
+			'language'		=> 'en-GB',
+			'direction'		=> 'ltr',
+			'link'			=> '',
+			'base'			=> '',
 			'absoluteHrefs'	=> $input->getBool('absoluteHrefs', false),
-			'uriParams'	=> [],
+			'uriParams'		=> [],
+			'resourceName'	=> $resourceName,
 		];
 
 		try

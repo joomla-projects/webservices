@@ -26,8 +26,32 @@ use Joomla\Webservices\Uri\Uri;
  * @see         http://stateless.co/hal_specification.html
  * @since       1.2
  */
-class Haljson extends Renderer
+class Halxml extends Renderer
 {
+	/**
+	 * Resource name.
+	 * 
+	 * @var    string
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $resourceName = '';
+	
+	/**
+	 * XML document object.
+	 * 
+	 * @var    \DOMDocument
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $xml = null;
+
+	/**
+	 * XML document root node.
+	 * 
+	 * @var   \DOMElement
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $xmlRoot = null;
+
 	/**
 	 * API interaction style.
 	 *
@@ -57,16 +81,123 @@ class Haljson extends Renderer
 		parent::__construct($container, $options);
 
 		// Set default mime type.
-		$this->setMimeEncoding('application/hal+json', false);
+		$this->setMimeEncoding('application/hal+xml', false);
 
 		// Set document type.
-		$this->setType('hal+json');
+		$this->setType('hal+xml');
 
 		// Set absolute/relative hrefs.
 		$this->absoluteHrefs = isset($options['absoluteHrefs']) ? $options['absoluteHrefs'] : false;
 
 		// Set token if needed.
 		$this->uriParams = isset($options['uriParams']) ? $options['uriParams'] : array();
+
+		// Get the resource name.
+		$this->resourceName = $options['resourceName'];
+
+		// Create a new XML document object.
+		$this->xml = new \DOMDocument;
+		$this->xmlRoot = $this->xml->createElement('resource');
+		$this->xml->appendChild($this->xmlRoot);
+		$this->xml->formatOutput = true;
+	}
+
+	/**
+	 * Create a DOMElement node from a ResourceItem object.
+	 *
+	 * @param   \DOMElement  $xml       An XML node.
+	 * @param   Resource     $resource  A resource item object.
+	 * @param   boolean      $root      True if this is the root resource element.
+	 *
+	 * @return  \DOMElement.
+	 */
+	public function createResourceItem(\DOMElement $xml, Resource $resource, $root = true)
+	{
+		$doc = $this->xml;
+
+		$properties = array();
+
+		// Iterate through the links and add them to the _links element.
+		foreach ($resource->getLinks() as $rel => $link)
+		{
+			if ($link instanceof Resource)
+			{
+				// The self link is odd because it gets moved into attributes of the resource element.
+				if ($link->getRel() == 'self')
+				{
+					// Create a rel attribute.
+					$rel = $doc->createAttribute('rel');
+					$rel->appendChild($doc->createTextNode($root ? 'self' : $this->resourceName));
+			
+					// Create an href attribute.
+					$href = $doc->createAttribute('href');
+					$href->appendChild($doc->createTextNode($link->getHref()));
+			
+					// Add the attributes to item resource node.
+					$xml->appendChild($rel);
+					$xml->appendChild($href);
+				}
+				else
+				{
+					$xml->appendChild($this->createResourceLink($link));
+				}
+
+				continue;
+			}
+
+			// An array of Link resources.
+			foreach ($link as $linkResource)
+			{
+				$xml->appendChild($this->createResourceLink($linkResource));
+			}
+		}
+
+		// Iterate through the data properties and add them to the top-level array.
+		foreach ($resource->getData() as $name => $property)
+		{
+			$xml->appendChild($doc->createElement($name, $property));
+		}
+
+		// Iterate through the embedded resources and add them to the _embedded element.
+		foreach ($resource->getEmbedded() as $rel => $embedded)
+		{
+			foreach ($embedded as $item)
+			{
+				if ($item instanceof ResourceItem)
+				{
+					$xml->appendChild($this->createResourceItem($xml, $item, false));
+				}
+			}
+		}
+
+		return $xml;
+	}
+
+	/**
+	 * Create a DOMElement node from a ResourceLink object.
+	 *
+	 * @param   Resource  $resource  A resource link object.
+	 *
+	 * @return  \DOMElement
+	 */
+	public function createResourceLink(Resource $resource)
+	{
+		$doc = $this->xml;
+
+		// Create a rel attribute.
+		$rel = $doc->createAttribute('rel');
+		$rel->appendChild($doc->createTextNode($resource->getRel()));
+
+		// Create an href attribute.
+		$href = $doc->createAttribute('href');
+		$href->appendChild($doc->createTextNode($resource->getHref()));
+
+		// Create a link element and add the attributes to it.
+		$link = $doc->createElement('link');
+		$link->appendChild($rel);
+		$link->appendChild($href);
+
+		return $link;
 	}
 
 	/**
@@ -107,59 +238,9 @@ class Haljson extends Renderer
 	 */
 	public function renderResourceItem(Resource $resource)
 	{
-		$properties = array();
+		$this->xmlRoot = $this->createResourceItem($this->xmlRoot, $resource, true);
 
-		// Iterate through the metadata properties and add them to the top-level array.
-//		foreach ($resource->getMetadata() as $name => $property)
-//		{
-//			$properties[$name] = $property;
-//		}
-
-		// Iterate through the links and add them to the _links element.
-		foreach ($resource->getLinks() as $rel => $link)
-		{
-			if ($link instanceof Resource)
-			{
-				$properties['_links'][$rel] = $this->render($link);
-
-				continue;
-			}
-
-			// An array of Link resources.
-			foreach ($link as $linkResource)
-			{
-				$properties['_links'][$rel][] = $this->render($linkResource);
-			}
-		}
-
-		// Iterate through the data properties and add them to the top-level array.
-		foreach ($resource->getData() as $name => $property)
-		{
-			$properties[$name] = $property;
-		}
-
-		// Iterate through the embedded resources and add them to the _embedded element.
-		foreach ($resource->getEmbedded() as $rel => $embedded)
-		{
-			if ($embedded instanceof Resource)
-			{
-				$properties['_embedded'][$rel] = $this->render($embedded);
-			}
-		}
-
-		return json_encode($properties);
-	}
-
-	/**
-	 * Render a representation of a ResourceLink object.
-	 *
-	 * @param   Resource  $resource  A resource item object.
-	 *
-	 * @return  A representation of the object.
-	 */
-	public function renderResourceLink(Resource $resource)
-	{
-		return $resource->toArray();
+		return (string) $this->xml->saveXML();
 	}
 
 	/**
@@ -171,14 +252,11 @@ class Haljson extends Renderer
 	 */
 	public function renderResourceList(Resource $resource)
 	{
+		$doc = $this->xml;
+		$xml = $this->xmlRoot;
+
 		$properties = array();
 		$data = $resource->getData();
-
-		// Iterate through the metadata properties and add them to the top-level array.
-//		foreach ($resource->getMetadata() as $name => $property)
-//		{
-//			$properties[$name] = $property;
-//		}
 
 		// Iterate through the links and add them to the _links element.
 		foreach ($resource->getLinks() as $rel => $link)
@@ -201,10 +279,27 @@ class Haljson extends Renderer
 				}
 			}
 
-			// Add link to _links element.
 			if ($link instanceof Resource)
 			{
-				$properties['_links'][$rel] = $this->render($link);
+				// The self link is odd because it gets moved into attributes of the resource element.
+				if ($link->getRel() == 'self')
+				{
+					// Create a rel attribute.
+					$rel = $doc->createAttribute('rel');
+					$rel->appendChild($doc->createTextNode('self'));
+			
+					// Create an href attribute.
+					$href = $doc->createAttribute('href');
+					$href->appendChild($doc->createTextNode($link->getHref()));
+			
+					// Add the attributes to item resource node.
+					$xml->appendChild($rel);
+					$xml->appendChild($href);
+				}
+				else
+				{
+					$xml->appendChild($this->createResourceLink($link));
+				}
 
 				continue;
 			}
@@ -212,14 +307,14 @@ class Haljson extends Renderer
 			// An array of Link resources.
 			foreach ($link as $linkResource)
 			{
-				$properties['_links'][$rel][] = $this->render($linkResource);
+				$xml->appendChild($this->createResourceLink($linkResource));
 			}
 		}
 
 		// Iterate through the data properties and add them to the top-level array.
 		foreach ($resource->getData() as $name => $property)
 		{
-			$properties[$name] = $property;
+			$xml->appendChild($doc->createElement($name, $property));
 		}
 
 		// Iterate through the embedded resources and add them to the _embedded element.
@@ -229,12 +324,13 @@ class Haljson extends Renderer
 			{
 				if ($item instanceof ResourceItem)
 				{
-					$properties['_embedded'][$rel][] = json_decode($this->render($item));
+					$embeddedResource = $doc->createElement('resource');
+					$xml->appendChild($this->createResourceItem($embeddedResource, $item, false));
 				}
 			}
 		}
 
-		return json_encode($properties);
+		return (string) $doc->saveXML();
 	}
 
 	/**

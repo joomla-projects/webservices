@@ -148,13 +148,14 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 		);
 
 		$rendererOptions = [
-			'charset'	=> 'utf-8',
-			'language'	=> 'en-GB',
-			'direction'	=> 'ltr',
-			'link'		=> '',
-			'base'		=> '',
+			'charset'		=> 'utf-8',
+			'language'		=> 'en-GB',
+			'direction'		=> 'ltr',
+			'link'			=> '',
+			'base'			=> '',
 			'absoluteHrefs'	=> $input->getBool('absoluteHrefs', true),
-			'uriParams'	=> [],
+			'uriParams'		=> [],
+			'resourceName'	=> $resourceName,
 		];
 
 		try
