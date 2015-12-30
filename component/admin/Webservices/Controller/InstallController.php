@@ -29,38 +29,40 @@ class InstallController extends DisplayController
 	 */
 	public function execute()
 	{
-    // Get model
-    $model = new WebservicesModel;
+		// Get model
+		$model = new WebservicesModel('webservices');
 
-    // Return url
-    $this->returnurl = 'index.php?option=com_webservices';
+		// Return url
+		$this->returnurl = 'index.php?option=com_webservices';
 
-    // Initialize the state for the model
-    $model->setState($this->initializeState($model));
+		// Initialize the state for the model
+		$model->setState($this->initializeState($model));
 
-    $input = $this->getInput();
+		$input = $this->getInput();
 
-    $webservice = $input->getString('webservice');
-    $version = $input->getString('version');
-    $folder = $input->getString('folder');
-    $client = $input->getString('client');
+		$webservice = $input->getString('webservice');
+		$version = $input->getString('version');
+		$folder = $input->getString('folder');
+		$client = $input->getString('client');
+
+		$msg = \JText::_('COM_WEBSERVICES_WEBSERVICES_INSTALLED_WEBSERVICES');
+		$type = 'message';
 
 		try
 		{
-      if ($webservice == 'all')
-  		{
-        // @@ TODO: Fix this
-  			//$this->batchWebservices('install');
-  		}
-  		else
-  		{
-        if ($model->installWebservice($client, $webservice, $version, $folder))
-  			{
-  				$msg = \JText::_('COM_WEBSERVICES_WEBSERVICES_WEBSERVICE_INSTALLED');
-  			}
-  		}
-
-			$type = 'message';
+			if ($webservice == 'all')
+			{
+				// @@ TODO: Fix this
+				//$this->batchWebservices('install');
+				throw new \Exception('Batch installation not implemented yet.  Install services one at a time.');
+			}
+	  		else
+	  		{
+				if ($model->installWebservice($client, $webservice, $version, $folder))
+	  			{
+	  				$msg = \JText::_('COM_WEBSERVICES_WEBSERVICES_WEBSERVICE_INSTALLED');
+	  			}
+	  		}
 		}
 		catch (\Exception $e)
 		{
