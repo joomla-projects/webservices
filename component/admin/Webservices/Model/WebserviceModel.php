@@ -63,8 +63,10 @@ class WebserviceModel extends FormModel
 				$data['main']['id']
 		))
 		{
-			$this->setState($this->getName() . '.id', $id);
-			$this->setState($this->getName() . '.new', empty($data['main']['id']));
+			$state = new Registry;
+			$state->set($this->getName() . '.id', $id);
+			$state->set($this->getName() . '.new', empty($data['main']['id']));
+			$this->setState($state);
 
 			// Update created, modified flags
 			return parent::save(array('id' => $id));
