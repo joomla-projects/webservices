@@ -93,8 +93,15 @@ class Read extends Webservice
 		$this->resource->setLink($documentationCurieAdmin, false, true);
 		$this->resource->setLink($documentationCurieSite, false, true);
 
+		// Add link to contents page (actually the same as the "self" link for this page).
 		$uri = Uri::getInstance();
-		$this->resource->setLink(new ResourceLink($uri->base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
+		$this->resource->setLink(
+			new ResourceLink(
+				$uri->base(),
+				'contents',
+				$this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')
+			)
+		);
 
 		$webservices = ConfigurationHelper::getInstalledWebservices($this->getContainer()->get('db'));
 
