@@ -19,21 +19,6 @@ use Joomla\Webservices\Webservices\Profile;
 class ResourceHome extends Resource
 {
 	/**
-	 * Json option
-	 */
-	const JSON_NUMERIC_CHECK_ON = true;
-
-	/**
-	 * Json option
-	 */
-	const JSON_NUMERIC_CHECK_OFF = false;
-
-	/**
-	 * @var bool
-	 */
-	protected $jsonNumericCheck = self::JSON_NUMERIC_CHECK_OFF;
-
-	/**
 	 * Profile object.
 	 */
 	protected $profile = null;
@@ -166,35 +151,6 @@ class ResourceHome extends Resource
 	}
 
 	/**
-	 * Adds links to the current resource
-	 *
-	 * @param   Link  $link  Link
-	 *
-	 * @return void
-	 */
-	protected function _addLinks(Link $link)
-	{
-		if ($link->getRel() != 'self' && !is_numeric($link->getRel()))
-		{
-			$this->_addLink($link);
-		}
-	}
-
-	/**
-	 * Adds link to the current resource
-	 *
-	 * @param   Link  $link  Link
-	 *
-	 * @return  $this
-	 */
-	protected function _addLink(Link $link)
-	{
-		$this->setXMLAttributes($this->xml->addChild('link'), $link);
-
-		return $this;
-	}
-
-	/**
 	 * Method to load an object or an array into this HAL object.
 	 *
 	 * @param   object  $object  Object whose properties are to be loaded.
@@ -224,7 +180,7 @@ class ResourceHome extends Resource
 	}
 
 	/**
-	 * Creates empty array of Xml configuration Resource field
+	 * Creates empty array of configuration Resource field
 	 *
 	 * @param   array   $resource          Resource array
 	 * @param   string  $resourceSpecific  Resource specific container

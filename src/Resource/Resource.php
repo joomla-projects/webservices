@@ -17,11 +17,6 @@ namespace Joomla\Webservices\Resource;
 abstract class Resource
 {
 	/**
-	 * @var \SimpleXMLElement
-	 */
-	protected $xml;
-
-	/**
 	 * Internal storage of Link objects
 	 * @var array
 	 */
@@ -180,41 +175,6 @@ abstract class Resource
 		foreach ($links as $link)
 		{
 			$this->setLink($link, $singular, $plural);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Sets XML attributes for \Joomla\Webservices\Resource\Link
-	 * 
-	 * @param   \SimpleXMLElement  $xml   XML document
-	 * @param   Link               $link  Link element
-	 *
-	 * @return  $this
-	 */
-	public function setXMLAttributes(\SimpleXMLElement $xml, Link $link)
-	{
-		$xml->addAttribute('href', $link->getHref());
-
-		if ($link->getRel() && $link->getRel() !== 'self')
-		{
-			$xml->addAttribute('rel', $link->getRel());
-		}
-
-		if ($link->getName())
-		{
-			$xml->addAttribute('name', $link->getName());
-		}
-
-		if ($link->getTitle())
-		{
-			$xml->addAttribute('title', $link->getTitle());
-		}
-
-		if ($link->getHreflang())
-		{
-			$xml->addAttribute('hreflang', $link->getHreflang());
 		}
 
 		return $this;
