@@ -19,7 +19,8 @@ use Joomla\Webservices\Webservices\Exception\ConfigurationException;
 use Joomla\Webservices\Xml\XmlHelper;
 
 /**
- * Interface to handle api calls
+ * A collection of static helper methods dealing with the reading
+ * and interpretation of webservice XML configuration files.
  *
  * @package     Redcore
  * @subpackage  Api
@@ -609,6 +610,33 @@ class ConfigurationHelper
 	}
 
 	/**
+	 * Gets list of all fields from operation configuration
+	 *
+	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
+	 *
+	 * @return  array
+	 *
+	 * @since   1.3
+	 */
+	public static function getAllFields(\SimpleXMLElement $configuration)
+	{
+		$fields = array();
+
+		// If there are no fields, return an empty array.
+		if (empty($configuration->fields))
+		{
+			return $fields;
+		}
+
+		foreach ($configuration->fields->field as $field)
+		{
+			$fields[] = XmlHelper::getXMLElementAttributes($field);
+		}
+
+		return $fields;
+	}
+
+	/**
 	 * Returns an array of fields from Element Fields properties
 	 *
 	 * @param   \SimpleXMLElement  $xmlElement   Xml element
@@ -705,5 +733,35 @@ class ConfigurationHelper
 		}
 
 		return $filterFields;
+	}
+
+	/**
+	 * Gets list of primary fields from operation configuration
+	 *
+	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
+	 *
+	 * @return  array
+	 *
+	 * @since   1.3
+	 */
+	public static function getPrimaryFields(\SimpleXMLElement $configuration)
+	{
+		$primaryFields = array();
+
+		// If there are no primary fields, return an empty array.
+		if (empty($configuration->fields))
+		{
+			return $primaryFields;
+		}
+
+		foreach ($configuration->fields->field as $field)
+		{
+			if (XmlHelper::isAttributeTrue($field, 'isPrimaryField'))
+			{
+				$primaryFields[] = (string) $field['name'];
+			}
+		}
+
+		return $primaryFields;
 	}
 }

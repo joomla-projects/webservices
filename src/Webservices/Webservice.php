@@ -956,60 +956,6 @@ abstract class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Gets list of primary fields from operation configuration
-	 *
-	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
-	 *
-	 * @return  array
-	 *
-	 * @since   1.3
-	 */
-	public function getPrimaryFields($configuration)
-	{
-		$primaryFields = array();
-
-		if (!empty($configuration->fields))
-		{
-			foreach ($configuration->fields->field as $field)
-			{
-				$isPrimaryField = XmlHelper::isAttributeTrue($field, 'isPrimaryField');
-
-				if ($isPrimaryField)
-				{
-					$primaryFields[] = (string) $field["name"];
-				}
-			}
-		}
-
-		return $primaryFields;
-	}
-
-	/**
-	 * Gets list of all fields from operation configuration
-	 *
-	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
-	 *
-	 * @return  array
-	 *
-	 * @since   1.3
-	 */
-	public function getAllFields($configuration)
-	{
-		$fields = array();
-
-		if (!empty($configuration->fields))
-		{
-			foreach ($configuration->fields->field as $field)
-			{
-				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
-				$fields[] = $fieldAttributes;
-			}
-		}
-
-		return $fields;
-	}
-
-	/**
 	 * Sets option and view name
 	 *
 	 * @param   string             $elementName    Element name
