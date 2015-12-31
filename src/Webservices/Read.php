@@ -39,7 +39,7 @@ class Read extends Webservice
 		$this->profile = $profile;
 
 		// Home page is special.
-		if ($this->webserviceName == 'home')
+		if ($this->webserviceName == 'contents')
 		{
 			return $this->triggerFunction('apiDefaultPage');
 		}

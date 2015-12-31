@@ -147,7 +147,7 @@ class CliApplication extends AbstractCliApplication implements ContainerAwareInt
 		);
 
 		// @deprecated The resource name should come from routing.
-		$optionName = $input->getString('option', 'home');
+		$optionName = $input->getString('option', 'contents');
 		$resourceName = strpos($optionName, 'com_') === 0 ? substr($optionName, 4) : $optionName;
 
 //		// Get optional task argument.
@@ -175,7 +175,7 @@ class CliApplication extends AbstractCliApplication implements ContainerAwareInt
 		$version = $input->getString('webserviceVersion');
 
 		// @deprecated There should be only one API.
-		$client  = $input->getString('webserviceClient', 'administrator');
+		$client  = $input->getString('webserviceClient', 'site');
 
 		$options = array(
 			'optionName'        => $resourceName,
