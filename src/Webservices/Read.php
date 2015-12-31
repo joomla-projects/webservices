@@ -82,26 +82,16 @@ class Read extends Webservice
 		$this->resource = new ResourceHome($this->profile);
 
 		// Add standard Joomla namespace as curie.
-		$documentationCurieAdmin = new ResourceLink('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=administrator',
-			'curies', 'Documentation Admin', 'Admin', null, true
-		);
-		$documentationCurieSite = new ResourceLink('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=site',
-			'curies', 'Documentation Site', 'Site', null, true
-		);
+//		$documentationCurieAdmin = new ResourceLink('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=administrator',
+//			'curies', 'Documentation Admin', 'Admin', null, true
+//		);
+//		$documentationCurieSite = new ResourceLink('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=site',
+//			'curies', 'Documentation Site', 'Site', null, true
+//		);
 
 		// Add basic hypermedia links.
-		$this->resource->setLink($documentationCurieAdmin, false, true);
-		$this->resource->setLink($documentationCurieSite, false, true);
-
-		// Add link to contents page (actually the same as the "self" link for this page).
-		$uri = Uri::getInstance();
-		$this->resource->setLink(
-			new ResourceLink(
-				$uri->base(),
-				'contents',
-				$this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')
-			)
-		);
+//		$this->resource->setLink($documentationCurieAdmin, false, true);
+//		$this->resource->setLink($documentationCurieSite, false, true);
 
 		$webservices = ConfigurationHelper::getInstalledWebservices($this->getContainer()->get('db'));
 
@@ -111,22 +101,17 @@ class Read extends Webservice
 			{
 				foreach ($webserviceVersions as $webserviceVersion => $webservice)
 				{
-					if ($webservice['state'] == 1)
+					if ($webservice['state'] != 1)
 					{
-						// Set option and view name
-						$this->setOptionViewName($webservice['name'], $this->configuration);
-						$webserviceUrlPath = '/index.php?option=' . $this->optionName
-							. '&amp;webserviceVersion=' . $webserviceVersion;
+						continue;
+					}
 
-						if (!empty($this->viewName))
-						{
-							$webserviceUrlPath .= '&view=' . $this->viewName;
-						}
-
-						// We will fetch only top level webservices.
+					// Temporary fix so that contents page URL does not have query part.
+					if ($webserviceName == 'contents')
+					{
 						$this->resource->setLink(
 							new ResourceLink(
-								$webserviceUrlPath . '&webserviceClient=' . $webserviceClient,
+								'/',
 								$webservice['name'],
 								$webservice['name'],
 								$webservice['title']
@@ -135,6 +120,26 @@ class Read extends Webservice
 
 						break;
 					}
+
+					// Set option and view name
+					$this->setOptionViewName($webservice['name'], $this->configuration);
+					$webserviceUrlPath = '/index.php?option=' . $this->optionName
+						. '&amp;webserviceVersion=' . $webserviceVersion;
+
+					if (!empty($this->viewName))
+					{
+						$webserviceUrlPath .= '&view=' . $this->viewName;
+					}
+
+					// We will fetch only top level webservices.
+					$this->resource->setLink(
+						new ResourceLink(
+							$webserviceUrlPath . '&webserviceClient=' . $webserviceClient,
+							$webservice['name'],
+							$webservice['name'],
+							$webservice['title']
+						)
+					);
 				}
 			}
 		}

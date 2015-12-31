@@ -9,13 +9,12 @@
 
 namespace Joomla\Webservices\Renderer\Application;
 
+use Joomla\DI\Container;
 use Joomla\Webservices\Renderer\Renderer;
 use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Resource\Resource;
 use Joomla\Webservices\Resource\ResourceHome;
 use Joomla\Webservices\Resource\ResourceItem;
-
-use Joomla\DI\Container;
 use Joomla\Webservices\Uri\Uri;
 
 /**
