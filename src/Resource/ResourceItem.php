@@ -36,7 +36,7 @@ class ResourceItem extends Resource
 	 * Replace existing link to the resource.
 	 *
 	 * @param   ResourceLink  $link   Link
-	 * @param   mixed         $group  Groupped link container
+	 * @param   mixed         $group  Grouped link container
 	 *
 	 * @return  $this
 	 */
@@ -181,7 +181,7 @@ class ResourceItem extends Resource
 	}
 
 	/**
-	 * Method to load an object or an array into this HAL object.
+	 * Method to load an object or an array into this object.
 	 *
 	 * @param   object  $object  Object whose properties are to be loaded.
 	 *

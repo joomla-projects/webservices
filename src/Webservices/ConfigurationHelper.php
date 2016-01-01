@@ -610,8 +610,9 @@ class ConfigurationHelper
 	}
 
 	/**
-	 * Gets list of all fields from operation configuration
-	 *
+	 * Returns an array of data from <field> elements defined in the <fields> section
+	 * of the configuration XML.
+	 * 
 	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
 	 *
 	 * @return  array
@@ -637,14 +638,18 @@ class ConfigurationHelper
 	}
 
 	/**
-	 * Returns an array of fields from Element Fields properties
+	 * Returns an array of data from <field> elements defined in the <fields> section
+	 * of the configuration XML.
+	 * 
+	 * Optionally retrieves primary key fields only.  These are defined as <field>
+	 * elements which have the attribute isPrimaryField set to true.
 	 *
-	 * @param   \SimpleXMLElement  $xmlElement   Xml element
-	 * @param   boolean            $primaryKeys  Only extract primary keys
+	 * @param   \SimpleXMLElement  $xmlElement   XML <fields> element.
+	 * @param   boolean            $primaryKeys  Only extract primary keys.
 	 *
 	 * @return  array
 	 */
-	public static function getFieldsArray($xmlElement, $primaryKeys = false)
+	public static function getFieldsArray(\SimpleXMLElement $xmlElement, $primaryKeys = false)
 	{
 		$fields = array();
 

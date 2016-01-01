@@ -21,6 +21,12 @@ final class Datetime extends Type
 	{
 		$datetime = new Datetime;
 
+		// Treat empty or null dates as zero in Unix epoch.
+		if (empty($internalValue) || $internalValue == '0000-00-00 00:00:00')
+		{
+			$internalValue = '1970-01-01 00:00:00';
+		}
+
 		try
 		{
 			$datetime->internal = \DateTime::createFromFormat('Y-m-d H:i:s', $internalValue);

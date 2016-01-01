@@ -191,7 +191,10 @@ abstract class Webservice extends WebserviceBase
 			try
 			{
 				$this->configuration = ConfigurationHelper::loadWebserviceConfiguration(
-					$this->webserviceName, $this->webserviceVersion, $this->webservicePath, $this->client
+					$this->webserviceName,
+					$this->webserviceVersion,
+					$this->webservicePath,
+					$this->client
 				);
 			}
 			catch (ConfigurationException $e)
@@ -387,71 +390,86 @@ abstract class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Loads Resource list from configuration file for specific method or task
+	 * Binds data to a Resource using a profile for a specific method or task.
+	 * 
+	 * The $profile array comes from the Profile XML and may have been filtered.
+	 * The binding can be restricted to a particular scope.  The default scope is rcwsGlobal.
 	 *
-	 * @param   Resource  $resourceDocument  Resource document for binding the resource
-	 * @param   array     $resources         Configuration for displaying object
-	 * @param   mixed     $data              Data to bind to the resources
-	 * @param   string    $resourceSpecific  Resource specific string that separates resources
+	 * @param   Resource  $resource  Resource document for binding the resource.
+	 * @param   array     $profile   Configuration for displaying object.
+	 * @param   mixed     $data      Data to bind to the resource.
+	 * @param   string    $scope     Scope specified by the resourceSpecific attribute in the profile.
 	 *
 	 * @return  Resource
 	 */
-	public function setDataValueToResource(Resource $resourceDocument, $resources, $data, $resourceSpecific = 'rcwsGlobal')
+	public function setDataValueToResource(Resource $resource, array $profile, $data, $scope = 'rcwsGlobal')
 	{
-		if (empty($resources[$resourceSpecific]))
+		// No properties to add to the Resource from this scope.
+		if (empty($profile[$scope]))
 		{
-			return $resourceDocument;
+			return $resource;
 		}
 
-		// Add links from the resource
-		foreach ($resources[$resourceSpecific] as $resource)
+		// Add properties to the Resource from the data provided.
+		foreach ($profile[$scope] as $profileItem)
 		{
-			if (empty($resource['displayGroup']))
+			// If no displayGroup was specified, then the data is added to the Resource as a top-level property.
+			if (empty($profileItem['displayGroup']))
 			{
-				$resourceDocument->setData($this->assignGlobalValueToResource($resource['displayName']), $this->assignValueToResource($resource, $data));
+				$resource->setData(
+					$this->assignGlobalValueToResource($profileItem['displayName']),
+					$this->assignValueToResource($profileItem, $data)
+				);
 
 				continue;
 			}
 
-			if ($resource['displayGroup'] == '_links')
+			// Deal with links separately.
+			if ($profileItem['displayGroup'] == '_links')
 			{
-				$linkRel = !empty($resource['linkRel']) ? $resource['linkRel'] : $this->assignGlobalValueToResource($resource['displayName']);
+				$linkRel = !empty($profileItem['linkRel']) ? $profileItem['linkRel'] : $this->assignGlobalValueToResource($profileItem['displayName']);
 
 				// We will force curies as link array.
 				$linkPlural = $linkRel == 'curies';
 
-				$resourceDocument->setLink(
+				$resource->setLink(
 					new ResourceLink(
-						$this->assignValueToResource($resource, $data),
+						$this->assignValueToResource($profileItem, $data),
 						$linkRel,
-						$resource['linkTitle'],
-						$this->assignGlobalValueToResource($resource['linkName']),
-						$resource['hrefLang'],
-						XmlHelper::isAttributeTrue($resource, 'linkTemplated')
+						$profileItem['linkTitle'],
+						$this->assignGlobalValueToResource($profileItem['linkName']),
+						$profileItem['hrefLang'],
+						XmlHelper::isAttributeTrue($profileItem, 'linkTemplated')
 					), $linkSingular = false, $linkPlural
 				);
 
 				continue;
 			}
 
-			$resourceDocument->setDataGrouped(
-				$resource['displayGroup'],
-				$this->assignGlobalValueToResource($resource['displayName']),
-				$this->assignValueToResource($resource, $data)
+			// Add data to a top-level group (other than _links).
+			$resource->setDataGrouped(
+				$profileItem['displayGroup'],
+				$this->assignGlobalValueToResource($profileItem['displayName']),
+				$this->assignValueToResource($profileItem, $data)
 			);
 		}
 
-		return $resourceDocument;
+		return $resource;
 	}
 
 	/**
-	 * Loads Resource list from configuration file for specific method or task.
+	 * Loads Resource profile from configuration file for specific method or task.
+	 * 
+	 * Returns an array of the data loaded from the <resources> section of the
+	 * XML configuration file for the task as provided in the $configuration element.
+	 * Some <resource> elements may be filtered out depending on options passed
+	 * into the Webservice constructor.
 	 *
 	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
 	 *
-	 * @return array
+	 * @return  array
 	 */
-	public function getResourceProfile($configuration)
+	public function getResourceProfile(\SimpleXMLElement $configuration)
 	{
 		if (!isset($configuration->resources->resource))
 		{
@@ -651,12 +669,17 @@ abstract class Webservice extends WebserviceBase
 			foreach ($configuration->fields->field as $field)
 			{
 				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
+
 				$fieldAttributes['transform'] = !is_null($fieldAttributes['transform']) ? $fieldAttributes['transform'] : 'string';
+
 				$fieldAttributes['defaultValue'] = isset($fieldAttributes['defaultValue']) && !is_null($fieldAttributes['defaultValue']) ?
 					$fieldAttributes['defaultValue'] : '';
+
 				$data[$fieldAttributes['name']] = isset($data[$fieldAttributes['name']]) && !is_null($data[$fieldAttributes['name']]) ?
 					$data[$fieldAttributes['name']] : $fieldAttributes['defaultValue'];
+
 				$data[$fieldAttributes['name']] = $this->transformField($fieldAttributes['transform'], $data[$fieldAttributes['name']], false);
+
 				$dataFields[$fieldAttributes['name']] = $data[$fieldAttributes['name']];
 			}
 
@@ -1057,8 +1080,8 @@ abstract class Webservice extends WebserviceBase
 	 *   Then this method will take the 'fieldFormat' from $resource, which is '{id}' and look for a property called 'id'
 	 *   in the $value.  It will then perform the substitution, using the 'transform' called 'int' to return the final value.
 	 * 
-	 * @param   array   $resource   Array of resource property attribute key-value pairs.
-	 * @param   mixed   $data       Data key-value pairs available for substitution in the data template.
+	 * @param   array  $resource  Array of resource property attribute key-value pairs.
+	 * @param   mixed  $data      Data key-value pairs available for substitution in the data template.
 	 *
 	 * @return  string
 	 *
@@ -1085,7 +1108,7 @@ abstract class Webservice extends WebserviceBase
 		{
 			$replacementValue = $this->getValueFromData($data, $replacementKey);
 			$search = '{' . $replacementKey . '}';
-			$replace = $this->transformField($dataType, $replacementValue);
+			$replace = $this->transformField($dataType, $replacementValue, true);
 			$output = str_replace($search, $replace, $template);
 		}
 
@@ -1173,27 +1196,24 @@ abstract class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Transform a source field data value.
+	 * Transform a source field data value using a transform class.
 	 *
-	 * Calls the static toExternal method of a transform class.
-	 *
-	 * @param   string   $fieldType          Field type.
-	 * @param   string   $value              Field value (internal or external).
+	 * @param   string   $fieldType          Field type.  Determines the transform class to use.
+	 * @param   mixed    $value              Field value (internal or external, depending on context).
 	 * @param   boolean  $directionExternal  True to convert from internal to external; false otherwise.
 	 *
 	 * @return  mixed Transformed data.
+	 * 
+	 * @throws  \InvalidArgumentException
 	 */
 	public function transformField($fieldType, $value, $directionExternal = true)
 	{
 		$className = 'Joomla\\Webservices\\Type\\' . ucfirst($fieldType);
 
-		// If there is no data type, return the value as a string.
-		// @TODO This is probably not what we want.
+		// If there is no data type throw an exception.
 		if (!class_exists($className))
 		{
-			echo '%Missing class ' . $className . "\n";
-
-			return (string) $value;
+			throw new \InvalidArgumentException('Missing class ' . $className);
 		}
 
 		// Convert an internal value to its external equivalent.
@@ -1373,34 +1393,37 @@ abstract class Webservice extends WebserviceBase
 			$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $configuration);
 		}
 
-		// Checking for primary keys
+		// Without any configuration, just return false. 
 		if (empty($configuration))
 		{
 			return false;
 		}
 
+		// Get primary keys from configuration.
 		$primaryKeysFromFields = ConfigurationHelper::getFieldsArray($configuration, true);
 
-		if (!empty($primaryKeysFromFields))
+		if (empty($primaryKeysFromFields))
 		{
-			foreach ($primaryKeysFromFields as $primaryKey => $primaryKeyField)
-			{
-				if (isset($data[$primaryKey]) && $data[$primaryKey] != '')
-				{
-					$primaryKeys[$primaryKey] = $this->transformField($primaryKeyField['transform'], $data[$primaryKey], false);
-				}
-				else
-				{
-					$primaryKeys[$primaryKey] = null;
-				}
-			}
+			return true;
+		}
 
-			foreach ($primaryKeys as $primaryKey => $primaryKeyField)
+		foreach ($primaryKeysFromFields as $primaryKey => $primaryKeyField)
+		{
+			if (isset($data[$primaryKey]) && $data[$primaryKey] != '')
 			{
-				if (is_null($primaryKeyField))
-				{
-					return false;
-				}
+				$primaryKeys[$primaryKey] = $this->transformField($primaryKeyField['transform'], $data[$primaryKey], false);
+			}
+			else
+			{
+				$primaryKeys[$primaryKey] = null;
+			}
+		}
+
+		foreach ($primaryKeys as $primaryKey => $primaryKeyField)
+		{
+			if (is_null($primaryKeyField))
+			{
+				return false;
 			}
 		}
 

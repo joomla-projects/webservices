@@ -41,7 +41,9 @@ class Read extends Webservice
 		// Home page is special.
 		if ($this->webserviceName == 'contents')
 		{
-			return $this->triggerFunction('apiDefaultPage');
+			$this->resource = $this->triggerFunction('apiDefaultPage');
+
+			return $this->resource;
 		}
 
 		// Check we have permission to perform this operation.
@@ -53,10 +55,8 @@ class Read extends Webservice
 		// Get name for integration model/table.  Could be different from the webserviceName.
 		$this->elementName = ucfirst(strtolower((string) $this->getConfig('config.name')));
 
-		$this->triggerFunction('apiRead');
-
-		// Set links from resources to the main document
-		$this->setDataValueToResource($this->resource, $this->resources, $this->data);
+		// Construct resource from data retrieved from integration layer.
+		$this->resource = $this->triggerFunction('apiRead');
 
 		return $this->resource;
 	}
@@ -79,19 +79,7 @@ class Read extends Webservice
 		}
 
 		// Instantiate a new Home resource.
-		$this->resource = new ResourceHome($this->profile);
-
-		// Add standard Joomla namespace as curie.
-//		$documentationCurieAdmin = new ResourceLink('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=administrator',
-//			'curies', 'Documentation Admin', 'Admin', null, true
-//		);
-//		$documentationCurieSite = new ResourceLink('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=site',
-//			'curies', 'Documentation Site', 'Site', null, true
-//		);
-
-		// Add basic hypermedia links.
-//		$this->resource->setLink($documentationCurieAdmin, false, true);
-//		$this->resource->setLink($documentationCurieSite, false, true);
+		$resource = new ResourceHome($this->profile);
 
 		$webservices = ConfigurationHelper::getInstalledWebservices($this->getContainer()->get('db'));
 
@@ -109,7 +97,7 @@ class Read extends Webservice
 					// Temporary fix so that contents page URL does not have query part.
 					if ($webserviceName == 'contents')
 					{
-						$this->resource->setLink(
+						$resource->setLink(
 							new ResourceLink(
 								'/',
 								$webservice['name'],
@@ -132,7 +120,7 @@ class Read extends Webservice
 					}
 
 					// We will fetch only top level webservices.
-					$this->resource->setLink(
+					$resource->setLink(
 						new ResourceLink(
 							$webserviceUrlPath . '&webserviceClient=' . $webserviceClient,
 							$webservice['name'],
@@ -144,7 +132,7 @@ class Read extends Webservice
 			}
 		}
 
-		return $this->resource;
+		return $resource;
 	}
 
 	/**
@@ -318,10 +306,10 @@ class Read extends Webservice
 	}
 
 	/**
-	 * Set document content for Item view
+	 * Set document content for Item view.
 	 *
-	 * @param   object|array       $item         Item content.
-	 * @param   \SimpleXMLElement  $subprofile   Profile for the read item.
+	 * @param   object|array       $item        Item content.
+	 * @param   \SimpleXMLElement  $subprofile  Profile for the read item.
 	 *
 	 * @return  Resource  A populated resource object.
 	 * 
@@ -338,26 +326,16 @@ class Read extends Webservice
 			throw new \Exception($this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_NO_CONTENT'), 404);
 		}
 
-		$this->resource = new ResourceItem($this->profile);
+		// Initialise a new resource object.
+		$resource = new ResourceItem($this->profile);
 
 		// Get resource profile from configuration.
 		$profile = $this->getResourceProfile($subprofile);
 
-		// Filter out all fields that are not in the profile and apply appropriate transform rules.
-		foreach ($item as $key => $value)
-		{
-			// If the property is present in the profile then determine its value.
-			if (!empty($profile['rcwsGlobal'][$key]))
-			{
-				// Determine value from the item data and from global data.
-				$value = $this->assignValueToResource($profile['rcwsGlobal'][$key], $item);
-			}
+		// Bind top-level properties into the Resource.
+		$this->setDataValueToResource($resource, $profile, $item, 'rcwsGlobal');
 
-			// Copy the value into the global data buffer.
-			$this->setData($this->assignGlobalValueToResource($key), $value);
-		}
-
-		return $this->resource;
+		return $resource;
 	}
 
 	/**
@@ -370,43 +348,33 @@ class Read extends Webservice
 	 * 
 	 * @throws  \Exception
 	 */
-	public function bindDataToResourceList($items, $subprofile)
+	public function bindDataToResourceList(array $items, \SimpleXMLElement $subprofile)
 	{
-		if (empty($items))
-		{
-			return;
-		}
-
-		$this->resource = new ResourceList($this->profile);
+		// Initialise a new resource object.
+		$resource = new ResourceList($this->profile);
 
 		// Get resource profile from configuration.
 		$profile = $this->getResourceProfile($subprofile);
 
-		$listResourcesKeys = array_keys($profile['listItem']);
+		// Bind top-level properties into the Resource.
+		$this->setDataValueToResource($resource, $profile, $this->data, 'rcwsGlobal');
 
-		// Filter out all fields that are not in the profile and apply appropriate transform rules.
+		// Embed secondary resource items into the list resource.
 		foreach ($items as $itemValue)
 		{
+			// Convert object to array.
 			$item = ArrayHelper::fromObject($itemValue);
 
-			foreach ($item as $key => $value)
-			{
-				if (!in_array($key, $listResourcesKeys))
-				{
-					unset($item[$key]);
-					continue;
-				}
+			// Create a new (empty) item Resource.
+			$embedItem = new ResourceItem('item', array());
 
-				$item[$this->assignGlobalValueToResource($key)] = $this->assignValueToResource(
-					$profile['listItem'][$key], $item
-				);
-			}
+			// Bind data into the new Resource using the profile.
+			$embedItem = $this->setDataValueToResource($embedItem, $profile, $item, 'listItem');
 
-			$embedItem = new ResourceItem('item', $item);
-			$embedItem = $this->setDataValueToResource($embedItem, $profile, $itemValue, 'listItem');
-			$this->resource->setEmbedded($this->webserviceName, $embedItem);
+			// Embed the new Resource into the list resource.
+			$resource->setEmbedded($this->webserviceName, $embedItem);
 		}
 
-		return $this->resource;
+		return $resource;
 	}
 }

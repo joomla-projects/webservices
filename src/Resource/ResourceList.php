@@ -33,7 +33,7 @@ class ResourceList extends Resource
 	 * Replace existing link to the resource.
 	 *
 	 * @param   ResourceLink  $link   Link
-	 * @param   mixed         $group  Groupped link container
+	 * @param   mixed         $group  Grouped link container
 	 *
 	 * @return  $this
 	 */

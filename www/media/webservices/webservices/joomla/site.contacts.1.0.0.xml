@@ -91,7 +91,7 @@
                     <resource displayName="image" transform="string" fieldFormat="{image}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="email" transform="string" fieldFormat="{email_to}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="default" transform="boolean" fieldFormat="{default_con}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="published" transform="int" fieldFormat="{published}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="published" transform="state" fieldFormat="{published}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="checked_out" transform="int" fieldFormat="{checked_out}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="checked_out_time" transform="datetime" fieldFormat="{checked_out_time}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="ordering" transform="int" fieldFormat="{ordering}" displayGroup="" resourceSpecific="rcwsGlobal"/>

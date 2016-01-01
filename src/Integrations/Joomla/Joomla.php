@@ -211,8 +211,8 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		// We are not using prefix like str_replace(array('.', '-'), array('_', '_'), $context) . '_';
 		$paginationPrefix = '';
 		$filterFields = ConfigurationHelper::getFilterFields($configuration);
-		$primaryFields = $this->webservice->getPrimaryFields($configuration);
-		$fields = $this->webservice->getAllFields($configuration);
+		$primaryFields = ConfigurationHelper::getPrimaryFields($configuration);
+		$fields = ConfigurationHelper::getAllFields($configuration);
 
 		$config = array(
 			'tableName' => $tableName,

@@ -1,44 +1,45 @@
 <?php
 /**
- * @package     Redcore
- * @subpackage  Api
+ * State value object class.
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * Implemented as an immutable object with a pair of named constructors.
  */
 
-namespace Joomla\Webservices\Api\Hal\Transform;
+namespace Joomla\Webservices\Type;
 
-/**
- * Transform api output
- *
- * @package     Redcore
- * @subpackage  Api
- * @since       1.2
- */
-class TransformNone extends TransformBase
+final class None extends Type
 {
 	/**
-	 * Method to transform an internal representation to an external one.
+	 * Public named constructor to create a new object from an internal value.
 	 *
-	 * @param   string  $definition  Field definition.
+	 * @param   string  $internalValue  Internal value.
 	 *
-	 * @return int Transformed value.
+	 * @return  TypeState object.
+	 * @throws  \BadMethodCallException
 	 */
-	public static function toExternal($definition)
+	public static function fromInternal($internalValue)
 	{
-		return $definition;
+		$none = new None;
+		$none->internal = $internalValue;
+		$none->external = $internalValue;
+
+		return $none;
 	}
 
 	/**
-	 * Method to transform an external representation to an internal one.
+	 * Public named constructor to create a new object from an external value.
 	 *
-	 * @param   mixed  $definition  Field definition.
+	 * @param   string  $externalValue  External value.
 	 *
-	 * @return mixed Transformed value.
+	 * @return  TypeState object.
+	 * @throws  \BadMethodCallException
 	 */
-	public static function toInternal($definition)
+	public static function fromExternal($externalValue)
 	{
-		return $definition;
+		$none = new None;
+		$none->internal = $externalValue;
+		$none->external = $externalValue;
+
+		return $none;
 	}
 }
