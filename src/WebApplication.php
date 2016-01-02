@@ -138,7 +138,7 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 			'viewName'          => $input->getString('view'),
 			'webserviceVersion' => $version,
 			'webserviceClient'  => $client,
-			'method'            => strtoupper($input->getCmd('method', 'GET')),
+			'method'            => strtoupper($input->getCmd('method', $input->getMethod())),
 			'task'              => $input->getCmd('task'),
 			'data'              => $this->getPostedData(),
 			'dataGet'           => $input->getArray(),

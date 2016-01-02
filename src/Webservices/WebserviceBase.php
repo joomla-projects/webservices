@@ -156,6 +156,7 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 
 		// Initialise / Load options
 		$this->options = $options;
+		$this->operation = $options->get('operation', 'read');
 
 		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
 

@@ -11,6 +11,7 @@ namespace Joomla\Webservices\Api\Rest;
 
 use Joomla\Webservices\Api\ApiBase;
 use Joomla\Webservices\Resource\Item;
+use Joomla\Webservices\Resource\Resource;
 use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Webservices\Factory;
 
@@ -105,6 +106,8 @@ class Rest extends ApiBase
 				$operation = 'delete';
 				break;
 		}
+
+		$this->setOption('operation', $operation);
 
 		// If task is pointing to some other operation like apply, update or delete.
 //		if (!empty($task) && !empty($this->configuration->operations->task->{$task}['useOperation']))
@@ -212,8 +215,11 @@ class Rest extends ApiBase
 		$this->app->setHeader('Webservice-Version', $this->webservice->webserviceVersion, true);
 
 		// Push results into the document.
-		$this->app->setBody(
-			$this->getContainer()->get('renderer')->render($this->resource)
-		);
+		if ($this->resource instanceof Resource)
+		{
+			$this->app->setBody(
+				$this->getContainer()->get('renderer')->render($this->resource)
+			);
+		}
 	}
 }

@@ -226,17 +226,26 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		$baseJoomlaModelClass = '\\Joomla\\Webservices\\Integrations\\Joomla\\Model\\';
 		$apiDynamicModelClassName = '';
 
-		if ($this->webservice->operation == 'read')
+		switch($this->webservice->operation)
 		{
-			$primaryKeys = array();
-			$isReadItem = $this->webservice->apiFillPrimaryKeys($primaryKeys);
+			case 'create':
+				$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst('item');
 
-			$displayTarget = $isReadItem ? 'item' : 'jlist';
-			$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst($displayTarget);
-		}
-		elseif ($this->webservice->operation == 'delete')
-		{
-			$apiDynamicModelClassName = $baseJoomlaModelClass . 'List';
+				break;
+
+			case 'read':
+				$primaryKeys = array();
+				$isReadItem = $this->webservice->apiFillPrimaryKeys($primaryKeys);
+	
+				$displayTarget = $isReadItem ? 'item' : 'jlist';
+				$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst($displayTarget);
+
+				break;
+
+			case 'delete':
+				$apiDynamicModelClassName = $baseJoomlaModelClass . 'List';
+
+				break;
 		}
 
 		if (!empty($apiDynamicModelClassName) && class_exists($apiDynamicModelClassName))

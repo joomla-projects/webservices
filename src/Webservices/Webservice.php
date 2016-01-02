@@ -230,7 +230,7 @@ abstract class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Load the model object
+	 * Load the model object from the integration layer.
 	 *
 	 * @param   string             $elementName    The element to load
 	 * @param   \SimpleXMLElement  $configuration  The configuration for the current task
@@ -641,59 +641,92 @@ abstract class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Process posted data from json or object to array
+	 * Process posted data from json or object to array.
+	 * 
+	 * Only returns fields that are present in the <fields> configuration section.
+	 * All values are transformed to their internal values.
 	 *
 	 * @param   array              $data           Raw Posted data
 	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
 	 *
 	 * @return  mixed  Array with posted data.
 	 *
+	 * @throws  \ConfigurationException
 	 * @since   1.2
 	 */
 	public function processPostData($data, $configuration)
 	{
+		// No data or no configuration.
+		if (empty($data) || empty($configuration->fields))
+		{
+			return $data;
+		}
+
+		// Convert object to array if needed.
 		if (is_object($data))
 		{
 			$data = ArrayHelper::fromObject($data);
 		}
 
+		// Make sure we have an array.
 		if (!is_array($data))
 		{
 			$data = (array) $data;
 		}
 
-		if (!empty($data) && !empty($configuration->fields))
+		$dataFields = array();
+
+		// Scan each field in the configuration.
+		foreach ($configuration->fields->field as $field)
 		{
-			$dataFields = array();
+			// Get all attributes for this field.
+			$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
 
-			foreach ($configuration->fields->field as $field)
+			// Default transform is "string".
+			if (is_null($fieldAttributes['transform']))
 			{
-				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
-
-				$fieldAttributes['transform'] = !is_null($fieldAttributes['transform']) ? $fieldAttributes['transform'] : 'string';
-
-				$fieldAttributes['defaultValue'] = isset($fieldAttributes['defaultValue']) && !is_null($fieldAttributes['defaultValue']) ?
-					$fieldAttributes['defaultValue'] : '';
-
-				$data[$fieldAttributes['name']] = isset($data[$fieldAttributes['name']]) && !is_null($data[$fieldAttributes['name']]) ?
-					$data[$fieldAttributes['name']] : $fieldAttributes['defaultValue'];
-
-				$data[$fieldAttributes['name']] = $this->transformField($fieldAttributes['transform'], $data[$fieldAttributes['name']], false);
-
-				$dataFields[$fieldAttributes['name']] = $data[$fieldAttributes['name']];
+				$fieldAttributes['transform'] = 'string';
 			}
 
-			if (XmlHelper::isAttributeTrue($configuration, 'strictFields'))
+			// If default value is not specified then make it an empty string.
+			if (!isset($fieldAttributes['defaultValue']) || is_null($fieldAttributes['defaultValue']))
 			{
-				$data = $dataFields;
+				$fieldAttributes['defaultValue'] = '';
 			}
+
+			// If the name is not specified then we have a configuration error.
+			if (!isset($fieldAttributes['name']) || is_null($fieldAttributes['name']))
+			{
+				throw new \ConfigurationException('Field name missing or empty in create configuration');
+			}
+
+			// If no public name is specified, use the default field name.
+			if (!isset($fieldAttributes['publicName']) || is_null($fieldAttributes['publicName']))
+			{
+				$fieldAttributes['publicName'] = $fieldAttributes['name'];
+			}
+
+			// If the value is missing from the posted data then assume the default value.
+			if (!isset($data[$fieldAttributes['publicName']]) || is_null($data[$fieldAttributes['publicName']]))
+			{
+				$data[$fieldAttributes['publicName']] = $fieldAttributes['defaultValue'];
+			}
+
+			// Copy and transform the data to the output array.
+			$dataFields[$fieldAttributes['name']] = $this->transformField($fieldAttributes['transform'], $data[$fieldAttributes['publicName']], false);
+		}
+
+/*
+		if (XmlHelper::isAttributeTrue($configuration, 'strictFields'))
+		{
+			$data = $dataFields;
 		}
 
 		// Common functions are not checking this field so we will
 		$data['params'] = isset($data['params']) ? $data['params'] : null;
 		$data['associations'] = isset($data['associations']) ? $data['associations'] : array();
-
-		return $data;
+*/
+		return $dataFields;
 	}
 
 	/**
@@ -772,7 +805,7 @@ abstract class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Validates posted data
+	 * Checks that all required fields have values.
 	 *
 	 * @param   array              $data           Raw Posted data
 	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
@@ -783,21 +816,27 @@ abstract class Webservice extends WebserviceBase
 	 */
 	public function checkRequiredFields($data, $configuration)
 	{
-		if (!empty($configuration->fields))
+		if (empty($configuration->fields))
 		{
-			foreach ($configuration->fields->field as $field)
-			{
-				if (XmlHelper::isAttributeTrue($field, 'isRequiredField'))
-				{
-					if (is_null($data[(string) $field['name']]) || $data[(string) $field['name']] == '')
-					{
-						$this->app->enqueueMessage(
-							$this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', (string) $field['name']), 'error'
-						);
+			return true;
+		}
 
-						return false;
-					}
-				}
+		foreach ($configuration->fields->field as $field)
+		{
+			if (!XmlHelper::isAttributeTrue($field, 'isRequiredField'))
+			{
+				continue;
+			}
+
+			$fieldName = (string) $field['name'];
+
+			if (is_null($data[$fieldName]) || $data[$fieldName] == '')
+			{
+				$this->app->enqueueMessage(
+					$this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', $fieldName), 'error'
+				);
+
+				return false;
 			}
 		}
 

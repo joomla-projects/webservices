@@ -10,6 +10,7 @@
 namespace Joomla\Webservices\Webservices;
 
 use Joomla\Webservices\Resource\Resource;
+use Joomla\Webservices\Resource\ResourceItem;
 use Joomla\Webservices\Xml\XmlHelper;
 
 /**
@@ -22,16 +23,15 @@ class Create extends Webservice
 	/**
 	 * Execute the Api operation.
 	 * 
-	 * @param   Resource  $resource  A Resource object to be populated.
+	 * @param   Profile  $profile  A profile which shapes the resource.
+	 * 
+	 * @return  Resource  A populated Resource object.
 	 *
-	 * @return  Resource  The populated Resource object.
-	 *
-	 * @since   1.2
-	 * @throws  \Exception
+	 * @since   __DEPLOY_VERSION__
 	 */
-	public function execute(Resource $resource)
+	public function execute(Profile $profile)
 	{
-		$this->resource = $resource;
+		$this->profile = $profile;
 
 		// Check we have permission to perform this operation.
 		if (!$this->triggerFunction('isOperationAllowed'))
@@ -39,11 +39,16 @@ class Create extends Webservice
 			return false;
 		}
 
+		// Get name for integration model/table.  Could be different from the webserviceName.
 		$this->elementName = ucfirst(strtolower((string) $this->getConfig('config.name')));
+
 		$this->operationConfiguration = $this->getConfig('operations.' . strtolower($this->operation));
+
 		$this->triggerFunction('apiCreate');
 
-		// Set links from resources to the main document
+		$this->resource = new ResourceItem($this->profile);
+
+		// Set links from resources to the main document.
 		$this->setDataValueToResource($this->resource, $this->resources, $this->data);
 
 		return $this->resource;
@@ -58,18 +63,19 @@ class Create extends Webservice
 	 */
 	public function apiCreate()
 	{
-		// Get resource list from configuration
-		$this->getResourceProfile($this->operationConfiguration);
+		// Get resource profile from configuration.
+		$profile = $this->getResourceProfile($this->operationConfiguration);
 
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
+
 		$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $this->operationConfiguration);
 
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
 
 		if ($data === false)
 		{
-			// Not Acceptable
+			// Data failed validation.
 			$this->setStatusCode(406);
 			$this->triggerFunction('displayErrors', $model);
 			$this->setData('result', $data);
@@ -77,11 +83,16 @@ class Create extends Webservice
 			return;
 		}
 
-		// Prepare parameters for the function
+		// Prepare parameters for the function.
 		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
 		$result = null;
+		$id = 0;
+		$webserviceUrlPath = 'index.php?option=com_' . $this->webserviceName
+			. '&amp;webserviceVersion=' . $this->webserviceVersion
+			. '&amp;webserviceClient=' . $this->client
+			;
 
-		// Checks if that method exists in model class file and executes it
+		// Checks if that method exists in model class file and executes it.
 		if (method_exists($model, $functionName))
 		{
 			$result = $this->triggerCallFunction($model, $functionName, $args);
@@ -93,7 +104,8 @@ class Create extends Webservice
 
 		if (method_exists($model, 'getState'))
 		{
-			$this->setData('id', $model->getState($model->getName() . '.id'));
+			$id = $model->getState($model->getName() . '.id');
+			$this->setData('id', $id);
 		}
 
 		$this->setData('result', $result);
@@ -108,6 +120,7 @@ class Create extends Webservice
 			else
 			{
 				$this->setStatusCode(201);
+				$this->app->setHeader('Location', $webserviceUrlPath . '&id=' . $id, true);
 			}
 		}
 	}
