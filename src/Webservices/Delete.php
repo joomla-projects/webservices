@@ -10,6 +10,7 @@
 namespace Joomla\Webservices\Webservices;
 
 use Joomla\Webservices\Resource\Resource;
+use Joomla\Webservices\Resource\ResourceItem;
 use Joomla\Webservices\Xml\XmlHelper;
 
 /**
@@ -22,16 +23,15 @@ class Delete extends Webservice
 	/**
 	 * Execute the Api operation.
 	 * 
-	 * @param   Resource  $resource  A Resource object to be populated.
+	 * @param   Profile  $profile  A profile which shapes the resource.
+	 * 
+	 * @return  Resource  A populated Resource object.
 	 *
-	 * @return  Resource  The populated Resource object.
-	 *
-	 * @since   1.2
-	 * @throws  \Exception
+	 * @since   __DEPLOY_VERSION__
 	 */
-	public function execute(Resource $resource)
+	public function execute(Profile $profile)
 	{
-		$this->resource = $resource;
+		$this->profile = $profile;
 
 		// Check we have permission to perform this operation.
 		if (!$this->triggerFunction('isOperationAllowed'))
@@ -39,9 +39,14 @@ class Delete extends Webservice
 			return false;
 		}
 
+		// Get name for integration model/table.  Could be different from the webserviceName.
 		$this->elementName = ucfirst(strtolower((string) $this->getConfig('config.name')));
+
 		$this->operationConfiguration = $this->getConfig('operations.' . strtolower($this->operation));
+
 		$this->triggerFunction('apiDelete');
+
+		$this->resource = new ResourceItem($this->profile);
 
 		// Set links from resources to the main document
 		$this->setDataValueToResource($this->resource, $this->resources, $this->data);
@@ -64,13 +69,14 @@ class Delete extends Webservice
 		// Delete function requires references and not values like we use in call_user_func_array so we use List delete function
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'delete');
+
 		$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $this->operationConfiguration);
 
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
 
 		if ($data === false)
 		{
-			// Not Acceptable
+			// 406 = Not acceptable.
 			$this->setStatusCode(406);
 			$this->triggerFunction('displayErrors', $model);
 			$this->setData('result', $data);

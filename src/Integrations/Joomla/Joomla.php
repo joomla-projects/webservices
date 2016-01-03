@@ -243,7 +243,7 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 				break;
 
 			case 'delete':
-				$apiDynamicModelClassName = $baseJoomlaModelClass . 'List';
+				$apiDynamicModelClassName = $baseJoomlaModelClass . 'Jlist';
 
 				break;
 		}

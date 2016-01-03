@@ -185,6 +185,24 @@
                 </resources>
             </item>
         </read>
+
+        <!-- Primary keys can be multiple if separated by comma, default primary Id is id -->
+        <delete authorizationNeeded="false" strictFields="false" authorization="core.delete" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="contact_details">
+            <description><![CDATA[ This operation deletes Contact item(s). Expected data: id of the contact(s). ]]></description>
+
+            <fields>
+                <field name="id" transform="integer" defaultValue="" isRequiredField="true" isPrimaryField="true"/>
+                <description><![CDATA[ Fields needed for Delete operation. ]]></description>
+            </fields>
+
+            <resources>
+                <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+            </resources>
+        </delete>
+
         <task>
             <hit useOperation="" authorizationNeeded="false" strictFields="false" authorization="" dataMode="model" optionName="com_contact" modelClassName="contact" modelClassPath="" isAdminClass="false" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="">
                 <description><![CDATA[ This task enables you to Increase the hit counter for the contact. ]]></description>

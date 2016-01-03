@@ -113,7 +113,7 @@ class Item extends \JModelAdmin
 			$return = $table->load($pk);
 
 			// Check for a table object error.
-			if ($return === false && $table->getError())
+			if ($return === false)
 			{
 				$this->setError($table->getError());
 
