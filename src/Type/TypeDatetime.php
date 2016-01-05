@@ -7,7 +7,7 @@
 
 namespace Joomla\Webservices\Type;
 
-final class Datetime extends Type
+final class TypeDatetime extends AbstractType
 {
 	/**
 	 * Public named constructor to create a new object from an internal value.
@@ -19,7 +19,7 @@ final class Datetime extends Type
 	 */
 	public static function fromInternal($internalValue)
 	{
-		$datetime = new Datetime;
+		$datetime = new TypeDatetime;
 
 		// Treat empty or null dates as zero in Unix epoch.
 		if (empty($internalValue) || $internalValue == '0000-00-00 00:00:00')
@@ -58,7 +58,7 @@ final class Datetime extends Type
 	 */
 	public static function fromExternal($externalValue)
 	{
-		$datetime = new Datetime;
+		$datetime = new TypeDatetime;
 
 		try
 		{

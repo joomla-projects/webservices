@@ -13,7 +13,7 @@
 
 namespace Joomla\Webservices\Type;
 
-abstract class Type implements TypeInterface
+abstract class AbstractType implements TypeInterface
 {
 	/**
 	 * Has this class been instantiated yet?

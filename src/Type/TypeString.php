@@ -7,7 +7,7 @@
 
 namespace Joomla\Webservices\Type;
 
-final class String extends Type
+final class TypeString extends AbstractType
 {
 	/**
 	 * Public named constructor to create a new object from an internal value.
@@ -24,7 +24,7 @@ final class String extends Type
 			throw new \BadMethodCallException('String expected');
 		}
 
-		$string = new String;
+		$string = new TypeString;
 		$string->internal = (string) $internalValue;
 		$string->external = (string) $internalValue;
 
@@ -46,11 +46,10 @@ final class String extends Type
 			throw new \BadMethodCallException('String expected');
 		}
 
-		$string = new String;
+		$string = new TypeString;
 		$string->internal = (string) $externalValue;
 		$string->external = (string) $externalValue;
 
 		return $string;
 	}
 }
-

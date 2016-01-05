@@ -1247,7 +1247,7 @@ abstract class Webservice extends WebserviceBase
 	 */
 	public function transformField($fieldType, $value, $directionExternal = true)
 	{
-		$className = 'Joomla\\Webservices\\Type\\' . ucfirst($fieldType);
+		$className = 'Joomla\\Webservices\\Type\\Type' . ucfirst($fieldType);
 
 		// If there is no data type throw an exception.
 		if (!class_exists($className))

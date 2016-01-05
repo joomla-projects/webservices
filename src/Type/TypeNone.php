@@ -1,15 +1,14 @@
 <?php
 /**
- * JSON value object class.
+ * Dummy value object class.
  * 
- * @TODO This class should probably not exist.  Figure out a way to avoid its existence!
- *
+ * Does not apply any transformation to the given values.
  * Implemented as an immutable object with a pair of named constructors.
  */
 
 namespace Joomla\Webservices\Type;
 
-final class Json extends Type
+final class TypeNone extends AbstractType
 {
 	/**
 	 * Public named constructor to create a new object from an internal value.
@@ -21,11 +20,11 @@ final class Json extends Type
 	 */
 	public static function fromInternal($internalValue)
 	{
-		$json = new Json;
-		$json->internal = $internalValue;
-		$json->external = json_encode($internalValue);
+		$none = new TypeNone;
+		$none->internal = $internalValue;
+		$none->external = $internalValue;
 
-		return $json;
+		return $none;
 	}
 
 	/**
@@ -38,10 +37,10 @@ final class Json extends Type
 	 */
 	public static function fromExternal($externalValue)
 	{
-		$json = new Json;
-		$json->external = $externalValue;
-		$json->internal = json_decode($externalValue);
+		$none = new TypeNone;
+		$none->internal = $externalValue;
+		$none->external = $externalValue;
 
-		return $json;
+		return $none;
 	}
 }

@@ -7,7 +7,7 @@
 
 namespace Joomla\Webservices\Type;
 
-final class Boolean extends Type
+final class TypeBoolean extends AbstractType
 {
 	/**
 	 * Public named constructor to create a new object from an internal value.
@@ -19,7 +19,7 @@ final class Boolean extends Type
 	 */
 	public static function fromInternal($internalValue)
 	{
-		$boolean = new Boolean;
+		$boolean = new TypeBoolean;
 
 		switch ($internalValue)
 		{
@@ -54,7 +54,7 @@ final class Boolean extends Type
 	 */
 	public static function fromExternal($externalValue)
 	{
-		$boolean = new Boolean;
+		$boolean = new TypeBoolean;
 
 		switch ($externalValue)
 		{

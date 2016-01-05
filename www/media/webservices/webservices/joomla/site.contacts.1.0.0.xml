@@ -36,7 +36,7 @@
 				<field publicName="description" name="misc" transform="string" defaultValue="" isRequiredField="false" isPrimaryField="false"/>
 				<field publicName="email" name="email_to" transform="string" defaultValue="" isRequiredField="false" isPrimaryField="false"/>
 				<field name="fax" transform="string" defaultValue="" isRequiredField="false" isPrimaryField="false"/>
-				<field name="featured" transform="int" defaultValue="" isRequiredField="false" isPrimaryField="false"/>
+				<field name="featured" transform="integer" defaultValue="" isRequiredField="false" isPrimaryField="false"/>
 				<field name="image" transform="string" defaultValue="" isRequiredField="false" isPrimaryField="false"/>
 				<field name="language" transform="string" defaultValue="" isRequiredField="false" isPrimaryField="false"/>
 				<field publicName="locality" name="suburb" transform="string" defaultValue="" isRequiredField="false" isPrimaryField="false"/>
@@ -69,14 +69,14 @@
                 <!-- isFilterField defines specific fields as filter fields when using dataMode="table". When filtering fields must be in format filter[fieldName] -->
                 <!-- isPrimaryField defines specific fields as primary key fields when using dataMode="table". -->
                 <fields>
-                    <field name="id" transform="int" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="true"/>
+                    <field name="id" transform="integer" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="true"/>
                     <field name="name" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="true" isPrimaryField="false"/>
                     <field name="address" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="country" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="misc" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="email_to" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="fax" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
-                    <field name="featured" transform="int" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
+                    <field name="featured" transform="integer" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="image" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="language" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="suburb" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
@@ -84,18 +84,18 @@
                     <field name="postcode" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="state" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
                     <field name="telephone" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
-                    <field name="published" transform="int" defaultValue="" isRequiredField="false" isFilterField="true" isSearchableField="false" isPrimaryField="false"/>
+                    <field name="published" transform="integer" defaultValue="" isRequiredField="false" isFilterField="true" isSearchableField="false" isPrimaryField="false"/>
                 </fields>
 
                 <!-- Resource definition -->
                 <!-- Resources can be grouped with "resourceSpecific" attribute, default value is "rcwsGlobal" -->
                 <resources>
                     <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="page" transform="int" fieldFormat="{pagination.page}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="pageLimit" transform="int" fieldFormat="{pagination.limit}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="limitstart" transform="int" fieldFormat="{pagination.limitstart}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="totalItems" transform="int" fieldFormat="{pagination.totalItems}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="totalPages" transform="int" fieldFormat="{pagination.totalPages}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="page" transform="integer" fieldFormat="{pagination.page}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="pageLimit" transform="integer" fieldFormat="{pagination.limit}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="limitstart" transform="integer" fieldFormat="{pagination.limitstart}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="totalItems" transform="integer" fieldFormat="{pagination.totalItems}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="totalPages" transform="integer" fieldFormat="{pagination.totalPages}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 
                     <!-- _links -->
                     <resource displayName="contents" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
@@ -123,7 +123,7 @@
                     <resource displayName="featured" transform="boolean" fieldFormat="{featured}" displayGroup="" resourceSpecific="listItem"/>
                     <resource displayName="language" transform="string" fieldFormat="{language}" displayGroup="" resourceSpecific="listItem"/>
                     <resource displayName="name" transform="string" fieldFormat="{name}" displayGroup="" resourceSpecific="listItem"/>
-                    <resource displayName="ordering" transform="int" fieldFormat="{ordering}" displayGroup="" resourceSpecific="listItem"/>
+                    <resource displayName="ordering" transform="integer" fieldFormat="{ordering}" displayGroup="" resourceSpecific="listItem"/>
                     <resource displayName="self" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="listItem">
                         <description><![CDATA[Link to contact item]]></description>
                     </resource>
@@ -135,7 +135,7 @@
             <item authorizationNeeded="false" strictFields="false" authorization="" dataMode="table" optionName="com_contact" modelClassName="contact" modelClassPath="" isAdminClass="false" functionName="" functionArgs="" validateData="none" validateDataFunction="validate" tableName="contact_details">
                 <description><![CDATA[ This operation displays one Contact item. ]]></description>
                 <fields>
-                    <field name="id" transform="int" defaultValue="" isRequiredField="false" isPrimaryField="true"/>
+                    <field name="id" transform="integer" defaultValue="" isRequiredField="false" isPrimaryField="true"/>
                 </fields>
                 <resources>
                     <resource displayName="name" transform="string" fieldFormat="{name}" displayGroup="" resourceSpecific="rcwsGlobal"/>
@@ -153,13 +153,13 @@
                     <resource displayName="email" transform="string" fieldFormat="{email_to}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="default" transform="boolean" fieldFormat="{default_con}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="published" transform="state" fieldFormat="{published}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="checked_out" transform="int" fieldFormat="{checked_out}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="checked_out" transform="integer" fieldFormat="{checked_out}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="checked_out_time" transform="datetime" fieldFormat="{checked_out_time}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="ordering" transform="int" fieldFormat="{ordering}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="ordering" transform="integer" fieldFormat="{ordering}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="params" transform="json" fieldFormat="{params}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="user_id" transform="int" fieldFormat="{user_id}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="catid" transform="int" fieldFormat="{catid}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="access" transform="int" fieldFormat="{access}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="user_id" transform="integer" fieldFormat="{user_id}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="catid" transform="integer" fieldFormat="{catid}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="access" transform="integer" fieldFormat="{access}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="mobile" transform="string" fieldFormat="{mobile}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="webpage" transform="string" fieldFormat="{webpage}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="sortname1" transform="string" fieldFormat="{sortname1}" displayGroup="" resourceSpecific="rcwsGlobal"/>
@@ -167,9 +167,9 @@
                     <resource displayName="sortname3" transform="string" fieldFormat="{sortname3}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="language" transform="string" fieldFormat="{language}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="created" transform="datetime" fieldFormat="{created}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="created_by" transform="int" fieldFormat="{created_by}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="created_by" transform="integer" fieldFormat="{created_by}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="modified" transform="datetime" fieldFormat="{modified}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="modified_by" transform="int" fieldFormat="{modified_by}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="modified_by" transform="integer" fieldFormat="{modified_by}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="metakey" transform="string" fieldFormat="{metakey}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="metadesc" transform="string" fieldFormat="{metadesc}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="metadata" transform="string" fieldFormat="{metadata}" displayGroup="" resourceSpecific="rcwsGlobal"/>
@@ -177,7 +177,7 @@
                     <resource displayName="publish_up" transform="datetime" fieldFormat="{publish_up}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="publish_down" transform="datetime" fieldFormat="{publish_down}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="version" transform="string" fieldFormat="{version}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-                    <resource displayName="hits" transform="int" fieldFormat="{hits}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+                    <resource displayName="hits" transform="integer" fieldFormat="{hits}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="contents" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
                     <resource displayName="self" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
@@ -187,7 +187,7 @@
         </read>
 
         <!-- Primary keys can be multiple if separated by comma, default primary Id is id -->
-        <delete authorizationNeeded="false" strictFields="false" authorization="core.delete" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="contact_details">
+        <delete authorizationNeeded="false" strictFields="false" authorization="core.delete" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{integer}" validateData="none" validateDataFunction="validate" tableName="contact_details">
             <description><![CDATA[ This operation deletes Contact item(s). Expected data: id of the contact(s). ]]></description>
 
             <fields>
@@ -204,7 +204,7 @@
         </delete>
 
         <task>
-            <hit useOperation="" authorizationNeeded="false" strictFields="false" authorization="" dataMode="model" optionName="com_contact" modelClassName="contact" modelClassPath="" isAdminClass="false" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="">
+            <hit useOperation="" authorizationNeeded="false" strictFields="false" authorization="" dataMode="model" optionName="com_contact" modelClassName="contact" modelClassPath="" isAdminClass="false" functionName="" functionArgs="id{integer}" validateData="none" validateDataFunction="validate" tableName="">
                 <description><![CDATA[ This task enables you to Increase the hit counter for the contact. ]]></description>
                 <resources>
                     <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>

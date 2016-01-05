@@ -7,7 +7,7 @@
 
 namespace Joomla\Webservices\Type;
 
-final class State extends Type
+final class TypeState extends AbstractType
 {
 	/**
 	 * Public named constructor to create a new object from an internal value.
@@ -19,7 +19,7 @@ final class State extends Type
 	 */
 	public static function fromInternal($internalValue)
 	{
-		$state = new State;
+		$state = new TypeState;
 		$state->internal = $internalValue;
 		$state->external = '';
 
@@ -42,7 +42,7 @@ final class State extends Type
 				break;
 
 			default:
-				throw new \UnexpectedValueException('Internal value must be "0", "1", "2" or "-2", ' . $internalValue . ' given');
+				throw new \UnexpectedValueException('Internal value must be "0", "1", "2" or "-2"; ' . $internalValue . ' given');
 		}
 
 		return $state;
@@ -58,7 +58,7 @@ final class State extends Type
 	 */
 	public static function fromExternal($externalValue)
 	{
-		$state = new State;
+		$state = new TypeState;
 		$state->external = $externalValue;
 		$state->internal = '';
 
@@ -81,7 +81,7 @@ final class State extends Type
 				break;
 
 			default:
-				$message = 'External value must be "unpublished", "published", "archived" or "trashed", ' . $externalValue . ' given';
+				$message = 'External value must be "unpublished", "published", "archived" or "trashed"; ' . $externalValue . ' given';
 				throw new \UnexpectedValueException($message);
 		}
 

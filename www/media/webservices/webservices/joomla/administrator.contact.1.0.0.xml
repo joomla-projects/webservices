@@ -176,7 +176,7 @@
             </resources>
         </update>
         <!-- Primary keys can be multiple if separated by comma, default primary Id is id -->
-        <delete authorizationNeeded="true" strictFields="false" authorization="core.delete" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="form" validateDataFunction="validate" tableName="contact_details">
+        <delete authorizationNeeded="true" strictFields="false" authorization="core.delete" dataMode="table" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{integer}" validateData="form" validateDataFunction="validate" tableName="contact_details">
             <description><![CDATA[ This operation deletes Contact item(s). Expected data: id of the contact(s). ]]></description>
             <fields>
                 <field name="id" transform="integer" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
@@ -192,7 +192,7 @@
         <task>
             <!-- Each task can be preformed in separate class and system will take this values instead -->
             <!-- If functionArgs attribute is defined, only arguments defined there will be pulled from posted data and passed to the function. Default is to send all posted data in one array -->
-            <featured useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int},1{value}" validateData="none" validateDataFunction="validate" tableName="">
+            <featured useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{integer},1{value}" validateData="none" validateDataFunction="validate" tableName="">
                 <description><![CDATA[ This task enables you to set specific Contact or Contacts as featured. Expected data: id of the contact. ]]></description>
                 <fields>
                     <field name="id" transform="integer" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
@@ -205,7 +205,7 @@
                     <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                 </resources>
             </featured>
-            <unfeatured useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="featured" functionArgs="id{int},0{value}" validateData="none" validateDataFunction="validate" tableName="">
+            <unfeatured useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="featured" functionArgs="id{integer},0{value}" validateData="none" validateDataFunction="validate" tableName="">
                 <description><![CDATA[ This task enables you to set specific Contact or Contacts as unfeatured. Expected data: id of the contact. ]]></description>
                 <fields>
                     <field name="id" transform="integer" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
@@ -217,7 +217,7 @@
                     <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                 </resources>
             </unfeatured>
-            <publish useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="">
+            <publish useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{integer}" validateData="none" validateDataFunction="validate" tableName="">
                 <description><![CDATA[ This task enables you to set specific Contact or Contacts as published. Expected data: id of the contact. ]]></description>
                 <fields>
                     <field name="id" transform="integer" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
@@ -229,7 +229,7 @@
                     <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                 </resources>
             </publish>
-            <unpublish useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="publish" functionArgs="id{int},0{value}" validateData="none" validateDataFunction="validate" tableName="">
+            <unpublish useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="publish" functionArgs="id{integer},0{value}" validateData="none" validateDataFunction="validate" tableName="">
                 <description><![CDATA[ This task enables you to set specific Contact or Contacts as unpublished. Expected data: id of the contact. ]]></description>
                 <fields>
                     <field name="id" transform="integer" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
@@ -241,7 +241,7 @@
                     <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                 </resources>
             </unpublish>
-            <checkin useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="">
+            <checkin useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{integer}" validateData="none" validateDataFunction="validate" tableName="">
                 <description><![CDATA[ This task enables you to check-in currently checked-out Contact item. Expected data: id of the contact. ]]></description>
                 <fields>
                     <field name="id" transform="integer" defaultValue="" isRequiredField="true" isPrimaryField="false"/>
@@ -253,7 +253,7 @@
                     <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
                 </resources>
             </checkin>
-            <checkout useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{int}" validateData="none" validateDataFunction="validate" tableName="">
+            <checkout useOperation="" authorizationNeeded="true" strictFields="false" authorization="core.edit,core.edit.own" dataMode="model" optionName="com_contact" modelClassName="" modelClassPath="" isAdminClass="true" functionName="" functionArgs="id{integer}" validateData="none" validateDataFunction="validate" tableName="">
                 <description><![CDATA[ This task enables you to check-out Contact item. Expected data: id of the contact. ]]></description>
                 <fields>
                     <field name="id" transform="integer" defaultValue="" isRequiredField="true" isPrimaryField="false"/>

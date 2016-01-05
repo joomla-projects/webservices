@@ -7,10 +7,7 @@
 
 namespace Joomla\Webservices\Type;
 
-/**
- * Maybe this should extend Integer?
- */
-final class Int extends Type
+final class TypeInteger extends AbstractType
 {
 	/**
 	 * Public named constructor to create a new object from an internal value.
@@ -27,7 +24,7 @@ final class Int extends Type
 //			throw new \BadMethodCallException('Integer expected');
 //		}
 
-		$integer = new Integer;
+		$integer = new TypeInteger;
 		$integer->internal = $internalValue;
 		$integer->external = $internalValue;
 
@@ -49,7 +46,7 @@ final class Int extends Type
 //			throw new \BadMethodCallException('Integer expected');
 //		}
 
-		$integer = new Integer;
+		$integer = new TypeInteger;
 		$integer->internal = $externalValue;
 		$integer->external = $externalValue;
 
