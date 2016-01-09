@@ -11,7 +11,6 @@ namespace Joomla\Webservices\Renderer\Application;
 
 use Joomla\Webservices\Renderer\Renderer;
 use Joomla\Webservices\Api\Soap\Soap as Api;
-use Joomla\DI\Container;
 
 /**
  * ApiDocumentSoap class, provides an easy interface to parse and display XML output
@@ -57,15 +56,15 @@ class Soapxml extends Renderer
 	/**
 	 * Class constructor
 	 *
-	 * @param   Container  $container  The DIC object
-	 * @param   array   $options   Associative array of options
-	 * @param   string  $mimeType  Document type
+	 * @param   object  $application  The application.
+	 * @param   array   $options      Associative array of options.
+	 * @param   string  $mimeType     Document type.
 	 *
 	 * @since  1.4
 	 */
-	public function __construct(Container $container, $options = array(), $mimeType = 'soap+xml')
+	public function __construct($application, $options = array(), $mimeType = 'soap+xml')
 	{
-		parent::__construct($container, $options);
+		parent::__construct($application, $options);
 
 		$this->documentFormat = $options['documentFormat'];
 

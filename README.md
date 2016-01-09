@@ -12,13 +12,70 @@ How to install
 * Zip or tar-gzip everything in the /component directory
 * Install component package file as an extension in the usual way
 * Copy all the files from the github clone to the web root of the CMS
-* sudo composer require willdurand/Negotiation (don't know why this is needed, but it is)
+* sudo composer require willdurand/Negotiation (if necessary, but hopefully not required now)
+* sudo composer require joomla/router:dev-2.0-dev (if necessary, but hopefully not required now)
 * sudo composer install
 * Copy config.dist.json to config.json
 * Edit config.json database credentials
+* Copy /www/htaccess.txt to /www/.htaccess and edit RewriteBase if required
 * Log in to Administrator and go to Components -> Webservices
 * Install web services one-by-one because batch doesn't work.
 * Test
+
+WARNING: Do not install on a public server with data you care about.  The current version is *totally* insecure!
+
+NOTE: At the moment, the presence of an empty route for the home page causes PHP "Uninitialized string offset"
+notices to be thrown by the router.  Ignore them for now, they don't affect functionality.
+
+Routes and routing
+====
+The webservices application uses the Joomla Framework 2.0 router.
+There is some documentation on it here: https://github.com/joomla-framework/router/blob/2.0-dev/docs/overview.md
+
+Routes are stored in the routes.json file.  By default, this is in the web root, but it can be moved elsewhere
+as long as you update the webservices.routes entry in config.json.
+
+Although at present you will need to amend this file manually, the idea is that it should be possible to automatically
+add routes to the routes.json file as part of the process of installing a new webservice.  The admin component should
+also be extended to allow customisation of routes for a particular installation.  This is how routes can be customised
+and routing conflicts resolved.
+
+The routes.json file contains an array of resources.  Each resource has a name, a description (for humans only),
+an interaction style, a collection of route templates and the HTTP methods associated with them, and an optional
+collection of regular expressions for parsing named arguments.  These entries are described in more detail below.
+
+* "name".  The resource name.  The name "contents" is reserved for use as the API entry point (it's an IANA-registed name).
+* "description".  An optional brief description of the resource for human consumption.  Not used by the software.
+* "style".  The interaction style associated with the resource.  By default this will be "rest" to indicate that
+the REST style should be used.  Alternatively, use "soap" to use the SOAP interaction style.  This entry determines
+which interaction style class, in the /Api directory, is loaded and executed.
+* "routes".  This is is a collection of route definitions that will be added to the routing table.  The path contained
+in a web request (or the --path argument in a CLI request) will be matched against the routing table using regular
+expressions.  The route definition can contain named arguments which will be copied into the Input object.  By default,
+named variables in the route use a matching regular expression of "([^/]*)", which matches everything in the route, up
+to the next /.  This can be overridden by adding a "regex" entry (see below).  Associated with each route definition
+is an array of HTTP methods for which the route is valid.  If a path is matched with a route but the method is not
+listed in this array then the API should return a 405 Method not allowed error. [Needs testing].
+* "regex".  An optional collection of regular expressions to be associated with named arguments in the route definition.
+Entries here will override the default regular expression for the argument concerned.  Note that backslashes in
+regular expressions will need to be escaped in order to be compatible with JSON syntax.
+
+The routes specified by default and strongly encouraged are the "industry standard" routes for web APIs, but you
+can specify whatever routes you want.
+
+If you install third-party extensions that have conflicting routes then these can be resolved by editing the routes.json
+file.  The "routes" entry specifies the *public* routes available to client software.  The "name" entry specifies
+the internal resource associated with the route.  That is, it will be used to determine which configuration XML file
+will be loaded to handle the request.
+
+Example routes and route definitions
+=====
+* "/contacts".  This will return a collection of contacts resources.
+* "/contacts/:id".  This will match a path such as "/contacts/something" to return a contacts resource with id = "something".
+The id will be passed in the Input object for use in the integration layer.
+* "/contacts/:id" with "regex:{"id":"(\\d+)}".  This tightens the specification of the :id argument so that only
+a numeric argument in that position will be matched.  For example, the path "/contacts/1234" will match with the id
+argument set to "1234", but the path "/contact/something" will not match. 
 
 How to install [OLD - These instructions don't work at present]
 ====

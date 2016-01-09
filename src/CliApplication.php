@@ -26,7 +26,6 @@ use Joomla\Utilities\ArrayHelper;
 
 use Joomla\Webservices\Api\Soap\SoapHelper;
 use Joomla\Webservices\Webservices\Factory;
-use Joomla\Webservices\Service\ApiProvider;
 use Joomla\Webservices\Service\RendererProvider;
 
 use Negotiation\Negotiator;
@@ -146,48 +145,28 @@ class CliApplication extends AbstractCliApplication implements ContainerAwareInt
 			$this->get('webservices.content_types')
 		);
 
-		// @deprecated The resource name should come from routing.
-		$optionName = $input->getString('option', 'contents');
-		$resourceName = strpos($optionName, 'com_') === 0 ? substr($optionName, 4) : $optionName;
+		// Get the router.
+		$router = Factory::getRouter(
+			new Registry(['config_file' => JPATH_API . $this->get('webservices.routes')])
+		);
 
-//		// Get optional task argument.
-//		$task = $this->options->get('task', '');
-//
-//		if (!empty($task))
-//		{
-//			$taskSplit = explode('.', $task);
-//
-//			if (count($taskSplit) > 1)
-//			{
-//				// Set the name of the webservice as a task controller name.
-//				$webserviceName = $this->options->get('optionName', '') . '-' . $taskSplit[0];
-//				$task = $taskSplit[1];
-//				$this->options->set('task', $task);
-//
-//				return $this;
-//			}
-//		}
-//
-//		$webserviceName = $this->options->get('optionName', '');
-//		$viewName = $this->options->get('viewName', '');
-//		$webserviceName .= !empty($webserviceName) && !empty($viewName) ? '-' . $viewName : '';
+		$match = $router->parseRoute($input->getString('path'), $input->getCmd('method', 'get'));
 
-		$version = $input->getString('webserviceVersion');
+		$style = $match['controller']['style'];
+		$resourceName = $match['controller']['resource'];
+		$input->set('optionName', $resourceName);
 
-		// @deprecated There should be only one API.
-		$client  = $input->getString('webserviceClient', 'site');
+		// Add parsed variables from the route into the input object.
+		foreach ($match['vars'] as $key => $value)
+		{
+			$input->set($key, $value);
+		}
 
 		$options = array(
-			'optionName'        => $resourceName,
 			'viewName'          => $input->getString('view'),
-			'webserviceVersion' => $version,
-			'webserviceClient'  => $client,
-			'method'            => strtoupper($input->getCmd('method', 'GET')),
-			'task'              => $input->getCmd('task'),
 			'data'              => $this->getPostedData(),
 			'dataGet'           => $input->getArray(),
 			'accessToken'       => $input->getString($this->get('webservices.oauth2_token_param_name', 'access_token')),
-			'id'                => $input->getString('id'),
 			'absoluteHrefs'     => $input->getBool('absoluteHrefs', false),
 		);
 
@@ -204,11 +183,13 @@ class CliApplication extends AbstractCliApplication implements ContainerAwareInt
 
 		try
 		{
-			// Instantiate a renderer, based on content negotiation, then defer to the API class.
-			$this->container
-				->registerServiceProvider(new RendererProvider($contentType, new Registry($rendererOptions)))
-				->registerServiceProvider(new ApiProvider(new Registry($options)))
-				->get('api')->execute()->render()
+			// Instantiate a renderer, based on content negotiation.
+			$this->container->registerServiceProvider(new RendererProvider($this, $contentType, new Registry($rendererOptions)));
+
+			// Load the interaction style (api) class, execute it, then render the result.
+			Factory::getApi($this->container, $style, new Registry($options))
+				->execute($input)
+				->render()
 				;
 		}
 		catch (\Exception $e)

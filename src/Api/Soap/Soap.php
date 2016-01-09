@@ -83,14 +83,13 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 	/**
 	 * Method to instantiate the file-based api call.
 	 *
-	 * @param   Container  $container  The DIC object
-	 * @param   Renderer   $renderer   Renderer object.
-	 * @param   Registry   $options    Optional custom options to load
+	 * @param   Container  $container  The DIC object.
+	 * @param   Registry   $options    Optional custom options to load.
 	 *
 	 * @throws  \Exception
 	 * @since   1.4
 	 */
-	public function __construct(Container $container, $renderer, Registry $options)
+	public function __construct(Container $container, Registry $options)
 	{
 		parent::__construct($container, $options);
 

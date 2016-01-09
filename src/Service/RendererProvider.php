@@ -16,6 +16,11 @@ use Joomla\Registry\Registry;
 class RendererProvider implements ServiceProviderInterface
 {
 	/**
+	 * The Application object.
+	 */
+	private $application = null;
+
+	/**
 	 * Content type.
 	 *
 	 * @var    string
@@ -39,11 +44,13 @@ class RendererProvider implements ServiceProviderInterface
 	 * class, given a content type of "type/subtype", the class name should be "Subtype" in
 	 * the namespace "Type".  See the existing code for examples.
 	 * 
+	 * @param   object     $application  The Application object.
 	 * @param   string     $contentType  Content type (eg. "application/hal+json").
 	 * @param   Registry   $options      Array of options to be passed to the renderer.
 	 */
-	public function __construct($contentType, Registry $options)
+	public function __construct($application, $contentType, Registry $options)
 	{
+		$this->application = $application;
 		$this->contentType = $contentType;
 		$this->options = $options;
 	}
@@ -55,11 +62,12 @@ class RendererProvider implements ServiceProviderInterface
 	 */
 	public function register(Container $container)
 	{
+		$application = $this->application;
 		$contentType = $this->contentType;
 		$options = $this->options;
 
 		$container->share('renderer',
-			function () use ($container, $contentType, $options)
+			function () use ($container, $application, $contentType, $options)
 			{
 				// Split type and subtype strings from content type.
 				$parts = explode('/', strtolower($contentType));
@@ -76,7 +84,7 @@ class RendererProvider implements ServiceProviderInterface
 		
 				try
 				{
-					$renderer = new $rendererClass($container, $options);
+					$renderer = new $rendererClass($application, $options);
 				}
 				catch (\RuntimeException $e)
 				{

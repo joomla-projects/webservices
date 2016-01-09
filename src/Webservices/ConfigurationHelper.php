@@ -217,7 +217,7 @@ class ConfigurationHelper
 	{
 		if (empty($webserviceName))
 		{
-			return null;
+			return '';
 		}
 
 		$version = !empty($version) ? $version : '1.0.0';

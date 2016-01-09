@@ -9,6 +9,8 @@
 
 namespace Joomla\Webservices\Api;
 
+use Joomla\Input\Input;
+
 /**
  * Interface to handle api calls
  *
@@ -20,12 +22,14 @@ interface ApiInterface
 {
 	/**
 	 * Method to execute task.
-	 *
+	 * 
+	 * @param   Input  $input  An input object.
+	 * 
 	 * @return  $this
 	 *
 	 * @since   1.2
 	 */
-	public function execute();
+	public function execute(Input $input);
 
 	/**
 	 * Method to render the output.

@@ -81,51 +81,32 @@ class Read extends Webservice
 		// Instantiate a new Home resource.
 		$resource = new ResourceHome($this->profile);
 
+		// Get data on all installed webservices.
 		$webservices = ConfigurationHelper::getInstalledWebservices($this->getContainer()->get('db'));
 
+		// @TODO: Remove client name level.  There should be only one API.
 		foreach ($webservices as $webserviceClient => $webserviceNames)
 		{
 			foreach ($webserviceNames as $webserviceName => $webserviceVersions)
 			{
 				foreach ($webserviceVersions as $webserviceVersion => $webservice)
 				{
+					// If webservice is not "published", don't list it.
 					if ($webservice['state'] != 1)
 					{
 						continue;
 					}
 
-					// Temporary fix so that contents page URL does not have query part.
-					if ($webserviceName == 'contents')
-					{
-						$resource->setLink(
-							new ResourceLink(
-								'/',
-								$webservice['name'],
-								$webservice['name'],
-								$webservice['title']
-							)
-						);
-
-						break;
-					}
-
 					// Set option and view name
 					$this->setOptionViewName($webservice['name'], $this->configuration);
-					$webserviceUrlPath = '/index.php?option=' . $this->optionName
-						. '&amp;webserviceVersion=' . $webserviceVersion;
-
-					if (!empty($this->viewName))
-					{
-						$webserviceUrlPath .= '&view=' . $this->viewName;
-					}
 
 					// We will fetch only top level webservices.
 					$resource->setLink(
 						new ResourceLink(
-							$webserviceUrlPath . '&webserviceClient=' . $webserviceClient,
+							'/' . ($webservice['name'] != 'contents' ? $webservice['name'] : ''),
 							$webservice['name'],
-							$webservice['name'],
-							$webservice['title']
+							$webservice['title'],
+							$webservice['name']
 						)
 					);
 				}

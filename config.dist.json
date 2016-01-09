@@ -20,7 +20,8 @@
 		"application/json",
 		"application/soap+xml",
 		"application/xml"
-    ]
+    ],
+    "routes": "/routes.json"
   },
   "language" : {
     "basedir" : "",

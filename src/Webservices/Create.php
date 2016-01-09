@@ -87,10 +87,6 @@ class Create extends Webservice
 		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
 		$result = null;
 		$id = 0;
-		$webserviceUrlPath = 'index.php?option=com_' . $this->webserviceName
-			. '&amp;webserviceVersion=' . $this->webserviceVersion
-			. '&amp;webserviceClient=' . $this->client
-			;
 
 		// Checks if that method exists in model class file and executes it.
 		if (method_exists($model, $functionName))
@@ -120,7 +116,7 @@ class Create extends Webservice
 			else
 			{
 				$this->setStatusCode(201);
-				$this->app->setHeader('Location', $webserviceUrlPath . '&id=' . $id, true);
+				$this->app->setHeader('Location', $this->webserviceName . '/' . $id, true);
 			}
 		}
 	}

@@ -13,19 +13,13 @@ use Joomla\Webservices\Application;
 use Joomla\Webservices\Renderer\RendererInterface;
 use Joomla\Webservices\Resource\Resource;
 
-use Joomla\DI\Container;
-use Joomla\DI\ContainerAwareTrait;
-use Joomla\DI\ContainerAwareInterface;
-
 /**
  * Document class, provides an easy interface to parse and display a document
  *
  * @since  __DELPOY_VERSION__
  */
-abstract class Renderer implements ContainerAwareInterface, RendererInterface
+abstract class Renderer implements RendererInterface
 {
-	use ContainerAwareTrait;
-
 	/**
 	 * Document title
 	 *
@@ -148,15 +142,14 @@ abstract class Renderer implements ContainerAwareInterface, RendererInterface
 	/**
 	 * Class constructor.
 	 *
-	 * @param   Container  $container  The DIC object
-	 * @param   array      $options  Associative array of options
+	 * @param   object  $application  The application.
+	 * @param   array   $options      Associative array of options.
 	 *
 	 * @since   11.1
 	 */
-	public function __construct(Container $container, $options = array())
+	public function __construct($application, $options = array())
 	{
-		$this->app = $container->get('app');
-		$this->setContainer($container);
+		$this->app = $application;
 
 		if (array_key_exists('charset', $options))
 		{

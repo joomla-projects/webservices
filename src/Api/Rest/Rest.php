@@ -18,6 +18,7 @@ use Joomla\Webservices\Webservices\Factory;
 use Joomla\DI\Container;
 use Joomla\Event\Event;
 use Joomla\Event\EventImmutable;
+use Joomla\Input\Input;
 use Joomla\Registry\Registry;
 
 /**
@@ -66,30 +67,34 @@ class Rest extends ApiBase
 
 	/**
 	 * Execute the Api operation.
+	 * 
+	 * @param   Input  $input  An input object.
 	 *
 	 * @return  mixed  Webservice object with information on success, boolean false on failure.
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 * @throws  \Exception
 	 */
-	public function execute()
+	public function execute(Input $input)
 	{
+		$container	= $this->getContainer();
 		$options	= $this->getOptions();
 
-		$method		= $options->get('method', 'GET');
-		$task		= $options->get('task', '');
-		$format		= $options->get('format', '');
-		$clientName	= $options->get('webserviceClient');
-		$version	= $options->get('webserviceVersion');
-		$resourceName = $options->get('optionName');
+		$method		= strtoupper($input->getCmd('method', 'get'));
+		$task		= $input->getCmd('task', '');
+		$clientName	= $input->getString('webserviceClient', 'site');
+		$version	= $input->getString('webserviceVersion');
+		$resourceName = $input->getString('optionName');
+
+		$this->setOption('webserviceClient', $clientName);
+		$this->setOption('webserviceVersion', $version);
+		$this->setOption('optionName', $resourceName);
+
+		$operation = 'read';
 
 		// Map HTTP methods to service operations.
 		switch (strtolower($method))
 		{
-			case 'get':
-				$operation = !empty($task) ? 'task' : 'read';
-				break;
-
 			case 'put':
 				$operation = 'update';
 				break;
@@ -110,23 +115,20 @@ class Rest extends ApiBase
 		$this->setOption('operation', $operation);
 
 		// If task is pointing to some other operation like apply, update or delete.
-//		if (!empty($task) && !empty($this->configuration->operations->task->{$task}['useOperation']))
-//		{
-//			$useOperation = strtoupper((string) $this->configuration->operations->task->{$task}['useOperation']);
-//
-//			if (in_array($useOperation, array('create', 'read', 'update', 'delete', 'documentation')))
-//			{
-//				$operation = $useOperation;
-//			}
-//		}
+		if (!empty($task) && !empty($this->configuration->operations->task->{$task}['useOperation']))
+		{
+			$useOperation = strtoupper((string) $this->configuration->operations->task->{$task}['useOperation']);
+
+			if (in_array($useOperation, array('create', 'read', 'update', 'delete', 'documentation')))
+			{
+				$operation = $useOperation;
+			}
+		}
 
 		// Get the Profile object for the webservice requested.
-		$this->profile = Factory::getProfile($this->getContainer(), $clientName, $resourceName, $version, $operation);
+		$this->profile = Factory::getProfile($container->get('db'), $clientName, $resourceName, $version, $operation);
 
-		$this->webservice = Factory::getWebservice($this->getContainer(), $operation, $this->getOptions());
-
-		// Set initial status code to OK.
-		$this->setStatusCode(200);
+		$this->webservice = Factory::getWebservice($container, $operation, $this->getOptions());
 
 		// We do not want some unwanted text to appear before output.
 		ob_start();
@@ -138,7 +140,6 @@ class Rest extends ApiBase
 
 			$executionErrors = ob_get_contents();
 			ob_end_clean();
-//			ob_end_flush();		// TEMPORARY so we can see any error messages.
 		}
 		catch (\Exception $e)
 		{

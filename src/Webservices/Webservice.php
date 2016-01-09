@@ -432,16 +432,18 @@ abstract class Webservice extends WebserviceBase
 				// We will force curies as link array.
 				$linkPlural = $linkRel == 'curies';
 
-				$resource->setLink(
-					new ResourceLink(
-						$this->assignValueToResource($profileItem, $data),
-						$linkRel,
-						$profileItem['linkTitle'],
-						$this->assignGlobalValueToResource($profileItem['linkName']),
-						$profileItem['hrefLang'],
-						XmlHelper::isAttributeTrue($profileItem, 'linkTemplated')
-					), $linkSingular = false, $linkPlural
+				// Create a link resource.
+				$linkResource = new ResourceLink(
+					$this->assignValueToResource($profileItem, $data),				// href
+					$linkRel,														// rel
+					$profileItem['linkTitle'],										// title
+					$this->assignGlobalValueToResource($profileItem['linkName']),	// name
+					$profileItem['hrefLang'],										// hreflang
+					XmlHelper::isAttributeTrue($profileItem, 'linkTemplated')		// templated
 				);
+
+				// Add link to this resource.
+				$resource->setLink($linkResource, false, $linkPlural);
 
 				continue;
 			}
@@ -1145,10 +1147,16 @@ abstract class Webservice extends WebserviceBase
 		// Replace substitution codes in the template with values from the data. 
 		foreach ($stringsToReplace[1] as $replacementKey)
 		{
+			// Look for the key in the data and get the value associated with it.
 			$replacementValue = $this->getValueFromData($data, $replacementKey);
-			$search = '{' . $replacementKey . '}';
-			$replace = $this->transformField($dataType, $replacementValue, true);
-			$output = str_replace($search, $replace, $template);
+
+			// If the key was found in the data, perform the substitution.
+			if ($replacementValue)
+			{
+				$search = '{' . $replacementKey . '}';
+				$replace = $this->transformField($dataType, $replacementValue, true);
+				$output = str_replace($search, $replace, $template);
+			}
 		}
 
 		// Look for substitutions from global data as well.
@@ -1168,14 +1176,14 @@ abstract class Webservice extends WebserviceBase
 	 * Get a value from various types of data.
 	 * 
 	 * The key is used to locate a value in objects or arrays,
-	 * but if not found, an empty string is returned.
+	 * but if not found, returns false.
 	 * For other data types (eg. string), the data is returned
 	 * as its own value.
 	 * 
 	 * @param   mixed   $data  Array, object, etc., containing the data.
 	 * @param   string  $key   Property of the data to be retrieved.
 	 * 
-	 * @return  string value.
+	 * @return  string value or false if not found.
 	 * 
 	 * @since   __DEPLOY_VERSION__
 	 */
@@ -1193,7 +1201,7 @@ abstract class Webservice extends WebserviceBase
 
 		if (is_object($data) || is_array($data))
 		{
-			return '';
+			return false;
 		}
 
 		return $data;

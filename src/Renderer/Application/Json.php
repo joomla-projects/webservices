@@ -9,7 +9,6 @@
 
 namespace Joomla\Webservices\Renderer\Application;
 
-use Joomla\DI\Container;
 use Joomla\Webservices\Resource\Resource;
 use Joomla\Webservices\Resource\ResourceItem;
 
@@ -31,14 +30,14 @@ class Json extends Haljson
 	/**
 	 * Class constructor
 	 *
-	 * @param   Container  $container  The DIC object
-	 * @param   array      $options    Associative array of options
+	 * @param   object  $application  The application.
+	 * @param   array   $options      Associative array of options.
 	 *
 	 * @since  1.2
 	 */
-	public function __construct(Container $container, $options = array())
+	public function __construct($application, $options = array())
 	{
-		parent::__construct($container, $options);
+		parent::__construct($application, $options);
 
 		// Set default mime type.
 		$this->setMimeEncoding('application/json', false);
