@@ -58,7 +58,7 @@
 					<resource displayName="language" transform="string" fieldFormat="{language}" displayGroup="" resourceSpecific="listItem"/>
 					<resource displayName="title" transform="string" fieldFormat="{title}" displayGroup="" resourceSpecific="listItem"/>
 					<resource displayName="ordering" transform="integer" fieldFormat="{ordering}" displayGroup="" resourceSpecific="listItem"/>
-					<resource displayName="self" transform="string" fieldFormat="{webserviceName}/{id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="listItem">
+					<resource displayName="self" transform="string" fieldFormat="/{webserviceName}/{id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="listItem">
 						<description><![CDATA[Link to categories item]]></description>
 					</resource>
 				</resources>
@@ -104,6 +104,7 @@
 					<resource displayName="self" transform="string" fieldFormat="/{webserviceName}/{id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="up" transform="string" fieldFormat="/{webserviceName}/{parent_id}" displayGroup="_links" linkTitle="Parent category" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="collection" transform="string" fieldFormat="/{webserviceName}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="contacts" transform="string" fieldFormat="/{webserviceName}/{id}/contacts" displayGroup="_links" linkField="catid" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="j:contacts" resourceSpecific="rcwsGlobal"/>
 				</resources>
 			</item>
 		</read>

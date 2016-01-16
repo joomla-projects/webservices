@@ -85,6 +85,8 @@
 					<field name="state" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
 					<field name="telephone" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
 					<field name="published" transform="integer" defaultValue="" isRequiredField="false" isFilterField="true" isSearchableField="false" isPrimaryField="false"/>
+
+					<field name="catid" transform="integer" defaultValue="" isRequiredField="false" isFilterField="true" isSearchableField="false" isPrimaryField="false"/>
 				</fields>
 
 				<!-- Resource definition -->
@@ -127,6 +129,7 @@
 					<resource displayName="self" transform="string" fieldFormat="/{webserviceName}/{id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="listItem">
 						<description><![CDATA[Link to contact item]]></description>
 					</resource>
+					<resource displayName="category" transform="string" fieldFormat="/categories/{catid}" displayGroup="_links" linkTitle="Category to which this contact belongs" linkName="" hrefLang="" linkTemplated="false" linkRel="j:category" resourceSpecific="listItem"/>
 				</resources>
 			</list>
 
@@ -158,7 +161,6 @@
 					<resource displayName="ordering" transform="integer" fieldFormat="{ordering}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="params" transform="json" fieldFormat="{params}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="user_id" transform="integer" fieldFormat="{user_id}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-					<resource displayName="catid" transform="integer" fieldFormat="{catid}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="access" transform="integer" fieldFormat="{access}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="mobile" transform="string" fieldFormat="{mobile}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="webpage" transform="string" fieldFormat="{webpage}" displayGroup="" resourceSpecific="rcwsGlobal"/>
@@ -167,9 +169,7 @@
 					<resource displayName="sortname3" transform="string" fieldFormat="{sortname3}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="language" transform="string" fieldFormat="{language}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="created" transform="datetime" fieldFormat="{created}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-					<resource displayName="created_by" transform="integer" fieldFormat="{created_by}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="modified" transform="datetime" fieldFormat="{modified}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-					<resource displayName="modified_by" transform="integer" fieldFormat="{modified_by}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="metakey" transform="string" fieldFormat="{metakey}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="metadesc" transform="string" fieldFormat="{metadesc}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="metadata" transform="string" fieldFormat="{metadata}" displayGroup="" resourceSpecific="rcwsGlobal"/>
@@ -183,8 +183,12 @@
 					<resource displayName="documentation" transform="string" fieldFormat="https://docs.joomla.org/User:Chris_Davenport/API/contacts/item" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="contents" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="self" transform="string" fieldFormat="/{webserviceName}/{id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
-					<resource displayName="collection" transform="string" fieldFormat="/{webserviceName}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="collection" transform="string" fieldFormat="/{webserviceName}" displayGroup="_links" linkTitle="All contacts" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="category" transform="string" fieldFormat="/categories/{catid}" displayGroup="_links" linkTitle="Category to which this contact belongs" linkName="" hrefLang="" linkTemplated="false" linkRel="j:category" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="author" transform="string" fieldFormat="/users/{created_by}" displayGroup="_links" linkTitle="User who created this contact" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="modifiedBy" transform="string" fieldFormat="/users/{modified_by}" displayGroup="_links" linkTitle="User who last modified this contact" linkName="" hrefLang="" linkTemplated="false" linkRel="j:modifiedBy" resourceSpecific="rcwsGlobal"/>
 				</resources>
+
 			</item>
 		</read>
 

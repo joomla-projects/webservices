@@ -13,10 +13,12 @@
 		"style": "rest",
 		"routes": {
 			"/categories": ["GET","POST"],
+			"/categories/:id/:resource": ["GET"],
 			"/categories/:id": ["GET","PUT","PATCH","DELETE"]
 		},
 		"regex": {
-			"id": "(\\d+)"
+			"id": "\\d+",
+			"resource": "contacts"
 		}
 	},
 	{
@@ -25,10 +27,12 @@
 		"style": "rest",
 		"routes": {
 			"/contacts": ["GET","POST"],
+			"/contacts/:id/:resource": ["GET"],
 			"/contacts/:id": ["GET","PUT","PATCH","DELETE"]
 		},
 		"regex": {
-			"id": "(\\d+)"
+			"id": "\\d+",
+			"resource": "categories|users"
 		}
 	},
 	{
@@ -40,7 +44,7 @@
 			"/users/:id": ["GET","PUT","PATCH","DELETE"]
 		},
 		"regex": {
-			"id": "(\\d+)"
+			"id": "\\d+"
 		}
 	}
 ]

@@ -52,7 +52,7 @@ which interaction style class, in the /Api directory, is loaded and executed.
 * "routes".  This is is a collection of route definitions that will be added to the routing table.  The path contained
 in a web request (or the --path argument in a CLI request) will be matched against the routing table using regular
 expressions.  The route definition can contain named arguments which will be copied into the Input object.  By default,
-named variables in the route use a matching regular expression of "([^/]*)", which matches everything in the route, up
+named variables in the route use a matching regular expression of "[^/]*", which matches everything in the route, up
 to the next /.  This can be overridden by adding a "regex" entry (see below).  Associated with each route definition
 is an array of HTTP methods for which the route is valid.  If a path is matched with a route but the method is not
 listed in this array then the API should return a 405 Method not allowed error. [Needs testing].
@@ -73,9 +73,60 @@ Example routes and route definitions
 * "/contacts".  This will return a collection of contacts resources.
 * "/contacts/:id".  This will match a path such as "/contacts/something" to return a contacts resource with id = "something".
 The id will be passed in the Input object for use in the integration layer.
-* "/contacts/:id" with "regex:{"id":"(\\d+)}".  This tightens the specification of the :id argument so that only
+* "/contacts/:id" with "regex": { "id": "\\d+" }.  This tightens the specification of the :id argument so that only
 a numeric argument in that position will be matched.  For example, the path "/contacts/1234" will match with the id
 argument set to "1234", but the path "/contact/something" will not match. 
+
+Linked resources
+====
+A linked resource is one where the resource returned is determined by a link from another resource.  For example,
+the request "/categories/1234" will return the Categories resource with id 1234, whereas the request "/categories/1234/contacts"
+will return the collection of Contacts resources which belong to the Categories resource with id 1234.  In this case,
+the Contents collection resource returned is a linked resource of the Categories resource.
+
+To create a route for a linked resource, modify the routes.json file using the :resource key to indicate the name of the
+resource being linked to.  It's a good idea to also include a regular expression to limit the possible values this may
+take.  For example, here is a possible entry for the Categories resource which includes Contacts as a linked resource.
+
+```json
+{
+	"name": "categories",
+	"description": "Categories collection and individual categories",
+	"style": "rest",
+	"routes": {
+		"/categories": ["GET","POST"],
+		"/categories/:id/:resource": ["GET"],
+		"/categories/:id": ["GET","PUT","PATCH","DELETE"]
+	},
+	"regex": {
+		"id": "\\d+",
+		"resource": "contacts"
+	}
+}
+```
+
+In the profile XML file, you will need to add a link property to the resource named in the routes.json file.  This must
+include a "linkField" attribute which defines the property in the resource that will be used to filter the
+linked resource.  For example, here is a possible link property in the Categories resource that will link to the Contacts
+resource using the "catid" field in the Categories resource to filter the linked Categories resource.
+```xml
+<resource
+	displayName="contacts"
+	transform="string"
+	fieldFormat="/{webserviceName}/{id}/contacts"
+	displayGroup="_links"
+	linkField="catid"
+	linkTitle=""
+	linkName=""
+	hrefLang=""
+	linkTemplated="false"
+	linkRel="j:contacts"
+	resourceSpecific="rcwsGlobal"
+/>
+```
+
+Note that the link rel visible in the public data will be that given in the linkRel attribute.  The displayName attribute
+must correspond with the name of the linked resource.  @TODO This probably needs to be fixed/changed as it's not intuitive.
 
 How to install [OLD - These instructions don't work at present]
 ====

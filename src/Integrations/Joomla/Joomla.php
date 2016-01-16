@@ -56,24 +56,34 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		$this->setContainer($container);
 		$this->webservice = $webservice;
 
-		// Constant that is checked in included files to prevent direct access.
-		define('_JEXEC', 1);
-
 		$client = $webservice->getOptions()->get('webserviceClient', 'site');
 
-		// Get the CMS base data and load the application
+		// Constant that is checked in included files to prevent direct access.
+		if (!defined('_JEXEC'))
+		{
+			define('_JEXEC', 1);
+
+			// Get the CMS base data and load the application
+			if ($client == 'administrator')
+			{
+				define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
+				require_once __DIR__ . '/defines.php';
+				require_once JPATH_BASE . '/includes/framework.php';
+			}
+			else
+			{
+				define('JPATH_BASE',      JPATH_CMS);
+				require_once __DIR__ . '/defines.php';
+				require_once JPATH_BASE . '/includes/framework.php';
+			}
+		}
+
 		if ($client == 'administrator')
 		{
-			define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
-			require_once __DIR__ . '/defines.php';
-			require_once JPATH_BASE . '/includes/framework.php';
 			$app = new \JApplicationAdministrator;
 		}
 		else
 		{
-			define('JPATH_BASE',      JPATH_CMS);
-			require_once __DIR__ . '/defines.php';
-			require_once JPATH_BASE . '/includes/framework.php';
 			$app = new \JApplicationSite;
 		}
 

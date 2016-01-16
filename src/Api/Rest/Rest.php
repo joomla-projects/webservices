@@ -10,7 +10,7 @@
 namespace Joomla\Webservices\Api\Rest;
 
 use Joomla\Webservices\Api\ApiBase;
-use Joomla\Webservices\Resource\Item;
+use Joomla\Webservices\Resource\ResourceLink;
 use Joomla\Webservices\Resource\Resource;
 use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Webservices\Factory;
@@ -85,6 +85,7 @@ class Rest extends ApiBase
 		$clientName	= $input->getString('webserviceClient', 'site');
 		$version	= $input->getString('webserviceVersion');
 		$resourceName = $input->getString('optionName');
+		$linkedResourceName  = $input->getString('resource');
 
 		$this->setOption('webserviceClient', $clientName);
 		$this->setOption('webserviceVersion', $version);
@@ -128,6 +129,7 @@ class Rest extends ApiBase
 		// Get the Profile object for the webservice requested.
 		$this->profile = Factory::getProfile($container->get('db'), $clientName, $resourceName, $version, $operation);
 
+		// Build a webservice object to handle the request.
 		$this->webservice = Factory::getWebservice($container, $operation, $this->getOptions());
 
 		// We do not want some unwanted text to appear before output.
@@ -137,6 +139,12 @@ class Rest extends ApiBase
 		{
 			// Execute the web service operation.
 			$this->resource = $this->webservice->execute($this->profile);
+
+			// Are we being asked for a resource linked from this one?
+			if ($linkedResourceName != '')
+			{
+				$this->resource = $this->getLinkedResource($linkedResourceName, $clientName, $version);
+			}
 
 			$executionErrors = ob_get_contents();
 			ob_end_clean();
@@ -174,6 +182,67 @@ class Rest extends ApiBase
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Get a resource that is linked to the current resource.
+	 * 
+	 * This is used to handle routes like "/categories/:id/contacts" where the categories
+	 * resource with the given id is retrieved first, then this is used to determine
+	 * the contacts resource to return.
+	 * 
+	 * @param   string  $linkedResourceName  Name of the linked resource to retrieve.
+	 * @param   string  $clientName          Name of the client (eg. 'site' or 'administrator').
+	 * @param   string  $version             Version of the webservice.
+	 * 
+	 * @return  Resource
+	 */
+	private function getLinkedResource($linkedResourceName, $clientName, $version)
+	{
+		// Get resource data.
+		$data = $this->resource->getData(true);
+
+		$linkedResources = $this->profile->getSubprofile('item')->resources;
+		$linkField = '';
+
+		foreach ($linkedResources->children() as $linkedResource)
+		{
+			// We only want properties that are links.
+			if ($linkedResource['displayGroup'] != '_links')
+			{
+				continue;
+			}
+
+			// We only want the link with the matching name.
+			if ($linkedResource['displayName'] == $linkedResourceName)
+			{
+				$linkField = (string) $linkedResource['linkField'];
+				
+				break;
+			}
+		}
+
+		// Get the Profile object for the webservice requested.
+		$profile = Factory::getProfile($this->getContainer()->get('db'), $clientName, $linkedResourceName, $version, 'read');
+
+		// Clone the options from the source resource and save the resource name for later.
+		$options = clone $this->getOptions();
+		$resourceName = $options->get('optionName');
+
+		// Set the options up for retrieving the linked resource.
+		$options->set('optionName', $linkedResourceName);
+		$options->set('dataGet', ['filter' => [$linkField => $data['id']]]);
+
+		// Build a webservice object to handle the request.
+		$webservice = Factory::getWebservice($this->getContainer(), 'read', $options);
+
+		// Execute the web service operation.
+		$resource = $webservice->execute($profile);
+
+		// We need to overwrite the self link for a linked resource.
+		$resource->setLink(new ResourceLink('/' . $resourceName . '/' . $data['id'] . '/' . $linkedResourceName), true);
+
+		return $resource;
 	}
 
 	/**

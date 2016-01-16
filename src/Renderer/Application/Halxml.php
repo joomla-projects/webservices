@@ -154,6 +154,13 @@ class Halxml extends Renderer
 		// Iterate through the data properties and add them to the top-level array.
 		foreach ($resource->getData() as $name => $property)
 		{
+			// @TODO Check if skipping arrays is the correct behaviour.
+			//		 It was added because sometimes there is a _messages array.
+			if (is_array($property))
+			{
+				continue;
+			}
+
 			$xml->appendChild($doc->createElement($name, $property));
 		}
 
@@ -313,6 +320,13 @@ class Halxml extends Renderer
 		// Iterate through the data properties and add them to the top-level array.
 		foreach ($resource->getData() as $name => $property)
 		{
+			// @TODO Check if skipping arrays is the correct behaviour.
+			//		 It was added because sometimes there is a _messages array.
+			if (is_array($property))
+			{
+				continue;
+			}
+
 			$xml->appendChild($doc->createElement($name, $property));
 		}
 
