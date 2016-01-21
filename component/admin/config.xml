@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+
+	<fieldset name="webservices"
+		label="COM_WEBSERVICES_FIELD_CONFIG"
+	>
+
+		<field
+			name="rootpath"
+			type="text"
+			label="COM_WEBSERVICES_LABEL_ROOTPATH"
+			description="COM_WEBSERVICES_LABEL_ROOTPATH_DESC"
+			default="/path/to/root"
+		/>
+
+	</fieldset>
+
+	<fieldset name="permissions"
+		label="JCONFIG_PERMISSIONS_LABEL"
+		description="JCONFIG_PERMISSIONS_DESC"
+	>
+
+		<field name="rules"
+			type="rules"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			validate="rules"
+			filter="rules"
+			component="COM_WEBSERVICES"
+			section="component" />
+	</fieldset>
+
+</config>

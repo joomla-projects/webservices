@@ -296,6 +296,9 @@ class WebservicesModel extends \JModelDatabase
 				}
 			}
 
+			// Get current time
+			$time = \JFactory::getDate()->toSql();
+
 			\Joomla\Webservices\Webservices\ConfigurationHelper::$installedWebservices[$client][$webservice][$version] = array(
 				'name'          => $webservice,
 				'version'       => $version,
@@ -306,7 +309,11 @@ class WebservicesModel extends \JModelDatabase
 				'operations'    => json_encode($operations),
 				'scopes'        => json_encode($scopes),
 				'client'        => $client,
-				'state'         => 1,
+				'published'     => 1,
+				'checked_out'   => 0,
+				'checked_out_time'	=> $time,
+				'created_by'   	=> \JFactory::getUser()->id,
+				'modified_by'   => 0,
 				'id'            => $id,
 			);
 
