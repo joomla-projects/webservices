@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `#__webservices` (
   `operations`        TEXT                  NULL,
   `scopes`            TEXT                  NULL,
   `client`            VARCHAR(15)           NOT NULL DEFAULT 'site',
-  `state`             TINYINT(1)            NOT NULL DEFAULT '1',
+  `published`         TINYINT(1)            NOT NULL DEFAULT '1',
   `checked_out`       INT(11)               NULL     DEFAULT NULL,
   `checked_out_time`  DATETIME              NOT NULL DEFAULT '0000-00-00 00:00:00',
   `created_by`        INT(11)               NULL     DEFAULT NULL,

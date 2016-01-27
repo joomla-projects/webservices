@@ -189,7 +189,7 @@ $userId		= $user->get('id');
 								       title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)"/>
 							</th>
 							<th class="nowrap center">
-								<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'w.state', $listDirn, $listOrder); ?>
+								<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'w.published', $listDirn, $listOrder); ?>
 							</th>
 							<th class="nowrap">
 								<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'w.title', $listDirn, $listOrder); ?>
@@ -218,7 +218,7 @@ $userId		= $user->get('id');
 										<?php echo JHtml::_('grid.id', $i, $item->id); ?>
 									</td>
 									<td class="center">
-										<?php echo JHtml::_('jgrid.published', $item->state, $i, 'webservices.', $canChange); ?>
+										<?php echo JHtml::_('jgrid.published', $item->published, $i, '.', $canChange); ?>
 									</td>
 									<td>
 										<?php if ($item->checked_out) : ?>

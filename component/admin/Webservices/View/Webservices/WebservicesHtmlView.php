@@ -145,6 +145,7 @@ class WebservicesHtmlView extends DefaultHtmlView
 	 */
 	protected function addToolbar()
 	{
+		$user = \JFactory::getUser();
 		$canDo		= \JHelperContent::getActions('com_webservices');
 
 		// Get the toolbar object instance
@@ -177,6 +178,11 @@ class WebservicesHtmlView extends DefaultHtmlView
 		if ($canDo->get('core.delete'))
 		{
 			\JToolbarHelper::deleteList('', 'delete', 'JTOOLBAR_EMPTY_TRASH');
+		}
+
+		if ($user->authorise('core.admin', 'com_webservices'))
+		{
+			\JToolbarHelper::preferences('com_webservices');
 		}
 	}
 

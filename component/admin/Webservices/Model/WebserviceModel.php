@@ -47,9 +47,7 @@ class WebserviceModel extends FormModel
 		}
 		catch (\Exception $e)
 		{
-			$this->setError(\JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_SAVING_XML', $e->getMessage()));
-
-			return false;
+			throw new \Exception(\JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_SAVING_XML', $e->getMessage()), 500);
 		}
 
 		// Get Webservices model
@@ -93,9 +91,7 @@ class WebserviceModel extends FormModel
 
 		if (empty($data['main']['name']))
 		{
-			$this->setError(JText::_('COM_WEBSERVICES_WEBSERVICE_NAME_FIELD_CANNOT_BE_EMPTY'));
-
-			return false;
+			throw new \Exception(\JText::_('COM_WEBSERVICES_WEBSERVICE_NAME_FIELD_CANNOT_BE_EMPTY'), 500);
 		}
 
 		if (!empty($data['main']['id']))
@@ -597,5 +593,21 @@ class WebserviceModel extends FormModel
 				$this->resources[$name][$resourceSpecific][$displayName] = $resourceArray;
 			}
 		}
+	}
+
+	/**
+	 * Method to test whether a record can be deleted.
+	 *
+	 * @param   object  $record  A record object.
+	 *
+	 * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
+	 *
+	 * @since   12.2
+	 */
+	public function canEditState($record)
+	{
+		$user = \JFactory::getUser();
+
+		return $user->authorise('core.edit.state', $this->option);
 	}
 }
