@@ -12,8 +12,6 @@ How to install
 * Zip or tar-gzip everything in the /component directory
 * Install component package file as an extension in the usual way
 * Copy all the files from the github clone to the web root of the CMS
-* sudo composer require willdurand/Negotiation (if necessary, but hopefully not required now)
-* sudo composer require joomla/router:dev-2.0-dev (if necessary, but hopefully not required now)
 * sudo composer install
 * Copy config.dist.json to config.json
 * Edit config.json database credentials

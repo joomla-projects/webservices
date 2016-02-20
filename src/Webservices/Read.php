@@ -92,7 +92,7 @@ class Read extends Webservice
 				foreach ($webserviceVersions as $webserviceVersion => $webservice)
 				{
 					// If webservice is not "published", don't list it.
-					if ($webservice['state'] != 1)
+					if ($webservice['published'] != 1)
 					{
 						continue;
 					}

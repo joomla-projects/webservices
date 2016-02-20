@@ -181,7 +181,7 @@ abstract class Webservice extends WebserviceBase
 				throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_NOT_INSTALLED', $this->webserviceName, $this->webserviceVersion));
 			}
 
-			if (empty($this->webservice['state']))
+			if (empty($this->webservice['published']))
 			{
 				throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_UNPUBLISHED', $this->webserviceName, $this->webserviceVersion));
 			}

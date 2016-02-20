@@ -282,11 +282,11 @@ class ConfigurationHelper
 	}
 
 	/**
-	 * Get list of all webservices from webservices parameters
+	 * Get list of all installed and published webservices from database.
 	 *
-	 * @param   DatabaseDriver  $db  The database driver object
+	 * @param   DatabaseDriver  $db  The database driver object.
 	 *
-	 * @return  array  Array or table with columns columns
+	 * @return  array  Array of installed and published webservices.
 	 */
 	public static function getInstalledWebservices(DatabaseDriver $db)
 	{
@@ -297,10 +297,9 @@ class ConfigurationHelper
 			$query = $db->getQuery(true)
 				->select('*')
 				->from($db->quoteName('#__webservices'))
+                ->where($db->quoteName('published') . ' = 1')
 				->order('created_date ASC');
-
-			$db->setQuery($query);
-			$webservices = $db->loadObjectList();
+			$webservices = $db->setQuery($query)->loadObjectList();
 
 			if (!empty($webservices))
 			{
@@ -363,7 +362,7 @@ class ConfigurationHelper
 
 		$webservice = $installedWebservices[$client][$webserviceName][$version];
 
-		return !empty($webservice['state']);
+		return !empty($webservice['published']);
 	}
 
 	/**
