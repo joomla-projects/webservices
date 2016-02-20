@@ -64,7 +64,7 @@ class Create extends Webservice
 	public function apiCreate()
 	{
 		// Get resource profile from configuration.
-		$profile = $this->getResourceProfile($this->operationConfiguration);
+        $profile = $this->profile->getResources($this->getOptions());
 
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');

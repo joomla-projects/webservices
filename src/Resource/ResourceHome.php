@@ -180,33 +180,6 @@ class ResourceHome extends Resource
 	}
 
 	/**
-	 * Creates empty array of configuration Resource field
-	 *
-	 * @param   array   $resource          Resource array
-	 * @param   string  $resourceSpecific  Resource specific container
-	 *
-	 * @return  array
-	 */
-	public static function defaultResourceField($resource = array(), $resourceSpecific = 'rcwsGlobal')
-	{
-		$defaultResource = array(
-			'resourceSpecific' => !empty($resource['resourceSpecific']) ? $resource['resourceSpecific'] : $resourceSpecific,
-			'displayGroup'     => !empty($resource['displayGroup']) ? $resource['displayGroup'] : '',
-			'displayName'      => !empty($resource['displayName']) ? $resource['displayName'] : '',
-			'fieldFormat'      => !empty($resource['fieldFormat']) ? $resource['fieldFormat'] : '',
-			'transform'        => !empty($resource['transform']) ? $resource['transform'] : '',
-			'linkName'         => !empty($resource['linkName']) ? $resource['linkName'] : '',
-			'linkTitle'        => !empty($resource['linkTitle']) ? $resource['linkTitle'] : '',
-			'hrefLang'         => !empty($resource['hrefLang']) ? $resource['hrefLang'] : '',
-			'linkTemplated'    => !empty($resource['linkTemplated']) ? $resource['linkTemplated'] : '',
-			'linkRel'          => !empty($resource['linkRel']) ? $resource['linkRel'] : '',
-			'description'      => !empty($resource['description']) ? $resource['description'] : '',
-		);
-
-		return array_merge($resource, $defaultResource);
-	}
-
-	/**
 	 * Merges two resource fields
 	 *
 	 * @param   array  $resourceMain   Resource array main

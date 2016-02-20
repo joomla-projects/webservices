@@ -311,7 +311,7 @@ class Read extends Webservice
 		$resource = new ResourceItem($this->profile);
 
 		// Get resource profile from configuration.
-		$profile = $this->getResourceProfile($subprofile);
+        $profile = $this->profile->getResources($this->getOptions(), 'item');
 
 		// Bind top-level properties into the Resource.
 		$this->setDataValueToResource($resource, $profile, $item, 'rcwsGlobal');
@@ -335,7 +335,7 @@ class Read extends Webservice
 		$resource = new ResourceList($this->profile);
 
 		// Get resource profile from configuration.
-		$profile = $this->getResourceProfile($subprofile);
+        $profile = $this->profile->getResources($this->getOptions(), 'list');
 
 		// Bind top-level properties into the Resource.
 		$this->setDataValueToResource($resource, $profile, $this->data, 'rcwsGlobal');

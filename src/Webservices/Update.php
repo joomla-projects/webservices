@@ -58,8 +58,9 @@ class Update extends Webservice
 	 */
 	public function apiUpdate()
 	{
-		// Get resource list from configuration
-		$this->getResourceProfile($this->operationConfiguration);
+		// Get resource list from configuration.
+        $this->profile->getResources($this->getOptions());
+
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
 		$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $this->operationConfiguration);

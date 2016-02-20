@@ -63,8 +63,8 @@ class Delete extends Webservice
 	 */
 	public function apiDelete()
 	{
-		// Get resource list from configuration
-		$this->getResourceProfile($this->operationConfiguration);
+		// Get resource list from configuration.
+        $this->profile->getResources($this->getOptions());
 
 		// Delete function requires references and not values like we use in call_user_func_array so we use List delete function
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);

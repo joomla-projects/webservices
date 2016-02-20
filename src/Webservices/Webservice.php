@@ -145,11 +145,6 @@ abstract class Webservice extends WebserviceBase
 	/**
 	 * Method to instantiate the file-based api call.
 	 * 
-	 * Options:
-	 *   filterOutResourcesGroups  Array of displayGroup values to be ignored when binding a resource.
-	 *   filterResourcesSpecific   Only elements with this resourceSpecific value will be bound to the resource.
-	 *   filterDisplayName         Only elements with this displayName value will be bound to the resource. (This doesn't appear to be used).
-	 *
 	 * @param   Container  $container  The DIC object
 	 * @param   Registry   $options    Custom options to load.
 	 *
@@ -342,7 +337,7 @@ abstract class Webservice extends WebserviceBase
 			// Load resources directly from task group
 			if (!empty($this->operationConfiguration->{$task}->resources))
 			{
-				$this->getResourceProfile($this->operationConfiguration->{$task});
+                $this->profile->getResources($this->getOptions());
 			}
 
 			$taskConfiguration = !empty($this->operationConfiguration->{$task}) ?
@@ -457,65 +452,6 @@ abstract class Webservice extends WebserviceBase
 		}
 
 		return $resource;
-	}
-
-	/**
-	 * Loads Resource profile from configuration file for specific method or task.
-	 * 
-	 * Returns an array of the data loaded from the <resources> section of the
-	 * XML configuration file for the task as provided in the $configuration element.
-	 * Some <resource> elements may be filtered out depending on options passed
-	 * into the Webservice constructor.
-	 *
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
-	 *
-	 * @return  array
-	 */
-	public function getResourceProfile(\SimpleXMLElement $configuration)
-	{
-		if (!isset($configuration->resources->resource))
-		{
-			return $this->resources;
-		}
-
-		foreach ($configuration->resources->resource as $resourceXML)
-		{
-			$resource = XmlHelper::getXMLElementAttributes($resourceXML);
-
-			// Filters out specified displayGroup values.
-			if ($this->getOptions()->get('filterOutResourcesGroups') != ''
-				&& in_array($resource['displayGroup'], $this->getOptions()->get('filterOutResourcesGroups')))
-			{
-				continue;
-			}
-
-			// Filters out if the optional resourceSpecific filter is not the one defined.
-			if ($this->getOptions()->get('filterResourcesSpecific') != ''
-				&& $resource['resourceSpecific'] != $this->getOptions()->get('filterResourcesSpecific'))
-			{
-				continue;
-			}
-
-			// Filters out if the optional displayName filter is not the one defined.
-			if ($this->getOptions()->get('filterDisplayName') != ''
-				&& $resource['displayName'] != $this->getOptions()->get('filterDisplayName'))
-			{
-				continue;
-			}
-
-			if (!empty($resourceXML->description))
-			{
-				$resource['description'] = $resourceXML->description;
-			}
-
-			$resource = ResourceItem::defaultResourceField($resource);
-			$resourceName = $resource['displayName'];
-			$resourceSpecific = $resource['resourceSpecific'];
-
-			$this->resources[$resourceSpecific][$resourceName] = $resource;
-		}
-
-		return $this->resources;
 	}
 
 	/**
