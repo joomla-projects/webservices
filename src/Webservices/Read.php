@@ -125,10 +125,14 @@ class Read extends Webservice
 	 */
 	public function apiRead()
 	{
-		// Get primary keys and determine if the resource is an item or a list.
-		$primaryKeys = array();
-		$isReadItem = $this->apiFillPrimaryKeys($primaryKeys);
-		$displayTarget = $isReadItem ? 'item' : 'list';
+	    // Get data from request.
+        $data = (array) $this->getOptions()->get('dataGet', array());
+
+        // Determine if the request if for an item or a list.
+        $displayTarget = $this->profile->isItem($data) ? 'item' : 'list';
+
+		// Get data bound to primary keys.
+        $primaryKeys = $this->profile->bindDataToPrimaryKeys($data, $displayTarget);
 
 		// Get the part of the profile that deals with the item or the list.
 		$subprofile = $this->profile->getSubprofile($displayTarget);

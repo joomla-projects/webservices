@@ -70,8 +70,9 @@ class Delete extends Webservice
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'delete');
 
-		$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $this->operationConfiguration);
-
+        // Get data from request and validate it.
+        // Note that we actually get the data from the request URI, but we process/validate it as if the data came from the request body.
+		$data = $this->triggerFunction('processPostData', $this->getOptions()->get('dataGet', array()), $this->operationConfiguration);
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
 
 		if ($data === false)
@@ -90,8 +91,7 @@ class Delete extends Webservice
 		// Prepare parameters for the function
 		if (strtolower(XmlHelper::attributeToString($this->operationConfiguration, 'dataMode', 'model')) == 'table')
 		{
-			$primaryKeys = array();
-			$this->apiFillPrimaryKeys($primaryKeys, $this->operationConfiguration);
+            $primaryKeys = $this->profile->bindDataToPrimaryKeys($data, $this->operationConfiguration->getName());
 
 			if (!empty($primaryKeys))
 			{

@@ -244,10 +244,12 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 				break;
 
 			case 'read':
-				$primaryKeys = array();
-				$isReadItem = $this->webservice->apiFillPrimaryKeys($primaryKeys);
-	
-				$displayTarget = $isReadItem ? 'item' : 'jlist';
+                // Get data from request.
+                $data = (array) $this->webservice->getOptions()->get('dataGet', array());
+
+                // Determine if the request if for an item or a list.
+                $displayTarget = $this->webservice->profile->isItem($data) ? 'item' : 'jlist';
+
 				$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst($displayTarget);
 
 				break;

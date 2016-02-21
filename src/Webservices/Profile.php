@@ -54,6 +54,37 @@ class Profile
 	}
 
     /**
+     * Bind data to primary key fields.
+     * 
+     * @param   array   $data        Array of data value to bind.
+     * @param   string  $subprofile  Optional subprofile name within the main profile.
+     * 
+     * @return  array of bound primary key-value pairs.
+     */
+    public function bindDataToPrimaryKeys(array $data = array(), $subprofile = '')
+    {
+        $boundPrimaryKeys = array();
+
+        // Get primary keys.
+        $primaryKeys = $this->getFields($subprofile, true);
+
+        // Scan through all the primary key fields.
+        foreach ($primaryKeys as $primaryKey => $primaryKeyAttributes)
+        {
+            // Set the default value.
+            $boundPrimaryKeys[$primaryKey] = null;
+
+            // If we have a non-empty data value for the field then override the default.
+            if (isset($data[$primaryKey]) && $data[$primaryKey] != '')
+            {
+                $boundPrimaryKeys[$primaryKey] = $this->transformField($primaryKeyAttributes['transform'], $data[$primaryKey], false);
+            }
+        }
+
+        return $boundPrimaryKeys;
+    }
+
+    /**
      * Takes a resource array and fills in missing attributes with default values.
      *
      * @param   array   $resource          Resource array.
@@ -243,6 +274,30 @@ class Profile
 	{
 		return $this->schema->$target;
 	}
+
+    /**
+     * Is the request data for an item or a list?
+     * 
+     * @param   array  $primaryKeys  Array of primary key-value pairs.
+     * 
+     * @return  boolean true if request is for an item; false for a list.
+     */
+    public function isItem(array $data = array())
+    {
+        // First try to bind the data to the item primary fields.
+        $itemPrimaryFields = $this->bindDataToPrimaryKeys($data, 'item');
+
+        // If any primary field is null, return false (= list).
+        foreach ($itemPrimaryFields as $primaryKey => $primaryKeyField)
+        {
+            if (is_null($primaryKeyField))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Transform a source field data value using a transform class.

@@ -140,7 +140,7 @@ abstract class Webservice extends WebserviceBase
 	/**
 	 * Profile object.
 	 */
-	protected $profile = null;
+	public $profile = null;
 
 	/**
 	 * Method to instantiate the file-based api call.
@@ -843,9 +843,11 @@ abstract class Webservice extends WebserviceBase
 			}
 			else
 			{
-				$primaryKeys = array();
-				$isReadItem = $this->apiFillPrimaryKeys($primaryKeys);
-				$readType = $isReadItem ? 'item' : 'list';
+                // Get data from request.
+                $data = (array) $this->getOptions()->get('dataGet', array());
+
+                // Determine if the request if for an item or a list.
+                $readType = $this->profile->isItem($data) ? 'item' : 'list';
 
 				if (isset($allowedOperations->read->{$readType}['authorizationNeeded'])
 					&& strtolower($allowedOperations->read->{$readType}['authorizationNeeded']) == 'false')
@@ -1314,75 +1316,6 @@ abstract class Webservice extends WebserviceBase
 		}
 
 		return $args;
-	}
-
-	/**
-	 * Returns if all primary keys have set values
-	 * Easily get read type (item or list) for current read operation and fills primary keys
-	 *
-	 * @param   array              &$primaryKeys   List of primary keys
-	 * @param   \SimpleXMLElement  $configuration  Configuration group
-	 *
-	 * @return  boolean true if read type is Item; false if read type is List.
-	 *
-	 * @since   1.2
-	 */
-	public function apiFillPrimaryKeys(&$primaryKeys, $configuration = null)
-	{
-		if (is_null($configuration))
-		{
-			$operations = $this->getConfig('operations');
-
-			if (!empty($operations->read->item))
-			{
-				$configuration = $operations->read->item;
-			}
-
-			$data = $this->triggerFunction('processPostData', $this->getOptions()->get('dataGet', array()), $configuration);
-		}
-		else
-		{
-			$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $configuration);
-		}
-
-		// Without any configuration, just return false (= list). 
-		if (empty($configuration))
-		{
-			return false;
-		}
-
-		// Get primary keys from the profile.
-        $primaryKeysFromFields = $this->profile->getFields($configuration->getName(), true);
-
-        // If there are no primary keys, return true (= item).
-		if (empty($primaryKeysFromFields))
-		{
-			return true;
-		}
-
-        // Scan through all the primary key fields.
-		foreach ($primaryKeysFromFields as $primaryKey => $primaryKeyField)
-		{
-		    // Set the default value.
-            $primaryKeys[$primaryKey] = null;
-
-            // If we have a non-empty data value for the field then override the default.
-			if (isset($data[$primaryKey]) && $data[$primaryKey] != '')
-			{
-				$primaryKeys[$primaryKey] = $this->profile->transformField($primaryKeyField['transform'], $data[$primaryKey], false);
-			}
-		}
-
-        // If any primary field is null, return false (= list).
-		foreach ($primaryKeys as $primaryKey => $primaryKeyField)
-		{
-			if (is_null($primaryKeyField))
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**
