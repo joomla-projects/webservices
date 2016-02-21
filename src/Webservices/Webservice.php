@@ -651,7 +651,7 @@ abstract class Webservice extends WebserviceBase
 			}
 
 			// Copy and transform the data to the output array.
-			$dataFields[$fieldAttributes['name']] = $this->transformField($fieldAttributes['transform'], $data[$fieldAttributes['publicName']], false);
+			$dataFields[$fieldAttributes['name']] = $this->profile->transformField($fieldAttributes['transform'], $data[$fieldAttributes['publicName']], false);
 		}
 
 /*
@@ -1090,7 +1090,7 @@ abstract class Webservice extends WebserviceBase
 			if ($replacementValue)
 			{
 				$search = '{' . $replacementKey . '}';
-				$replace = $this->transformField($dataType, $replacementValue, true);
+				$replace = $this->profile->transformField($dataType, $replacementValue, true);
 				$output = str_replace($search, $replace, $template);
 			}
 		}
@@ -1176,37 +1176,6 @@ abstract class Webservice extends WebserviceBase
 		}
 
 		return $output;
-	}
-
-	/**
-	 * Transform a source field data value using a transform class.
-	 *
-	 * @param   string   $fieldType          Field type.  Determines the transform class to use.
-	 * @param   mixed    $value              Field value (internal or external, depending on context).
-	 * @param   boolean  $directionExternal  True to convert from internal to external; false otherwise.
-	 *
-	 * @return  mixed Transformed data.
-	 * 
-	 * @throws  \InvalidArgumentException
-	 */
-	public function transformField($fieldType, $value, $directionExternal = true)
-	{
-		$className = 'Joomla\\Webservices\\Type\\Type' . ucfirst($fieldType);
-
-		// If there is no data type throw an exception.
-		if (!class_exists($className))
-		{
-			throw new \InvalidArgumentException('Missing class ' . $className);
-		}
-
-		// Convert an internal value to its external equivalent.
-		if ($directionExternal)
-		{
-			return $className::fromInternal($value)->getExternal();
-		}
-
-		// Convert an external value to its internal equivalent.
-		return $className::fromExternal($value)->getInternal();
 	}
 
 	/**
@@ -1328,7 +1297,7 @@ abstract class Webservice extends WebserviceBase
 				{
 					if (isset($data[$parameter[0]]))
 					{
-						$parameterValue = $this->transformField($parameter[1], $data[$parameter[0]]);
+						$parameterValue = $this->profile->transformField($parameter[1], $data[$parameter[0]]);
 					}
 					else
 					{
@@ -1354,7 +1323,7 @@ abstract class Webservice extends WebserviceBase
 	 * @param   array              &$primaryKeys   List of primary keys
 	 * @param   \SimpleXMLElement  $configuration  Configuration group
 	 *
-	 * @return  bool  Returns true if read type is Item
+	 * @return  boolean true if read type is Item; false if read type is List.
 	 *
 	 * @since   1.2
 	 */
@@ -1376,32 +1345,35 @@ abstract class Webservice extends WebserviceBase
 			$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $configuration);
 		}
 
-		// Without any configuration, just return false. 
+		// Without any configuration, just return false (= list). 
 		if (empty($configuration))
 		{
 			return false;
 		}
 
-		// Get primary keys from configuration.
-		$primaryKeysFromFields = ConfigurationHelper::getFieldsArray($configuration, true);
+		// Get primary keys from the profile.
+        $primaryKeysFromFields = $this->profile->getFields($configuration->getName(), true);
 
+        // If there are no primary keys, return true (= item).
 		if (empty($primaryKeysFromFields))
 		{
 			return true;
 		}
 
+        // Scan through all the primary key fields.
 		foreach ($primaryKeysFromFields as $primaryKey => $primaryKeyField)
 		{
+		    // Set the default value.
+            $primaryKeys[$primaryKey] = null;
+
+            // If we have a non-empty data value for the field then override the default.
 			if (isset($data[$primaryKey]) && $data[$primaryKey] != '')
 			{
-				$primaryKeys[$primaryKey] = $this->transformField($primaryKeyField['transform'], $data[$primaryKey], false);
-			}
-			else
-			{
-				$primaryKeys[$primaryKey] = null;
+				$primaryKeys[$primaryKey] = $this->profile->transformField($primaryKeyField['transform'], $data[$primaryKey], false);
 			}
 		}
 
+        // If any primary field is null, return false (= list).
 		foreach ($primaryKeys as $primaryKey => $primaryKeyField)
 		{
 			if (is_null($primaryKeyField))

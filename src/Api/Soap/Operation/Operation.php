@@ -131,7 +131,7 @@ class Operation
 				$keyData = $data->$primaryKey;
 			}
 
-			$dataGet->$primaryKey = $this->webservice->transformField($primaryKeyField['transform'], $keyData, false);
+			$dataGet->$primaryKey = $this->webservice->profile->transformField($primaryKeyField['transform'], $keyData, false);
 		}
 
 		// Handle different language switch

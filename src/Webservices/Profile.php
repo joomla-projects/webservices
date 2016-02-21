@@ -108,6 +108,52 @@ class Profile
 	}
 
     /**
+     * Returns an array of data from <field> elements defined in the <fields> section
+     * of the configuration XML.
+     * 
+     * Optionally retrieves primary key fields only.  These are defined as <field>
+     * elements which have the attribute isPrimaryField set to true.
+     *
+     * @param   string   $subprofile   Optional subprofile name within the main profile.
+     * @param   boolean  $primaryKeys  Only extract primary keys.
+     *
+     * @return  array
+     */
+    public function getFields($subprofile = '', $primaryKeys = false)
+    {
+        $fields = array();
+        $resourcesRoot = $this->schema;
+
+        // If we have a subprofile, then adjust the root.
+        if ($subprofile != '' && isset($resourcesRoot->$subprofile))
+        {
+            $resourcesRoot = $resourcesRoot->$subprofile;
+        }
+
+        if (isset($resourcesRoot->fields->field))
+        {
+            foreach ($resourcesRoot->fields->field as $field)
+            {
+                $fieldAttributes = XmlHelper::getXMLElementAttributes($field);
+
+                if (($primaryKeys && XmlHelper::isAttributeTrue($field, 'isPrimaryField'))
+                    || !$primaryKeys)
+                {
+                    $fields[$fieldAttributes['name']] = $fieldAttributes;
+                }
+            }
+        }
+
+        // If there are no primary keys defined we will use id field as default
+        if (empty($fields) && $primaryKeys)
+        {
+            $fields['id'] = array('name' => 'id', 'transform' => 'int');
+        }
+
+        return $fields;
+    }
+
+    /**
      * Returns an array of resources and their attributes from the profile.
      * 
      * Returns an array of the data loaded from the <resources> section of the
@@ -197,4 +243,35 @@ class Profile
 	{
 		return $this->schema->$target;
 	}
+
+    /**
+     * Transform a source field data value using a transform class.
+     *
+     * @param   string   $fieldType          Field type.  Determines the transform class to use.
+     * @param   mixed    $value              Field value (internal or external, depending on context).
+     * @param   boolean  $directionExternal  True to convert from internal to external; false otherwise.
+     *
+     * @return  mixed Transformed data.
+     * 
+     * @throws  \InvalidArgumentException
+     */
+    public function transformField($fieldType, $value, $directionExternal = true)
+    {
+        $className = 'Joomla\\Webservices\\Type\\Type' . ucfirst($fieldType);
+
+        // If there is no data type throw an exception.
+        if (!class_exists($className))
+        {
+            throw new \InvalidArgumentException('Missing class ' . $className);
+        }
+
+        // Convert an internal value to its external equivalent.
+        if ($directionExternal)
+        {
+            return $className::fromInternal($value)->getExternal();
+        }
+
+        // Convert an external value to its internal equivalent.
+        return $className::fromExternal($value)->getInternal();
+    }
 }

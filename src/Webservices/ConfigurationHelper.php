@@ -547,45 +547,6 @@ class ConfigurationHelper
 	}
 
 	/**
-	 * Returns an array of data from <field> elements defined in the <fields> section
-	 * of the configuration XML.
-	 * 
-	 * Optionally retrieves primary key fields only.  These are defined as <field>
-	 * elements which have the attribute isPrimaryField set to true.
-	 *
-	 * @param   \SimpleXMLElement  $xmlElement   XML <fields> element.
-	 * @param   boolean            $primaryKeys  Only extract primary keys.
-	 *
-	 * @return  array
-	 */
-	public static function getFieldsArray(\SimpleXMLElement $xmlElement, $primaryKeys = false)
-	{
-		$fields = array();
-
-		if (isset($xmlElement->fields->field))
-		{
-			foreach ($xmlElement->fields->field as $field)
-			{
-				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
-
-				if (($primaryKeys && XmlHelper::isAttributeTrue($field, 'isPrimaryField'))
-					|| !$primaryKeys)
-				{
-					$fields[$fieldAttributes['name']] = $fieldAttributes;
-				}
-			}
-		}
-
-		// If there are no primary keys defined we will use id field as default
-		if (empty($fields) && $primaryKeys)
-		{
-			$fields['id'] = array('name' => 'id', 'transform' => 'int');
-		}
-
-		return $fields;
-	}
-
-	/**
 	 * Gets list of filter fields from operation configuration
 	 *
 	 * @param   \SimpleXMLElement  $configuration   Configuration for current action
