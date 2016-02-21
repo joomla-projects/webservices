@@ -27,11 +27,6 @@ class Profile
 	private $schema = null;
 
 	/**
-	 * Array of resource property definitions.
-	 */
-	private $properties = array();
-
-	/**
 	 * Constructor.
      * 
      * The XML taken as the argument to this constructor is not the full XML but
@@ -42,15 +37,6 @@ class Profile
 	public function __construct(\SimpleXMLElement $profileSchema)
 	{
 		$this->schema = $profileSchema;
-
-		// Save the name of the profile (eg. "read", "delete", etc.).
-		$this->name = $profileSchema->getName();
-
-		// Match each property to a data type.
-//		foreach ($profileSchema->properties as $property)
-//		{
-//			$this->properties[$property->name] = $property->type;
-//		}
 	}
 
     /**
@@ -143,33 +129,6 @@ class Profile
 
         return array_merge($resource, $defaultResource);
     }
-
-	/**
-	 * Get the array of property definition objects.
-	 *
-	 * @return  array of property definition objects.
-	 */
-	public function getProperties()
-	{
-		return $this->properties;
-	}
-
-	/**
-	 * Get an individual property definition.
-	 *
-	 * @param   string  $name  Name of the property.
-	 *
-	 * @return  Property definition object or false if it doesn't exist.
-	 */
-	public function getProperty($name)
-	{
-		if (!isset($this->properties[$name]))
-		{
-			return false;
-		}
-
-		return $this->properties[$name];
-	}
 
     /**
      * Returns an array of data from <field> elements defined in the <fields> section
