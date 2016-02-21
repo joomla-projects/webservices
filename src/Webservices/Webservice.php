@@ -682,9 +682,19 @@ abstract class Webservice extends WebserviceBase
 	{
 		$data = (array) $data;
 
-		// We are checking required fields set in webservice XMLs
-		if (!$this->checkRequiredFields($data, $configuration))
+        // Get required fields without values.
+        $requiredFields = $this->profile->checkRequiredFields($data);
+
+		// Queue an error for each required field without a value.
+		if (!empty($requiredFields))
 		{
+		    foreach ($requiredFields as $fieldName)
+            {
+                $this->app->enqueueMessage(
+                    $this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', $fieldName), 'error'
+                );
+            }
+
 			return false;
 		}
 
@@ -740,45 +750,6 @@ abstract class Webservice extends WebserviceBase
 		}
 
 		return false;
-	}
-
-	/**
-	 * Checks that all required fields have values.
-	 *
-	 * @param   array              $data           Raw Posted data
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
-	 *
-	 * @return  mixed  Array with posted data or false.
-	 *
-	 * @since   1.3
-	 */
-	public function checkRequiredFields($data, $configuration)
-	{
-		if (empty($configuration->fields))
-		{
-			return true;
-		}
-
-		foreach ($configuration->fields->field as $field)
-		{
-			if (!XmlHelper::isAttributeTrue($field, 'isRequiredField'))
-			{
-				continue;
-			}
-
-			$fieldName = (string) $field['name'];
-
-			if (is_null($data[$fieldName]) || $data[$fieldName] == '')
-			{
-				$this->app->enqueueMessage(
-					$this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', $fieldName), 'error'
-				);
-
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**

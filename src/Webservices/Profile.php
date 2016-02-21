@@ -85,6 +85,39 @@ class Profile
     }
 
     /**
+     * Checks that all required fields have values.
+     *
+     * @param   array  $data  Raw Posted data.
+     *
+     * @return  array of required field names that did not have values in the data.
+     */
+    public function checkRequiredFields(array $data = array())
+    {
+        $requiredFields = array();
+
+        // Get fields from the profile.
+        $fields = $this->getFields();
+
+        // Look at each field in turn and return false if we find a required field without a value.
+        foreach ($fields as $fieldName => $attributes)
+        {
+            // Field is not required.
+            if (!isset($attributes['isRequiredField']) || $attributes['isRequiredField'] == 'false')
+            {
+                continue;
+            }
+
+            // Field is required; check that we have a value for it.
+            if (is_null($data[$fieldName]) || $data[$fieldName] == '')
+            {
+                $requiredFields[] = $fieldName;
+            }
+        }
+
+        return $requiredFields;
+    }
+
+    /**
      * Takes a resource array and fills in missing attributes with default values.
      *
      * @param   array   $resource          Resource array.
