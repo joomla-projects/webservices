@@ -71,6 +71,60 @@ class Profile
     }
 
     /**
+     * Get all defined fields and transform them if needed to expected format.
+     * Returns them in an array for use in function calls.
+     *
+     * @param   array  $data  Data array.
+     *
+     * @return  array of key-value pairs to pass to the function.
+     */
+    public function buildFunctionArgs(array $data = array())
+    {
+        $args = array();
+        $result = null;
+
+        if (empty($this->schema['functionArgs']))
+        {
+            $args[] = $data;
+
+            return $args;
+        }
+
+        $functionArgs = explode(',', (string) $this->schema['functionArgs']);
+
+        foreach ($functionArgs as $functionArg)
+        {
+            $parameter = explode('{', $functionArg);
+
+            // First field is the name of the data field and second is transformation.
+            $parameter[0] = trim($parameter[0]);
+            $parameter[1] = !empty($parameter[1]) ? strtolower(trim(str_replace('}', '', $parameter[1]))) : 'string';
+            $parameterValue = null;
+
+            // If we set argument to value, then it will not be transformed, instead we will take field name as a value
+            if ($parameter[1] == 'value')
+            {
+                $parameterValue = $parameter[0];
+            }
+            else
+            {
+                if (isset($data[$parameter[0]]))
+                {
+                    $parameterValue = $this->transformField($parameter[1], $data[$parameter[0]]);
+                }
+                else
+                {
+                    $parameterValue = null;
+                }
+            }
+
+            $args[] = $parameterValue;
+        }
+
+        return $args;
+    }
+
+    /**
      * Checks that all required fields have values.
      *
      * @param   array  $data  Raw Posted data.

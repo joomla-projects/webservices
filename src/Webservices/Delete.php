@@ -86,7 +86,7 @@ class Delete extends Webservice
 		}
 
 		$result = null;
-		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
+        $args = $this->profile->buildFunctionArgs($data);
 
 		// Prepare parameters for the function
 		if (strtolower(XmlHelper::attributeToString($this->operationConfiguration, 'dataMode', 'model')) == 'table')

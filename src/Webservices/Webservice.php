@@ -360,7 +360,7 @@ abstract class Webservice extends WebserviceBase
 			}
 
 			// Prepare parameters for the function
-			$args = $this->buildFunctionArgs($taskConfiguration, $data);
+            $args = $this->profile->buildFunctionArgs($data);
 			$result = null;
 
 			// Checks if that method exists in model class and executes it
@@ -1233,60 +1233,6 @@ abstract class Webservice extends WebserviceBase
 			default:
 				return call_user_func_array(array($object, $functionName), $args);
 		}
-	}
-
-	/**
-	 * Get all defined fields and transform them if needed to expected format. Then it puts it into array for function call
-	 *
-	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
-	 * @param   array              $data           List of posted data
-	 *
-	 * @return array List of parameters to pass to the function
-	 */
-	public function buildFunctionArgs($configuration, $data)
-	{
-		$args = array();
-		$result = null;
-
-		if (!empty($configuration['functionArgs']))
-		{
-			$functionArgs = explode(',', (string) $configuration['functionArgs']);
-
-			foreach ($functionArgs as $functionArg)
-			{
-				$parameter = explode('{', $functionArg);
-
-				// First field is the name of the data field and second is transformation
-				$parameter[0] = trim($parameter[0]);
-				$parameter[1] = !empty($parameter[1]) ? strtolower(trim(str_replace('}', '', $parameter[1]))) : 'string';
-				$parameterValue = null;
-
-				// If we set argument to value, then it will not be transformed, instead we will take field name as a value
-				if ($parameter[1] == 'value')
-				{
-					$parameterValue = $parameter[0];
-				}
-				else
-				{
-					if (isset($data[$parameter[0]]))
-					{
-						$parameterValue = $this->profile->transformField($parameter[1], $data[$parameter[0]]);
-					}
-					else
-					{
-						$parameterValue = null;
-					}
-				}
-
-				$args[] = $parameterValue;
-			}
-		}
-		else
-		{
-			$args[] = $data;
-		}
-
-		return $args;
 	}
 
 	/**

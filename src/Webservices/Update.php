@@ -78,7 +78,7 @@ class Update extends Webservice
 		}
 
 		// Prepare parameters for the function
-		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
+        $args = $this->profile->buildFunctionArgs($data);
 		$result = null;
 
 		// Checks if that method exists in model class and executes it

@@ -84,7 +84,7 @@ class Create extends Webservice
 		}
 
 		// Prepare parameters for the function.
-		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
+		$args = $this->profile->buildFunctionArgs($data);
 		$result = null;
 		$id = 0;
 
