@@ -345,7 +345,7 @@ abstract class Webservice extends WebserviceBase
 
 			$model = $this->triggerFunction('loadModel', $this->elementName, $taskConfiguration);
 			$functionName = XmlHelper::attributeToString($taskConfiguration, 'functionName', $task);
-			$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $taskConfiguration);
+            $data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
 
 			$data = $this->triggerFunction('validatePostData', $model, $data, $taskConfiguration);
 
@@ -576,95 +576,6 @@ abstract class Webservice extends WebserviceBase
 		$this->uriParams[$uriKey] = $uriValue;
 
 		return $this;
-	}
-
-	/**
-	 * Process posted data from json or object to array.
-	 * 
-	 * Only returns fields that are present in the <fields> configuration section.
-	 * All values are transformed to their internal values.
-	 *
-	 * @param   array              $data           Raw Posted data
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
-	 *
-	 * @return  mixed  Array with posted data.
-	 *
-	 * @throws  \ConfigurationException
-	 * @since   1.2
-	 */
-	public function processPostData($data, $configuration)
-	{
-		// No data or no configuration.
-		if (empty($data) || empty($configuration->fields))
-		{
-			return $data;
-		}
-
-		// Convert object to array if needed.
-		if (is_object($data))
-		{
-			$data = ArrayHelper::fromObject($data);
-		}
-
-		// Make sure we have an array.
-		if (!is_array($data))
-		{
-			$data = (array) $data;
-		}
-
-		$dataFields = array();
-
-		// Scan each field in the configuration.
-		foreach ($configuration->fields->field as $field)
-		{
-			// Get all attributes for this field.
-			$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
-
-			// Default transform is "string".
-			if (is_null($fieldAttributes['transform']))
-			{
-				$fieldAttributes['transform'] = 'string';
-			}
-
-			// If default value is not specified then make it an empty string.
-			if (!isset($fieldAttributes['defaultValue']) || is_null($fieldAttributes['defaultValue']))
-			{
-				$fieldAttributes['defaultValue'] = '';
-			}
-
-			// If the name is not specified then we have a configuration error.
-			if (!isset($fieldAttributes['name']) || is_null($fieldAttributes['name']))
-			{
-				throw new \ConfigurationException('Field name missing or empty in create configuration');
-			}
-
-			// If no public name is specified, use the default field name.
-			if (!isset($fieldAttributes['publicName']) || is_null($fieldAttributes['publicName']))
-			{
-				$fieldAttributes['publicName'] = $fieldAttributes['name'];
-			}
-
-			// If the value is missing from the posted data then assume the default value.
-			if (!isset($data[$fieldAttributes['publicName']]) || is_null($data[$fieldAttributes['publicName']]))
-			{
-				$data[$fieldAttributes['publicName']] = $fieldAttributes['defaultValue'];
-			}
-
-			// Copy and transform the data to the output array.
-			$dataFields[$fieldAttributes['name']] = $this->profile->transformField($fieldAttributes['transform'], $data[$fieldAttributes['publicName']], false);
-		}
-
-/*
-		if (XmlHelper::isAttributeTrue($configuration, 'strictFields'))
-		{
-			$data = $dataFields;
-		}
-
-		// Common functions are not checking this field so we will
-		$data['params'] = isset($data['params']) ? $data['params'] : null;
-		$data['associations'] = isset($data['associations']) ? $data['associations'] : array();
-*/
-		return $dataFields;
 	}
 
 	/**

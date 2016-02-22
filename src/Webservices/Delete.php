@@ -72,7 +72,7 @@ class Delete extends Webservice
 
         // Get data from request and validate it.
         // Note that we actually get the data from the request URI, but we process/validate it as if the data came from the request body.
-		$data = $this->triggerFunction('processPostData', $this->getOptions()->get('dataGet', array()), $this->operationConfiguration);
+        $data = $this->profile->bindData((array) $this->getOptions()->get('dataGet', array()));
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
 
 		if ($data === false)

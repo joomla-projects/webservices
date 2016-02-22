@@ -63,7 +63,7 @@ class Update extends Webservice
 
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
-		$data = $this->triggerFunction('processPostData', $this->getOptions()->get('data', array()), $this->operationConfiguration);
+        $data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
 
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
 

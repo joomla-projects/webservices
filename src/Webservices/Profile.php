@@ -346,6 +346,62 @@ class Profile
     }
 
     /**
+     * Bind data to the fields of the profile.
+     * 
+     * Only returns fields that are present in the <fields> configuration section.
+     * All values are transformed to their internal values.
+     *
+     * @param   array  $data  Raw Posted data.
+     *
+     * @return  array of key-value pairs.
+     *
+     * @throws  \ConfigurationException
+     */
+    public function bindData(array $data = array())
+    {
+        $boundFields = array();
+
+        // Scan each field in the configuration.
+        foreach ($this->getFields() as $fieldName => $fieldAttributes)
+        {
+            // Default transform is "string".
+            if (is_null($fieldAttributes['transform']))
+            {
+                $fieldAttributes['transform'] = 'string';
+            }
+
+            // If default value is not specified then make it an empty string.
+            if (!isset($fieldAttributes['defaultValue']) || is_null($fieldAttributes['defaultValue']))
+            {
+                $fieldAttributes['defaultValue'] = '';
+            }
+
+            // If the name is not specified then we have a configuration error.
+            if (!isset($fieldAttributes['name']) || is_null($fieldAttributes['name']))
+            {
+                throw new \ConfigurationException('Field name missing or empty in create configuration');
+            }
+
+            // If no public name is specified, use the default field name.
+            if (!isset($fieldAttributes['publicName']) || is_null($fieldAttributes['publicName']))
+            {
+                $fieldAttributes['publicName'] = $fieldAttributes['name'];
+            }
+
+            // If the value is missing from the posted data then assume the default value.
+            if (!isset($data[$fieldAttributes['publicName']]) || is_null($data[$fieldAttributes['publicName']]))
+            {
+                $data[$fieldAttributes['publicName']] = $fieldAttributes['defaultValue'];
+            }
+
+            // Copy and transform the data to the output array.
+            $boundFields[$fieldAttributes['name']] = $this->transformField($fieldAttributes['transform'], $data[$fieldAttributes['publicName']], false);
+        }
+
+        return $boundFields;
+    }
+
+    /**
      * Transform a source field data value using a transform class.
      *
      * @param   string   $fieldType          Field type.  Determines the transform class to use.
