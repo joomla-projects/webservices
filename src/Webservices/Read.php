@@ -27,9 +27,9 @@ class Read extends Webservice
 {
 	/**
 	 * Execute the Api operation.
-	 * 
+	 *
 	 * @param   Profile  $profile  A profile which shapes the resource.
-	 * 
+	 *
 	 * @return  Resource  A populated Resource object.
 	 *
 	 * @since   __DEPLOY_VERSION__
@@ -150,13 +150,13 @@ class Read extends Webservice
 
 	/**
 	 * Execute the API read operation for a list.
-	 * 
+	 *
 	 * Data is retrieved from the model
-	 * 
+	 *
 	 * @param   array              $primaryKeys  Array of primary keys.
 	 * @param   mixed              $model        A model from the integration.
 	 * @param   \SimpleXMLElement  $subprofile   Profile for the read list.
-	 * 
+	 *
 	 * @return  Resource  A populated Resource object.
 	 *
 	 * @since   __DEPLOY_VERSION__
@@ -175,21 +175,17 @@ class Read extends Webservice
 		{
 			$pagination = $model->getPagination();
 			$paginationPages = $pagination->getPaginationPages();
-
-			$this->setData(
-				'pagination.previous',
-				isset($paginationPages['previous']['data']->base) ? $paginationPages['previous']['data']->base : $pagination->limitstart
-			);
-			$this->setData(
-				'pagination.next',
-				isset($paginationPages['next']['data']->base) ? $paginationPages['next']['data']->base : $pagination->limitstart
-			);
-			$this->setData('pagination.limit', $pagination->limit);
-			$this->setData('pagination.limitstart', $pagination->limitstart);
-			$this->setData('pagination.totalItems', $pagination->total);
-			$this->setData('pagination.totalPages', max($pagination->pagesTotal, 1));
-			$this->setData('pagination.page', max($pagination->pagesCurrent, 1));
-			$this->setData('pagination.last', ((max($pagination->pagesTotal, 1) - 1) * $pagination->limit));
+            $pageData = array(
+                'previous'  => isset($paginationPages['previous']['data']->base) ? $paginationPages['previous']['data']->base : $pagination->limitstart,
+                'next'      => isset($paginationPages['next']['data']->base) ? $paginationPages['next']['data']->base : $pagination->limitstart,
+                'limit'     => $pagination->limit,
+                'limitstart' => $pagination->limitstart,
+                'totalItems' => $pagination->total,
+                'totalPages' => max($pagination->pagesTotal, 1),
+                'page'      => max($pagination->pagesCurrent, 1),
+                'last'      => ((max($pagination->pagesTotal, 1) - 1) * $pagination->limit),
+            );
+            $this->setData('pagination', $pageData);
 		}
 
 		$resource = $this->triggerFunction('bindDataToResourceList', $items, $subprofile);
@@ -199,11 +195,11 @@ class Read extends Webservice
 
 	/**
 	 * Execute the API read operation for an item.
-	 * 
+	 *
 	 * @param   array              $primaryKeys  Array of primary keys.
 	 * @param   mixed              $model        A model from the integration.
 	 * @param   \SimpleXMLElement  $subprofile   Profile for the read list.
-	 * 
+	 *
 	 * @return  Resource  A populated Resource object.
 	 *
 	 * @since   __DEPLOY_VERSION__
@@ -297,7 +293,7 @@ class Read extends Webservice
 	 * @param   \SimpleXMLElement  $subprofile  Profile for the read item.
 	 *
 	 * @return  Resource  A populated resource object.
-	 * 
+	 *
 	 * @throws  \Exception
 	 */
 	public function bindDataToResourceItem($item, $subprofile)
@@ -330,7 +326,7 @@ class Read extends Webservice
 	 * @param   \SimpleXMLElement  $subprofile   Profile for the read item.
 	 *
 	 * @return  Resource  A populated resource object.
-	 * 
+	 *
 	 * @throws  \Exception
 	 */
 	public function bindDataToResourceList(array $items, \SimpleXMLElement $subprofile)

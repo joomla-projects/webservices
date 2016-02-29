@@ -30,6 +30,10 @@
 				<fields>
 					<field name="id" transform="integer" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="true"/>
 					<field name="title" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="true" isPrimaryField="false"/>
+					<field name="path" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="true" isPrimaryField="false"/>
+					<field name="extension" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="true" isPrimaryField="false"/>
+					<field name="alias" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="true" isPrimaryField="false"/>
+					<field name="language" transform="string" defaultValue="" isRequiredField="false" isFilterField="true" isSearchableField="false" isPrimaryField="false"/>
 					<field name="published" transform="integer" defaultValue="" isRequiredField="false" isFilterField="true" isSearchableField="false" isPrimaryField="false"/>
 				</fields>
 
@@ -52,12 +56,13 @@
 					<resource displayName="last" transform="string" fieldFormat="/{webserviceName}?limitstart={pagination.last}" displayGroup="_links" linkTitle="Pagination last" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
 
 					<!-- items -->
-					<resource displayName="id" transform="integer" fieldFormat="{id}" displayGroup="" resourceSpecific="listItem"/>
-					<resource displayName="access" transform="integer" fieldFormat="{access}" displayGroup="" resourceSpecific="listItem"/>
-					<resource displayName="featured" transform="integer" fieldFormat="{featured}" displayGroup="" resourceSpecific="listItem"/>
-					<resource displayName="language" transform="string" fieldFormat="{language}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="id" transform="urn" fieldFormat="urn:joomla:{webserviceName}:{id}" displayGroup="" resourceSpecific="listItem"/>
 					<resource displayName="title" transform="string" fieldFormat="{title}" displayGroup="" resourceSpecific="listItem"/>
-					<resource displayName="ordering" transform="integer" fieldFormat="{ordering}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="path" transform="string" fieldFormat="{path}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="extension" transform="string" fieldFormat="{extension}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="alias" transform="string" fieldFormat="{alias}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="language" transform="string" fieldFormat="{language}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="state" transform="state" fieldFormat="{published}" displayGroup="" resourceSpecific="listItem"/>
 					<resource displayName="self" transform="string" fieldFormat="/{webserviceName}/{id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="listItem">
 						<description><![CDATA[Link to categories item]]></description>
 					</resource>
@@ -74,8 +79,8 @@
 				</fields>
 
 				<resources>
-					<resource displayName="id" transform="integer" fieldFormat="{id}" displayGroup="" resourceSpecific="rcwsGlobal" />
-					<resource displayName="asset_id" transform="integer" fieldFormat="{asset_id}" displayGroup="" resourceSpecific="rcwsGlobal" />
+					<resource displayName="id" transform="urn" fieldFormat="urn:joomla:{webserviceName}:{id}" displayGroup="" resourceSpecific="rcwsGlobal" />
+					<resource displayName="asset_id" transform="urn" fieldFormat="urn:joomla:assets:{asset_id}" displayGroup="" resourceSpecific="rcwsGlobal" />
 					<resource displayName="level" transform="integer" fieldFormat="{level}" displayGroup="" resourceSpecific="rcwsGlobal" />
 					<resource displayName="path" transform="string" fieldFormat="{path}" displayGroup="" resourceSpecific="rcwsGlobal" />
 					<resource displayName="extension" transform="string" fieldFormat="{extension}" displayGroup="" resourceSpecific="rcwsGlobal" />
@@ -89,7 +94,9 @@
 					<resource displayName="access" transform="integer" fieldFormat="{access}" displayGroup="" resourceSpecific="rcwsGlobal" />
 					<resource displayName="metadesc" transform="string" fieldFormat="{metadesc}" displayGroup="" resourceSpecific="rcwsGlobal" />
 					<resource displayName="metakey" transform="string" fieldFormat="{metakey}" displayGroup="" resourceSpecific="rcwsGlobal" />
-					<resource displayName="metadata" transform="string" fieldFormat="{metadata}" displayGroup="" resourceSpecific="rcwsGlobal" />
+					<resource displayName="pageTitle" transform="string" fieldFormat="{metadata.page_title}" displayGroup="" resourceSpecific="rcwsGlobal" />
+					<resource displayName="author" transform="string" fieldFormat="{metadata.author}" displayGroup="" resourceSpecific="rcwsGlobal" />
+					<resource displayName="robots" transform="string" fieldFormat="{metadata.robots}" displayGroup="" resourceSpecific="rcwsGlobal" />
 					<resource displayName="created_user_id" transform="integer" fieldFormat="{created_user_id}" displayGroup="" resourceSpecific="rcwsGlobal" />
 					<resource displayName="created_time" transform="datetime" fieldFormat="{created_time}" displayGroup="" resourceSpecific="rcwsGlobal" />
 					<resource displayName="modified_user_id" transform="integer" fieldFormat="{modified_user_id}" displayGroup="" resourceSpecific="rcwsGlobal" />

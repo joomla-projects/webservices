@@ -14,6 +14,7 @@ use Joomla\Webservices\Resource\ResourceItem;
 use Joomla\Webservices\Resource\ResourceLink;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 use Joomla\Webservices\Webservices\Exception\ConfigurationException;
+use Joomla\Webservices\Webservices\Exception\KeyNotFoundException;
 use Joomla\Webservices\Xml\XmlHelper;
 use Joomla\Webservices\Layout\LayoutHelper;
 
@@ -144,7 +145,7 @@ abstract class Webservice extends WebserviceBase
 
 	/**
 	 * Method to instantiate the file-based api call.
-	 * 
+	 *
 	 * @param   Container  $container  The DIC object
 	 * @param   Registry   $options    Custom options to load.
 	 *
@@ -386,7 +387,7 @@ abstract class Webservice extends WebserviceBase
 
 	/**
 	 * Binds data to a Resource using a profile for a specific method or task.
-	 * 
+	 *
 	 * The $profile array comes from the Profile XML and may have been filtered.
 	 * The binding can be restricted to a particular scope.  The default scope is rcwsGlobal.
 	 *
@@ -927,20 +928,20 @@ abstract class Webservice extends WebserviceBase
 
 	/**
 	 * Assign value to Resource (really a property of a resource).
-	 * 
+	 *
 	 * Given a property (specified as an array of attributes taken from the profile) and some data,
 	 * determine the value to be assigned to that property.  Also uses global data if required.
 	 *
 	 * Example:
 	 *   <resource displayName="id" transform="int" fieldFormat="{id}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-	 * 
+	 *
 	 *   $resource contains ['displayName' => 'id', 'transform' => 'int', 'fieldFormat' => '{id}', 'displayGroup' => '', 'resourceSpecific' => 'rcwsGlobal']
-	 *   $value contains an array|object containing all available data from some internal resource object.
+	 *   $data contains an array|object containing all available data from some internal resource object.
 	 *   $attribute contains 'fieldFormat'
-	 * 
-	 *   Then this method will take the 'fieldFormat' from $resource, which is '{id}' and look for a property called 'id'
-	 *   in the $value.  It will then perform the substitution, using the 'transform' called 'int' to return the final value.
-	 * 
+	 *
+	 *   Then this method will take the 'fieldFormat' from $resource, which is '{id}' and looks for a property called 'id'
+	 *   in the $data.  It will then perform the substitution, using the 'transform' called 'int' to return the final value.
+	 *
 	 * @param   array  $resource  Array of resource property attribute key-value pairs.
 	 * @param   mixed  $data      Data key-value pairs available for substitution in the data template.
 	 *
@@ -952,84 +953,124 @@ abstract class Webservice extends WebserviceBase
 	{
 		// Get the template from the profile.
 		// This template defines the value to be returned.  eg. "{id}".
-		$template = XmlHelper::attributeToString($resource, 'fieldFormat');
+		$output = $template = $resource['fieldFormat'];
 
-		// Get the data type of the resource property.
-		// This will be used to transform the private internal value to its public external form.
-		$dataType = XmlHelper::attributeToString($resource, 'transform');
-
-		$output = $template;
+        $search = $replace = array();
 
 		// Look for substitution codes in the template.
 		$stringsToReplace = array();
 		preg_match_all('/\{([^}]+)\}/', $template, $stringsToReplace);
 
-		// Replace substitution codes in the template with values from the data. 
+		// Build search and replace arrays.
 		foreach ($stringsToReplace[1] as $replacementKey)
 		{
 			// Look for the key in the data and get the value associated with it.
-			$replacementValue = $this->getValueFromData($data, $replacementKey);
+            try
+            {
+                $replacementValue = $this->getValueFromData($data, $replacementKey);
+            }
+            catch (KeyNotFoundException $e)
+            {
+                continue;
+            }
 
-			// If the key was found in the data, perform the substitution.
-			if ($replacementValue)
+			// If the key was found in the data, add to search and replace arrays.
+			if (!is_null($replacementValue))
 			{
-				$search = '{' . $replacementKey . '}';
-				$replace = $this->profile->transformField($dataType, $replacementValue, true);
-				$output = str_replace($search, $replace, $template);
+				$search[] = '{' . $replacementKey . '}';
+                $replace[] = $replacementValue;
 			}
 		}
+
+        // Perform search and replace on the template.
+        $output = str_replace($search, $replace, $template);
 
 		// Look for substitutions from global data as well.
 		$output = $this->assignGlobalValueToResource($output);
 
-		// If we did not find data with that resource we will set it to null, except for linkRel which is a documentation template.
-		// @TODO Figure out why this is needed.
-		if (!empty($stringsToReplace[1]) && $output === $template && $resource['linkRel'] != 'curies')
-		{
-			$output = null;
-		}
+        // Transform internal format to external format.
+        $output = $this->profile->transformField($resource['transform'], $output, true);
 
 		return $output;
 	}
 
-	/**
-	 * Get a value from various types of data.
-	 * 
-	 * The key is used to locate a value in objects or arrays,
-	 * but if not found, returns false.
-	 * For other data types (eg. string), the data is returned
-	 * as its own value.
-	 * 
-	 * @param   mixed   $data  Array, object, etc., containing the data.
-	 * @param   string  $key   Property of the data to be retrieved.
-	 * 
-	 * @return  string value or false if not found.
-	 * 
-	 * @since   __DEPLOY_VERSION__
-	 */
-	private function getValueFromData($data, $key)
-	{
-		if (is_object($data) && property_exists($data, $key))
-		{
-			return $data->{$key};
-		}
+    /**
+     * Get a value from various types of data.
+     *
+     * The key is used to locate a value in objects or arrays, which may be nested.
+     * For other data types (eg. string), the data is returned as its own value.
+     * The key may be a dot-separated path so that data can be retrieved from a
+     * hierarchy of array, object, JSON-encoded or simple data.
+     *
+     * @param   mixed   $data  Array, object, etc., containing the data.
+     * @param   string  $key   Property of the data to be retrieved.
+     *
+     * @return  Value associated with the key.
+     * @throws  KeyNotFoundException for objects or arrays when the key is not found.
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    private function getValueFromData($data, $key)
+    {
+        // Copy the arguments so we don't accidentally cause side-effects.
+        $innerData = $data;
+        $innerKey = $key;
 
-		if (is_array($data) && isset($data[$key]))
-		{
-			return $data[$key];
-		}
+        // Get the parts of the key.
+        $parts = explode('.', $innerKey);
 
-		if (is_object($data) || is_array($data))
-		{
-			return false;
-		}
+        // If the key is not simple, break it down.
+        if (count($parts) > 1)
+        {
+            // Look for the first part.
+            $innerData = $this->getValueFromData($innerData, array_shift($parts));
 
-		return $data;
-	}
+            // If we are given a string, try JSON-decoding it.
+            if (is_string($innerData))
+            {
+                $tmp = json_decode($innerData);
+
+                if (json_last_error() === JSON_ERROR_NONE)
+                {
+                    $innerData = $tmp;
+                }
+            }
+
+            // Re-assemble the remainder of the key.
+            $innerKey = implode('.', $parts);
+
+            // If necessary, recurse further.
+            if (count($parts) > 1)
+            {
+                return $this->getValueFromData($innerData, $innerKey);
+            }
+        }
+
+        // Key is simple, data is an object.
+        if (is_object($innerData) && property_exists($innerData, $innerKey))
+        {
+            return $innerData->{$innerKey};
+        }
+
+        // Key is simple, data is an array.
+        if (is_array($innerData) && isset($innerData[$innerKey]))
+        {
+            return $innerData[$innerKey];
+        }
+
+        // Key is simple, but not found when data is object or array.
+        if (is_object($innerData) || is_array($innerData))
+        {
+            throw new KeyNotFoundException($innerKey);
+        }
+
+        // Key is simple, data is simple.
+        return $innerData;
+    }
 
 	/**
 	 * Determine the value of a resource property using data from the global data buffer.
-	 * 
+	 *
 	 * The template contains substitution codes that determine which global data values
 	 * will comprise the property value.  Note that this does not transform data,
 	 * because global data has already been transformed.
@@ -1054,7 +1095,16 @@ abstract class Webservice extends WebserviceBase
 
 		foreach ($stringsToReplace[1] as $replacementKey)
 		{
-			$replacementValue = $this->getValueFromData($this->data, $replacementKey);
+            // Look for the key in the data and get the value associated with it.
+            try
+            {
+                $replacementValue = $this->getValueFromData($this->data, $replacementKey);
+            }
+            catch (KeyNotFoundException $e)
+            {
+                continue;
+            }
+
 			$search = '{' . $replacementKey . '}';
 			$output = str_replace($search, $replacementValue, $template);
 		}

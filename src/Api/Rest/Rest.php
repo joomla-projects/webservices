@@ -12,6 +12,7 @@ namespace Joomla\Webservices\Api\Rest;
 use Joomla\Webservices\Api\ApiBase;
 use Joomla\Webservices\Resource\ResourceLink;
 use Joomla\Webservices\Resource\Resource;
+use Joomla\Webservices\Type\TypeUrn;
 use Joomla\Webservices\Webservices\Webservice;
 use Joomla\Webservices\Webservices\Factory;
 
@@ -36,7 +37,7 @@ class Rest extends ApiBase
 
 	/**
 	 * Profile object.
-	 * 
+	 *
 	 * @var  Profile
 	 */
 	private $profile = null;
@@ -54,7 +55,7 @@ class Rest extends ApiBase
 	 * @param   Registry   $options    Optional custom options to load.
 	 *
 	 * @throws  \Exception
-	 * 
+	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
 	public function __construct(Container $container, Registry $options)
@@ -67,7 +68,7 @@ class Rest extends ApiBase
 
 	/**
 	 * Execute the Api operation.
-	 * 
+	 *
 	 * @param   Input  $input  An input object.
 	 *
 	 * @return  mixed  Webservice object with information on success, boolean false on failure.
@@ -186,15 +187,15 @@ class Rest extends ApiBase
 
 	/**
 	 * Get a resource that is linked to the current resource.
-	 * 
+	 *
 	 * This is used to handle routes like "/categories/:id/contacts" where the categories
 	 * resource with the given id is retrieved first, then this is used to determine
 	 * the contacts resource to return.
-	 * 
+	 *
 	 * @param   string  $linkedResourceName  Name of the linked resource to retrieve.
 	 * @param   string  $clientName          Name of the client (eg. 'site' or 'administrator').
 	 * @param   string  $version             Version of the webservice.
-	 * 
+	 *
 	 * @return  Resource
 	 */
 	private function getLinkedResource($linkedResourceName, $clientName, $version)
@@ -217,7 +218,7 @@ class Rest extends ApiBase
 			if ($linkedResource['displayName'] == $linkedResourceName)
 			{
 				$linkField = (string) $linkedResource['linkField'];
-				
+
 				break;
 			}
 		}
@@ -229,9 +230,18 @@ class Rest extends ApiBase
 		$options = clone $this->getOptions();
 		$resourceName = $options->get('optionName');
 
+        // Decode the URN which is the id of the resource we're linking from.
+        $urn = TypeUrn::fromInternal($data['id']);
+
+        // Check that the URN is of the expected type.
+        if ($urn->getType() != $resourceName)
+        {
+            throw new RuntimeException('URN is not of the expected type \'' . $resourceName . '\': ' . $data['id']);
+        }
+
 		// Set the options up for retrieving the linked resource.
 		$options->set('optionName', $linkedResourceName);
-		$options->set('dataGet', ['filter' => [$linkField => $data['id']]]);
+		$options->set('dataGet', ['filter' => [$linkField => $urn->getId()]]);
 
 		// Build a webservice object to handle the request.
 		$webservice = Factory::getWebservice($this->getContainer(), 'read', $options);
@@ -240,7 +250,7 @@ class Rest extends ApiBase
 		$resource = $webservice->execute($profile);
 
 		// We need to overwrite the self link for a linked resource.
-		$resource->setLink(new ResourceLink('/' . $resourceName . '/' . $data['id'] . '/' . $linkedResourceName), true);
+		$resource->setLink(new ResourceLink('/' . $resourceName . '/' . $urn->getId() . '/' . $linkedResourceName), true);
 
 		return $resource;
 	}

@@ -172,7 +172,8 @@
 					<resource displayName="modified" transform="datetime" fieldFormat="{modified}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="metakey" transform="string" fieldFormat="{metakey}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="metadesc" transform="string" fieldFormat="{metadesc}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-					<resource displayName="metadata" transform="string" fieldFormat="{metadata}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="robots" transform="string" fieldFormat="{metadata.robots}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="rights" transform="string" fieldFormat="{metadata.rights}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="featured" transform="boolean" fieldFormat="{featured}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="publish_up" transform="datetime" fieldFormat="{publish_up}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="publish_down" transform="datetime" fieldFormat="{publish_down}" displayGroup="" resourceSpecific="rcwsGlobal"/>
