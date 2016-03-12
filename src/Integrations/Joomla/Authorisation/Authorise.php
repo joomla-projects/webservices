@@ -14,7 +14,7 @@ use Joomla\Webservices\Integrations\AuthorisationInterface;
 /**
  * Joomla 3.x Authorisation class
  *
- * @package    Webservices
+ * @since    __DEPLOY_VERSION__
  */
 class Authorise implements AuthorisationInterface
 {

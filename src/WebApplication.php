@@ -14,6 +14,7 @@ use Joomla\Application\Web\WebClient;
 use Joomla\Input\Input;
 use Joomla\Filter\InputFilter;
 use Joomla\Registry\Registry;
+use Joomla\Router\Router;
 
 use Joomla\Authentication\Authentication;
 
@@ -24,6 +25,11 @@ use Joomla\DI\ContainerAwareInterface;
 use Joomla\Utilities\ArrayHelper;
 
 use Joomla\Webservices\Api\Soap\SoapHelper;
+use Joomla\Webservices\Webservices\Factory;
+use Joomla\Webservices\Service\RendererProvider;
+use Joomla\Webservices\Uri\Uri;
+
+use Negotiation\Negotiator;
 
 /**
  * Webservices bootstrap class
@@ -32,7 +38,7 @@ use Joomla\Webservices\Api\Soap\SoapHelper;
  * @subpackage  System
  * @since       1.0
  */
-class Application extends AbstractWebApplication implements ContainerAwareInterface
+class WebApplication extends AbstractWebApplication implements ContainerAwareInterface
 {
 	use ContainerAwareTrait;
 
@@ -97,121 +103,133 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 		/** @var \Joomla\Language\LanguageFactory $languageFactory */
 		$languageFactory = $this->getContainer()->get('Joomla\\Language\\LanguageFactory');
 		$languageFactory->getLanguage()->load('lib_webservices');
-		$text = $languageFactory->getText();
+		$this->getContainer()->set('text', $languageFactory->getText());
 
 		$input = $this->input;
-		$apiName = $input->getString('api');
+		$method = $input->getMethod();
 
-		if (!$this->isApiEnabled($apiName))
+		// The supported content types are retrieved from the configuration (this
+		// is temporary as it needs to come from the services themselves).
+		$contentType = $this->negotiateContentType(
+			$input->server->get('HTTP_ACCEPT', '*/*', 'RAW'),
+			$this->get('webservices.content_types')
+		);
+
+		$this->clearHeaders();
+
+		// Get the router.
+		$router = Factory::getRouter(
+			new Registry(['config_file' => JPATH_API . $this->get('webservices.routes')])
+		);
+
+		// Get the request URI and tell the router to parse it.
+		$uri = Uri::getInstance();
+		$path = str_replace($uri->base(), '', $uri->current());
+		$match = $router->parseRoute($path, $method);
+
+		// Get data from the matched route.
+		$style = $match['controller']['style'];
+		$resourceName = $match['controller']['resource'];
+		$input->set('optionName', $resourceName);
+		$input->set('method', $method);
+
+		// Add parsed variables from the route into the input object.
+		foreach ($match['vars'] as $key => $value)
 		{
-			return;
+			$input->set($key, $value);
 		}
 
-		if (empty($apiName))
-		{
-			return;
-		}
+		$options = array(
+			'viewName'      => $input->getString('view'),
+			'data'          => $this->getPostedData(),
+			'dataGet'       => $input->getArray(),
+			'accessToken'   => $input->getString($this->get('webservices.oauth2_token_param_name', 'access_token')),
+			'absoluteHrefs' => $input->getBool('absoluteHrefs', true),
+		);
+
+		$rendererOptions = [
+			'charset'		=> 'utf-8',
+			'language'		=> 'en-GB',
+			'direction'		=> 'ltr',
+			'link'			=> '',
+			'base'			=> '',
+			'absoluteHrefs'	=> $input->getBool('absoluteHrefs', true),
+			'uriParams'		=> [],
+			'resourceName'	=> $resourceName,
+		];
 
 		try
 		{
-			$this->clearHeaders();
-			$webserviceClient = $input->getString('webserviceClient', 'administrator');
-			$optionName       = $input->getString('option');
-			$optionName       = strpos($optionName, 'com_') === 0 ? substr($optionName, 4) : $optionName;
-			$viewName         = $input->getString('view');
-			$version          = $input->getString('webserviceVersion');
+			// Instantiate a renderer, based on content negotiation.
+			$this->container->registerServiceProvider(new RendererProvider($this, $contentType, new Registry($rendererOptions)));
 
-			$token = $input->getString($this->get('webservices.oauth2_token_param_name', 'access_token'));
-			$apiName = ucfirst($apiName);
-			$method  = strtoupper($input->getMethod());
-			$task    = $this->getTask();
-			$data    = $this->getPostedData();
-			$dataGet = $input->getArray();
-
-			$options = array(
-				'api'               => $apiName,
-				'optionName'        => $optionName,
-				'viewName'          => $viewName,
-				'webserviceVersion' => $version,
-				'webserviceClient'  => $webserviceClient,
-				'method'            => $method,
-				'task'              => $task,
-				'data'              => $data,
-				'dataGet'           => $dataGet,
-				'accessToken'       => $token,
-				'format'            => $input->getString('format', $this->get('webservices.webservices_default_format', 'hal')),
-				'id'                => $input->getString('id'),
-				'absoluteHrefs'     => $input->getBool('absoluteHrefs', true),
-			);
-
-			$apiClass = 'Joomla\\Webservices\\Api\\' . $apiName . '\\' . $apiName;
-
-			if (!class_exists($apiClass))
-			{
-				throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_LOAD_API', $options['api']));
-			}
-
-			try
-			{
-				/** @var \Joomla\Webservices\Api\ApiBase $api */
-				$api = new $apiClass($this->getContainer(), new Registry($options));
-			}
-			catch (\RuntimeException $e)
-			{
-				throw new \RuntimeException($text->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_CONNECT_TO_API', $e->getMessage()));
-			}
-
-			// Run the api task
-			$api->execute();
-
-			// Display output
-			$api->render();
+			// Load the interaction style (api) class, execute it, then render the result.
+			Factory::getApi($this->container, $style, new Registry($options))
+				->execute($input)
+				->render();
 		}
 		catch (\Exception $e)
 		{
+			// @TODO Generally, application errors should be handled by the API object,
+			// so the following code should probably be moved into the API class.
 			$code = $e->getCode() > 0 ? $e->getCode() : 500;
 
 			// Set the server response code.
 			$this->header('Status: ' . $code, true, $code);
 
-			if (strtolower($apiName) == 'soap')
+			// Check for defined constants (required prior to PHP 5.4.0).
+			if (!defined('JSON_UNESCAPED_SLASHES'))
 			{
-				$this->setBody(SoapHelper::createSoapFaultResponse($e->getMessage()));
+				define('JSON_UNESCAPED_SLASHES', 64);
 			}
-			else
-			{
-				// Check for defined constants
-				if (!defined('JSON_UNESCAPED_SLASHES'))
-				{
-					define('JSON_UNESCAPED_SLASHES', 64);
-				}
 
-				// An exception has been caught, echo the message and exit.
-				$this->setBody(json_encode(array('message' => $e->getMessage(), 'code' => $e->getCode(), 'type' => get_class($e)), JSON_UNESCAPED_SLASHES));
-			}
+			// An exception has been caught, echo the message and exit.
+			$this->setBody(
+				json_encode(
+					array(
+						'message' => $e->getMessage(),
+						'code' => $code,
+						'type' => get_class($e),
+						'trace' => $e->getTrace(),
+					), JSON_UNESCAPED_SLASHES
+				)
+			);
 		}
 	}
 
 	/**
-	 * Checks if given api name is currently install and enabled on this server
+	 * Content type negotiation.
 	 *
-	 * @param   string  $apiName  Api name
+	 * If no match can be found a RuntimeException is thrown.
 	 *
-	 * @return  bool
+	 * @param   string  $accept      An "Accept" string formatted as per RFC7231.
+	 * @param   array   $priorities  Array of content types accepted in priority order.
+	 *
+	 * @return  string  Best match content type.
+	 *
+	 * @throws  RuntimeException
+	 *
+	 * @see https://tools.ietf.org/html/rfc7231#section-5.3.2
+	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
-	private function isApiEnabled($apiName)
+	private function negotiateContentType($accept = '', $priorities = array())
 	{
-		$apiName = strtolower($apiName);
+		$mediaType = (new Negotiator)->getBest($accept, $priorities);
 
-		return ($this->get('webservices.enable_webservices', 0) == 1 && $apiName == 'hal')
-		|| ($this->get('webservices.enable_soap', 0) == 1 && $apiName == 'soap');
+		if (is_null($mediaType))
+		{
+			// @TODO Better error handling.
+			throw new \RuntimeException('406 Not acceptable');
+		}
+
+		return $mediaType->getValue();
 	}
 
 	/**
 	 * Login authentication function.
 	 *
-	 * @param   \Joomla\Authentication\AuthenticationStrategyInterface[]  $strategies
+	 * @param   \Joomla\Authentication\AuthenticationStrategyInterface[]  $strategies  Array of authentication strategies.
 	 *
 	 * @return  boolean  True on success.
 	 *
@@ -219,10 +237,12 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 */
 	public function login($strategies)
 	{
-		$authenticate = new Authentication();
+		$authenticate = new Authentication;
 
 		foreach ($strategies as $name => $strategy)
-		$authenticate->addStrategy($name, $strategy);
+		{
+			$authenticate->addStrategy($name, $strategy);
+		}
 
 		return $authenticate->authenticate();
 	}
@@ -230,7 +250,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	/**
 	 * Logout authentication function.
 	 *
-	 * @param   integer  $userid   The user to load - Can be an integer or string - If string, it is converted to ID automatically
+	 * @param   integer  $userid  The user to load - Can be an integer or string - If string, it is converted to ID automatically.
 	 *
 	 * @return  boolean  True on success
 	 *
@@ -281,6 +301,7 @@ class Application extends AbstractWebApplication implements ContainerAwareInterf
 	 * @return  string Task name
 	 *
 	 * @since   1.2
+	 * @deprecated
 	 */
 	public function getTask()
 	{

@@ -13,8 +13,20 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Database\DatabaseDriver;
 
+/**
+ * Database driver service provider.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 class DatabaseProvider implements ServiceProviderInterface
 {
+	/**
+	 * Return a database driver.
+	 *
+	 * @param   Container  $container  Dependency injection container.
+	 *
+	 * @return  DatabaseDriver object.
+	 */
 	public function register(Container $container)
 	{
 		$container->alias("db", "Joomla\\Database\\DatabaseDriver")

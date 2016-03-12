@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<!-- Default value for client attribute is site. If client is set to "administrator" then it will only be triggered through administrator call  -->
+<apiservice client="site">
+    <name>Home Webservice</name>
+    <author>Jooma Project</author>
+    <copyright>Copyright (C) 2015 Open Source Matters, Inc. All rights reserved.</copyright>
+    <description>API configuration for web service "home page".  Provides a contents list for the API.</description>
+    <config>
+        <!-- This will be used for automatic model and table instance in CRUD methods and for Api helper class -->
+        <name>contents</name>
+        <version>1.0.0</version>
+        <!-- authorizationAssetName is used with Joomla authorization when performing checks against ACL (if not authorized by scope) -->
+        <authorizationAssetName>{webserviceName}</authorizationAssetName>
+    </config>
+    <operations>
+        <!-- Documentation can be included from various sources:
+            auto: documentation is auto generated using this XML as template
+            url: documentation will be loaded from fixed url using url="http://www.sample.com"
+            none: documentation will not be included in methods Rels (not recommended)
+             -->
+		<documentation authorizationNeeded="false" source="url" url="https://docs.joomla.org/User:Chris_Davenport/API/contacts/item"/>
+	</operations>
+</apiservice>

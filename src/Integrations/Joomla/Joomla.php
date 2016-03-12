@@ -24,7 +24,8 @@ use Joomla\Authentication\AuthenticationStrategyInterface;
 /**
  * Integration class for Joomla! CMS 3.x
  *
- * @package Joomla\Webservices\Integrations\Joomla
+ * @package  Joomla\Webservices\Integrations\Joomla
+ * @since    __DEPLOY_VERSION__
  */
 class Joomla implements ContainerAwareInterface, IntegrationInterface
 {
@@ -36,14 +37,6 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 	 * @var  Webservice
 	 */
 	private $webservice;
-
-	/**
-	 * Helper class object
-	 *
-	 * @var    object
-	 * @since  __DEPLOY_VERSION__
-	 */
-	public $apiHelperClass = null;
 
 	/**
 	 * Dynamic model class object
@@ -64,24 +57,34 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		$this->setContainer($container);
 		$this->webservice = $webservice;
 
+		$client = $webservice->getOptions()->get('webserviceClient', 'site');
+
 		// Constant that is checked in included files to prevent direct access.
-		define('_JEXEC', 1);
+		if (!defined('_JEXEC'))
+		{
+			define('_JEXEC', 1);
 
-		$client = $webservice->options->get('webserviceClient', 'site');
+			// Get the CMS base data and load the application
+			if ($client == 'administrator')
+			{
+				define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
+				require_once __DIR__ . '/defines.php';
+				require_once JPATH_BASE . '/includes/framework.php';
+			}
+			else
+			{
+				define('JPATH_BASE',      JPATH_CMS);
+				require_once __DIR__ . '/defines.php';
+				require_once JPATH_BASE . '/includes/framework.php';
+			}
+		}
 
-		// Get the CMS base data and load the application
 		if ($client == 'administrator')
 		{
-			define('JPATH_BASE',      JPATH_CMS . DIRECTORY_SEPARATOR . 'administrator');
-			require_once JPATH_BASE . '/includes/defines.php';
-			require_once JPATH_BASE . '/includes/framework.php';
 			$app = new \JApplicationAdministrator;
 		}
 		else
 		{
-			define('JPATH_BASE',      JPATH_CMS);
-			require_once JPATH_BASE . '/includes/defines.php';
-			require_once JPATH_BASE . '/includes/framework.php';
 			$app = new \JApplicationSite;
 		}
 
@@ -139,7 +142,9 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 
 		if ($dataMode == 'helper')
 		{
-			return $this->getHelperObject();
+			$version = $this->webservice->getOptions()->get('webserviceVersion', '');
+
+			return Factory::getHelper($version, $this->webservice->client, $this->webservice->webserviceName, $this->webservice->webservicePath);
 		}
 
 		if ($dataMode == 'table')
@@ -218,8 +223,8 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		// We are not using prefix like str_replace(array('.', '-'), array('_', '_'), $context) . '_';
 		$paginationPrefix = '';
 		$filterFields = ConfigurationHelper::getFilterFields($configuration);
-		$primaryFields = $this->webservice->getPrimaryFields($configuration);
-		$fields = $this->webservice->getAllFields($configuration);
+		$primaryFields = ConfigurationHelper::getPrimaryFields($configuration);
+		$fields = ConfigurationHelper::getAllFields($configuration);
 
 		$config = array(
 			'tableName' => $tableName,
@@ -233,17 +238,28 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		$baseJoomlaModelClass = '\\Joomla\\Webservices\\Integrations\\Joomla\\Model\\';
 		$apiDynamicModelClassName = '';
 
-		if ($this->webservice->operation == 'read')
+		switch ($this->webservice->operation)
 		{
-			$primaryKeys = array();
-			$isReadItem = $this->webservice->apiFillPrimaryKeys($primaryKeys);
+			case 'create':
+				$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst('item');
 
-			$displayTarget = $isReadItem ? 'item' : 'jlist';
-			$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst($displayTarget);
-		}
-		elseif ($this->webservice->operation == 'delete')
-		{
-			$apiDynamicModelClassName = $baseJoomlaModelClass . 'List';
+				break;
+
+			case 'read':
+				// Get data from request.
+				$data = (array) $this->webservice->getOptions()->get('dataGet', array());
+
+				// Determine if the request if for an item or a list.
+				$displayTarget = $this->webservice->profile->isItem($data) ? 'item' : 'jlist';
+
+				$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst($displayTarget);
+
+				break;
+
+			case 'delete':
+				$apiDynamicModelClassName = $baseJoomlaModelClass . 'Jlist';
+
+				break;
 		}
 
 		if (!empty($apiDynamicModelClassName) && class_exists($apiDynamicModelClassName))
@@ -327,39 +343,6 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		|| $lang->load($option, $path . "/components/$option", $lang->getDefault(), false, false);
 
 		return $this;
-	}
-
-	/**
-	 * Gets instance of helper object class if exists
-	 *
-	 * @return  mixed It will return Api helper class or false if it does not exists
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	private function getHelperObject()
-	{
-		if (!empty($this->apiHelperClass))
-		{
-			return $this->apiHelperClass;
-		}
-
-		$version = $this->webservice->options->get('webserviceVersion', '');
-		$helperFile = ConfigurationHelper::getWebserviceHelper($this->webservice->client, strtolower($this->webservice->webserviceName), $version, $this->webservice->webservicePath);
-
-		if (file_exists($helperFile))
-		{
-			require_once $helperFile;
-		}
-
-		$webserviceName = preg_replace('/[^A-Z0-9_\.]/i', '', $this->webservice->webserviceName);
-		$helperClassName = '\\JWebserviceHelper' . ucfirst($this->webservice->client) . ucfirst(strtolower($webserviceName));
-
-		if (class_exists($helperClassName))
-		{
-			$this->apiHelperClass = new $helperClassName;
-		}
-
-		return $this->apiHelperClass;
 	}
 
 	/**

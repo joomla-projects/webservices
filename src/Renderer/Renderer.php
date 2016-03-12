@@ -10,20 +10,16 @@
 namespace Joomla\Webservices\Renderer;
 
 use Joomla\Webservices\Application;
-
-use Joomla\DI\Container;
-use Joomla\DI\ContainerAwareTrait;
-use Joomla\DI\ContainerAwareInterface;
+use Joomla\Webservices\Renderer\RendererInterface;
+use Joomla\Webservices\Resource\Resource;
 
 /**
  * Document class, provides an easy interface to parse and display a document
  *
  * @since  __DELPOY_VERSION__
  */
-abstract class Base implements ContainerAwareInterface
+abstract class Renderer implements RendererInterface
 {
-	use ContainerAwareTrait;
-
 	/**
 	 * Document title
 	 *
@@ -109,7 +105,7 @@ abstract class Base implements ContainerAwareInterface
 	 * @var    array
 	 * @since  11.1
 	 */
-	public $_metaTags = array();
+	public $metaTags = array();
 
 	/**
 	 * The rendering engine
@@ -117,7 +113,7 @@ abstract class Base implements ContainerAwareInterface
 	 * @var    object
 	 * @since  11.1
 	 */
-	public $_engine = null;
+	public $engine = null;
 
 	/**
 	 * The document type
@@ -146,15 +142,14 @@ abstract class Base implements ContainerAwareInterface
 	/**
 	 * Class constructor.
 	 *
-	 * @param   Container  $container  The DIC object
-	 * @param   array      $options  Associative array of options
+	 * @param   object  $application  The application.
+	 * @param   array   $options      Associative array of options.
 	 *
 	 * @since   11.1
 	 */
-	public function __construct(Container $container, $options = array())
+	public function __construct($application, $options = array())
 	{
-		$this->app = $container->get('app');
-		$this->setContainer($container);
+		$this->app = $application;
 
 		if (array_key_exists('charset', $options))
 		{
@@ -263,11 +258,11 @@ abstract class Base implements ContainerAwareInterface
 		{
 			if ($httpEquiv == true)
 			{
-				$result = @$this->_metaTags['http-equiv'][$name];
+				$result = @$this->metaTags['http-equiv'][$name];
 			}
 			else
 			{
-				$result = @$this->_metaTags['standard'][$name];
+				$result = @$this->metaTags['standard'][$name];
 			}
 		}
 
@@ -299,11 +294,11 @@ abstract class Base implements ContainerAwareInterface
 		{
 			if ($http_equiv == true)
 			{
-				$this->_metaTags['http-equiv'][$name] = $content;
+				$this->metaTags['http-equiv'][$name] = $content;
 			}
 			else
 			{
-				$this->_metaTags['standard'][$name] = $content;
+				$this->metaTags['standard'][$name] = $content;
 			}
 		}
 
@@ -606,16 +601,27 @@ abstract class Base implements ContainerAwareInterface
 	}
 
 	/**
-	 * Outputs the document
+	 * Get API interaction style.
 	 *
-	 * @param   boolean  $cache   If true, cache the output
-	 * @param   array    $params  Associative array of attributes
-	 *
-	 * @return  string  The rendered data
-	 *
-	 * @since   11.1
+	 * @return  string
 	 */
-	public function render($cache = false, $params = array())
+	public function getInteractionStyle()
+	{
+		return $this->style;
+	}
+
+	/**
+	 * Render the document.
+	 *
+	 * This defers to resource-specific render methods.
+	 *
+	 * @param   Resource  $resource  A populated resource object.
+	 *
+	 * @return  string   The rendered data
+	 *
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public function render(Resource $resource)
 	{
 		if ($mdate = $this->getModifiedDate())
 		{
@@ -624,5 +630,13 @@ abstract class Base implements ContainerAwareInterface
 
 		$this->app->mimeType = $this->getMimeEncoding();
 		$this->app->charSet  = $this->getCharset();
+
+		$this->app->setHeader('Content-Type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
+
+		// Determine the resource-specific render method.
+		$methodName = 'render' . (new \ReflectionClass($resource))->getShortName();
+
+		// Defer to the resource-specific render method.
+		return $this->$methodName($resource);
 	}
 }

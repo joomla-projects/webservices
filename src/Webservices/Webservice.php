@@ -10,9 +10,11 @@
 namespace Joomla\Webservices\Webservices;
 
 use Joomla\Webservices\Resource\Resource;
-use Joomla\Webservices\Resource\Link;
+use Joomla\Webservices\Resource\ResourceItem;
+use Joomla\Webservices\Resource\ResourceLink;
 use Joomla\Webservices\Api\Hal\Transform\TransformInterface;
 use Joomla\Webservices\Webservices\Exception\ConfigurationException;
+use Joomla\Webservices\Webservices\Exception\KeyNotFoundException;
 use Joomla\Webservices\Xml\XmlHelper;
 use Joomla\Webservices\Layout\LayoutHelper;
 
@@ -20,6 +22,7 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\DI\Container;
 use Joomla\Event\Event;
 use Joomla\Event\EventImmutable;
+use Joomla\Registry\Registry;
 use Joomla\Webservices\Uri\Uri;
 
 /**
@@ -27,7 +30,7 @@ use Joomla\Webservices\Uri\Uri;
  *
  * @since  1.2
  */
-class Webservice extends WebserviceBase
+abstract class Webservice extends WebserviceBase
 {
 	/**
 	 * Webservice element name
@@ -42,6 +45,9 @@ class Webservice extends WebserviceBase
 	public $client = '';
 
 	/**
+	 * Name of the Webservice.  In REST terms this
+	 * would be the name of the resource.
+	 *
 	 * @var    string  Name of the Webservice
 	 * @since  1.2
 	 */
@@ -102,12 +108,6 @@ class Webservice extends WebserviceBase
 	public $configuration = null;
 
 	/**
-	 * @var    object  Helper class object
-	 * @since  1.2
-	 */
-	public $apiHelperClass = null;
-
-	/**
 	 * @var    string  Rendered Documentation
 	 * @since  1.2
 	 */
@@ -139,22 +139,26 @@ class Webservice extends WebserviceBase
 	private $integration = array();
 
 	/**
+	 * Profile object.
+	 */
+	public $profile = null;
+
+	/**
 	 * Method to instantiate the file-based api call.
 	 *
 	 * @param   Container  $container  The DIC object
-	 * @param   mixed      $options    Optional custom options to load. Registry or array format
+	 * @param   Registry   $options    Custom options to load.
 	 *
 	 * @throws  \Exception
 	 * @since   1.2
 	 */
-	public function __construct(Container $container, $options = null)
+	public function __construct(Container $container, Registry $options)
 	{
 		parent::__construct($container, $options);
 
-		$this->setWebserviceName();
-		$this->client = $this->options->get('webserviceClient', 'site');
-		$this->webserviceVersion = $this->options->get('webserviceVersion', '');
-		$this->resource = new Resource('');
+		$this->client = $options->get('webserviceClient', 'administrator');
+		$this->webserviceVersion = $options->get('webserviceVersion', '');
+		$this->webserviceName = $options->get('optionName');
 
 		if (!empty($this->webserviceName))
 		{
@@ -173,7 +177,7 @@ class Webservice extends WebserviceBase
 				throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_NOT_INSTALLED', $this->webserviceName, $this->webserviceVersion));
 			}
 
-			if (empty($this->webservice['state']))
+			if (empty($this->webservice['published']))
 			{
 				throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_UNPUBLISHED', $this->webserviceName, $this->webserviceVersion));
 			}
@@ -183,7 +187,10 @@ class Webservice extends WebserviceBase
 			try
 			{
 				$this->configuration = ConfigurationHelper::loadWebserviceConfiguration(
-					$this->webserviceName, $this->webserviceVersion, $this->webservicePath, $this->client
+					$this->webserviceName,
+					$this->webserviceVersion,
+					$this->webservicePath,
+					$this->client
 				);
 			}
 			catch (ConfigurationException $e)
@@ -198,9 +205,6 @@ class Webservice extends WebserviceBase
 			$this->setBaseDataValues();
 		}
 
-		// Init Environment
-		$this->triggerFunction('setApiOperation');
-
 		// Set initial status code
 		$this->setStatusCode($this->statusCode);
 
@@ -209,6 +213,7 @@ class Webservice extends WebserviceBase
 		{
 			define('JSON_UNESCAPED_SLASHES', 64);
 		}
+
 		// OAuth2 check
 		if ($this->app->get('webservices.webservices_permission_check', 1) == 0)
 		{
@@ -221,7 +226,7 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Load the model object
+	 * Load the model object from the integration layer.
 	 *
 	 * @param   string             $elementName    The element to load
 	 * @param   \SimpleXMLElement  $configuration  The configuration for the current task
@@ -269,267 +274,12 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Sets Webservice name according to given options
-	 *
-	 * @return  Api
-	 *
-	 * @since   1.2
-	 */
-	public function setWebserviceName()
-	{
-		$task = $this->options->get('task', '');
-
-		if (empty($task))
-		{
-			$taskSplit = explode(',', $task);
-
-			if (count($taskSplit) > 1)
-			{
-				// We will set name of the webservice as a task controller name
-				$this->webserviceName = $this->options->get('optionName', '') . '-' . $taskSplit[0];
-				$task = $taskSplit[1];
-				$this->options->set('task', $task);
-
-				return $this;
-			}
-		}
-
-		$this->webserviceName = $this->options->get('optionName', '');
-		$viewName = $this->options->get('viewName', '');
-		$this->webserviceName .= !empty($this->webserviceName) && !empty($viewName) ? '-' . $viewName : '';
-
-		return $this;
-	}
-
-	/**
-	 * Set Method for Api to be performed
-	 *
-	 * @return  Api
-	 *
-	 * @since   1.2
-	 */
-	public function setApiOperation()
-	{
-		$method = $this->options->get('method', 'GET');
-		$task = $this->options->get('task', '');
-		$format = $this->options->get('format', '');
-
-		// Set proper operation for given method
-		switch ((string) $method)
-		{
-			case 'PUT':
-				$method = 'UPDATE';
-				break;
-			case 'GET':
-				$method = !empty($task) ? 'TASK' : 'READ';
-				break;
-			case 'POST':
-				$method = !empty($task) ? 'TASK' : 'CREATE';
-				break;
-			case 'DELETE':
-				$method = 'DELETE';
-				break;
-
-			default:
-				$method = 'READ';
-				break;
-		}
-
-		// If task is pointing to some other operation like apply, update or delete
-		if (!empty($task) && !empty($this->configuration->operations->task->{$task}['useOperation']))
-		{
-			$operation = strtoupper((string) $this->configuration->operations->task->{$task}['useOperation']);
-
-			if (in_array($operation, array('CREATE', 'READ', 'UPDATE', 'DELETE', 'DOCUMENTATION')))
-			{
-				$method = $operation;
-			}
-		}
-
-		if ($format == 'doc')
-		{
-			$method = 'documentation';
-		}
-
-		$this->operation = strtolower($method);
-
-		return $this;
-	}
-
-	/**
-	 * Execute the Api operation.
-	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
-	 *
-	 * @since   1.2
-	 * @throws  \Exception
-	 */
-	public function execute()
-	{
-		// Set initial status code to OK
-		$this->setStatusCode(200);
-
-		// We do not want some unwanted text to appear before output
-		ob_start();
-
-		try
-		{
-			if (!empty($this->webserviceName))
-			{
-				if ($this->triggerFunction('isOperationAllowed'))
-				{
-					$this->elementName = ucfirst(strtolower((string) $this->getConfig('config.name')));
-					$this->operationConfiguration = $this->getConfig('operations.' . strtolower($this->operation));
-
-					switch ($this->operation)
-					{
-						case 'create':
-							$this->triggerFunction('apiCreate');
-							break;
-						case 'read':
-							$this->triggerFunction('apiRead');
-							break;
-						case 'update':
-							$this->triggerFunction('apiUpdate');
-							break;
-						case 'delete':
-							$this->triggerFunction('apiDelete');
-							break;
-						case 'task':
-							$this->triggerFunction('apiTask');
-							break;
-						case 'documentation':
-							$this->triggerFunction('apiDocumentation');
-							break;
-					}
-				}
-			}
-			else
-			{
-				// If default page needs authorization to access it
-				if ($this->app->get('webservices.webservices_default_page_authorization', 0) == 1 && !$this->app->login($this->getIntegrationObject()->getStrategies()))
-				{
-					return false;
-				}
-
-				// No webservice name. We display all webservices available
-				$this->triggerFunction('apiDefaultPage');
-			}
-
-			// Set links from resources to the main document
-			$this->setDataValueToResource($this->resource, $this->resources, $this->data);
-
-			$messages = $this->app->getMessageQueue();
-
-			$executionErrors = ob_get_contents();
-			ob_end_clean();
-		}
-		catch (\Exception $e)
-		{
-			$executionErrors = ob_get_contents();
-			ob_end_clean();
-
-			throw $e;
-		}
-
-		if (!empty($executionErrors))
-		{
-			$messages[] = array('message' => $executionErrors, 'type' => 'notice');
-		}
-
-		if (!empty($messages))
-		{
-			// If we are not in debug mode we will take out everything except errors
-			if ($this->app->get('webservices.debug_webservices', 0) == 0)
-			{
-				foreach ($messages as $key => $message)
-				{
-					if ($message['type'] != 'error')
-					{
-						unset($messages[$key]);
-					}
-				}
-			}
-
-			$this->resource->setData('_messages', $messages);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Execute the Api Default Page operation.
-	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
-	 *
-	 * @since   1.2
-	 */
-	public function apiDefaultPage()
-	{
-		// Add standard Joomla namespace as curie.
-		$documentationCurieAdmin = new Link('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=administrator',
-			'curies', 'Documentation Admin', 'Admin', null, true
-		);
-		$documentationCurieSite = new Link('/index.php?option={rel}&amp;format=doc&amp;webserviceClient=site',
-			'curies', 'Documentation Site', 'Site', null, true
-		);
-
-		// Add basic hypermedia links.
-		$this->resource->setLink($documentationCurieAdmin, false, true);
-		$this->resource->setLink($documentationCurieSite, false, true);
-
-		$uri = Uri::getInstance();
-		$this->resource->setLink(new Link($uri->base(), 'base', $this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_DEFAULT_PAGE')));
-
-		$webservices = ConfigurationHelper::getInstalledWebservices($this->getContainer()->get('db'));
-
-		if (!empty($webservices))
-		{
-			foreach ($webservices as $webserviceClient => $webserviceNames)
-			{
-				foreach ($webserviceNames as $webserviceName => $webserviceVersions)
-				{
-					foreach ($webserviceVersions as $webserviceVersion => $webservice)
-					{
-						if ($webservice['state'] == 1)
-						{
-							$documentation = $webserviceClient == 'site' ? 'Site' : 'Admin';
-
-							// Set option and view name
-							$this->setOptionViewName($webservice['name'], $this->configuration);
-							$webserviceUrlPath = '/index.php?option=' . $this->optionName
-								. '&amp;webserviceVersion=' . $webserviceVersion;
-
-							if (!empty($this->viewName))
-							{
-								$webserviceUrlPath .= '&view=' . $this->viewName;
-							}
-
-							// We will fetch only top level webservice
-							$this->resource->setLink(
-								new Link(
-									$webserviceUrlPath . '&webserviceClient=' . $webserviceClient,
-									$documentation . ':' . $webservice['name'],
-									$webservice['title']
-								)
-							);
-
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Execute the Api Documentation operation.
 	 *
 	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
+	 * @deprecated Move to separate Webservices/Documentation.php file.
 	 */
 	public function apiDocumentation()
 	{
@@ -552,7 +302,7 @@ class Webservice extends WebserviceBase
 			$currentConfiguration = null;
 		}
 
-		$dataGet = $this->options->get('dataGet', array());
+		$dataGet = $this->getOptions()->get('dataGet', array());
 
 		$this->documentation = LayoutHelper::render(
 			'webservice.documentation',
@@ -572,295 +322,16 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Execute the Api Read operation.
-	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
-	 *
-	 * @since   1.2
-	 */
-	public function apiRead()
-	{
-		$primaryKeys = array();
-		$isReadItem = $this->apiFillPrimaryKeys($primaryKeys);
-
-		$displayTarget = $isReadItem ? 'item' : 'list';
-		$currentConfiguration = $this->operationConfiguration->{$displayTarget};
-		$model = $this->triggerFunction('loadModel', $this->elementName, $currentConfiguration);
-		$this->assignFiltersList($model);
-
-		if ($displayTarget == 'list')
-		{
-			$functionName = XmlHelper::attributeToString($currentConfiguration, 'functionName', 'getItems');
-
-			$items = method_exists($model, $functionName) ? $model->{$functionName}() : array();
-
-			if (method_exists($model, 'getPagination'))
-			{
-				$pagination = $model->getPagination();
-				$paginationPages = $pagination->getPaginationPages();
-
-				$this->setData(
-					'pagination.previous', isset($paginationPages['previous']['data']->base) ? $paginationPages['previous']['data']->base : $pagination->limitstart
-				);
-				$this->setData(
-					'pagination.next', isset($paginationPages['next']['data']->base) ? $paginationPages['next']['data']->base : $pagination->limitstart
-				);
-				$this->setData('pagination.limit', $pagination->limit);
-				$this->setData('pagination.limitstart', $pagination->limitstart);
-				$this->setData('pagination.totalItems', $pagination->total);
-				$this->setData('pagination.totalPages', max($pagination->pagesTotal, 1));
-				$this->setData('pagination.page', max($pagination->pagesCurrent, 1));
-				$this->setData('pagination.last', ((max($pagination->pagesTotal, 1) - 1) * $pagination->limit));
-			}
-
-			$this->triggerFunction('setForRenderList', $items, $currentConfiguration);
-
-			return $this;
-		}
-
-		$primaryKeys = count($primaryKeys) > 1 ? array($primaryKeys) : $primaryKeys;
-
-		// Getting single item
-		$functionName = XmlHelper::attributeToString($currentConfiguration, 'functionName', 'getItem');
-		$messagesBefore = $this->app->getMessageQueue();
-		$itemObject = method_exists($model, $functionName) ? call_user_func_array(array(&$model, $functionName), $primaryKeys) : array();
-		$messagesAfter = $this->app->getMessageQueue();
-
-		// Check to see if we have the item or not since it might return default properties
-		if (count($messagesBefore) != count($messagesAfter))
-		{
-			foreach ($messagesAfter as $messageKey => $messageValue)
-			{
-				$messageFound = false;
-
-				foreach ($messagesBefore as $key => $value)
-				{
-					if ($messageValue['type'] == $value['type'] && $messageValue['message'] == $value['message'])
-					{
-						$messageFound = true;
-						break;
-					}
-				}
-
-				if (!$messageFound && $messageValue['type'] == 'error')
-				{
-					$itemObject = null;
-					break;
-				}
-			}
-		}
-
-		$this->triggerFunction('setForRenderItem', $itemObject, $currentConfiguration);
-
-		return $this;
-	}
-
-	/**
-	 * Execute the Api Create operation.
-	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
-	 *
-	 * @since   1.2
-	 */
-	public function apiCreate()
-	{
-		// Get resource list from configuration
-		$this->loadResourceFromConfiguration($this->operationConfiguration);
-
-		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
-		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
-		$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $this->operationConfiguration);
-
-		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
-
-		if ($data === false)
-		{
-			// Not Acceptable
-			$this->setStatusCode(406);
-			$this->triggerFunction('displayErrors', $model);
-			$this->setData('result', $data);
-
-			return;
-		}
-
-		// Prepare parameters for the function
-		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
-		$result = null;
-
-		// Checks if that method exists in model class file and executes it
-		if (method_exists($model, $functionName))
-		{
-			$result = $this->triggerCallFunction($model, $functionName, $args);
-		}
-		else
-		{
-			$this->setStatusCode(400);
-		}
-
-		if (method_exists($model, 'getState'))
-		{
-			$this->setData('id', $model->getState($model->getName() . '.id'));
-		}
-
-		$this->setData('result', $result);
-		$this->triggerFunction('displayErrors', $model);
-
-		if ($this->statusCode < 400)
-		{
-			if ($result === false)
-			{
-				$this->setStatusCode(404);
-			}
-			else
-			{
-				$this->setStatusCode(201);
-			}
-		}
-	}
-
-	/**
-	 * Execute the Api Delete operation.
-	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
-	 *
-	 * @since   1.2
-	 */
-	public function apiDelete()
-	{
-		// Get resource list from configuration
-		$this->loadResourceFromConfiguration($this->operationConfiguration);
-
-		// Delete function requires references and not values like we use in call_user_func_array so we use List delete function
-		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
-		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'delete');
-		$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $this->operationConfiguration);
-
-		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
-
-		if ($data === false)
-		{
-			// Not Acceptable
-			$this->setStatusCode(406);
-			$this->triggerFunction('displayErrors', $model);
-			$this->setData('result', $data);
-
-			return;
-		}
-
-		$result = null;
-		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
-
-		// Prepare parameters for the function
-		if (strtolower(XmlHelper::attributeToString($this->operationConfiguration, 'dataMode', 'model')) == 'table')
-		{
-			$primaryKeys = array();
-			$this->apiFillPrimaryKeys($primaryKeys, $this->operationConfiguration);
-
-			if (!empty($primaryKeys))
-			{
-				$result = $model->{$functionName}($primaryKeys);
-			}
-			else
-			{
-				$result = $model->{$functionName}($args);
-			}
-		}
-		else
-		{
-			// Checks if that method exists in model class file and executes it
-			if (method_exists($model, $functionName))
-			{
-				$result = $this->triggerCallFunction($model, $functionName, $args);
-			}
-			else
-			{
-				$this->setStatusCode(400);
-			}
-		}
-
-		$this->setData('result', $result);
-
-		$this->triggerFunction('displayErrors', $model);
-
-		if ($this->statusCode < 400)
-		{
-			if ($result === false)
-			{
-				// If delete failed then we set it to Internal Server Error status code
-				$this->setStatusCode(500);
-			}
-		}
-	}
-
-	/**
-	 * Execute the Api Update operation.
-	 *
-	 * @return  mixed  JApi object with information on success, boolean false on failure.
-	 *
-	 * @since   1.2
-	 */
-	public function apiUpdate()
-	{
-		// Get resource list from configuration
-		$this->loadResourceFromConfiguration($this->operationConfiguration);
-		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
-		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
-		$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $this->operationConfiguration);
-
-		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
-
-		if ($data === false)
-		{
-			// Not Acceptable
-			$this->setStatusCode(406);
-			$this->triggerFunction('displayErrors', $model);
-			$this->setData('result', $data);
-
-			return;
-		}
-
-		// Prepare parameters for the function
-		$args = $this->buildFunctionArgs($this->operationConfiguration, $data);
-		$result = null;
-
-		// Checks if that method exists in model class and executes it
-		if (method_exists($model, $functionName))
-		{
-			$result = $this->triggerCallFunction($model, $functionName, $args);
-		}
-		else
-		{
-			$this->setStatusCode(400);
-		}
-
-		if (method_exists($model, 'getState'))
-		{
-			$this->setData('id', $model->getState(strtolower($this->elementName) . '.id'));
-		}
-
-		$this->setData('result', $result);
-		$this->triggerFunction('displayErrors', $model);
-
-		if ($this->statusCode < 400)
-		{
-			if ($result === false)
-			{
-				// If update failed then we set it to Internal Server Error status code
-				$this->setStatusCode(500);
-			}
-		}
-	}
-
-	/**
 	 * Execute the Api Task operation.
 	 *
 	 * @return  mixed  JApi object with information on success, boolean false on failure.
 	 *
 	 * @since   1.2
+	 * @deprecated Move to separate Webservices/Task.php file.
 	 */
 	public function apiTask()
 	{
-		$task = $this->options->get('task', '');
+		$task = $this->getOptions()->get('task', '');
 		$result = false;
 
 		if (!empty($task))
@@ -868,7 +339,7 @@ class Webservice extends WebserviceBase
 			// Load resources directly from task group
 			if (!empty($this->operationConfiguration->{$task}->resources))
 			{
-				$this->loadResourceFromConfiguration($this->operationConfiguration->{$task});
+				$this->profile->getResources($this->getOptions());
 			}
 
 			$taskConfiguration = !empty($this->operationConfiguration->{$task}) ?
@@ -876,7 +347,7 @@ class Webservice extends WebserviceBase
 
 			$model = $this->triggerFunction('loadModel', $this->elementName, $taskConfiguration);
 			$functionName = XmlHelper::attributeToString($taskConfiguration, 'functionName', $task);
-			$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $taskConfiguration);
+			$data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
 
 			$data = $this->triggerFunction('validatePostData', $model, $data, $taskConfiguration);
 
@@ -891,7 +362,7 @@ class Webservice extends WebserviceBase
 			}
 
 			// Prepare parameters for the function
-			$args = $this->buildFunctionArgs($taskConfiguration, $data);
+			$args = $this->profile->buildFunctionArgs($data);
 			$result = null;
 
 			// Checks if that method exists in model class and executes it
@@ -916,153 +387,73 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Set document content for List view
+	 * Binds data to a Resource using a profile for a specific method or task.
 	 *
-	 * @param   array              $items          List of items
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
+	 * The $profile array comes from the Profile XML and may have been filtered.
+	 * The binding can be restricted to a particular scope.  The default scope is rcwsGlobal.
 	 *
-	 * @return void
-	 */
-	public function setForRenderList($items, $configuration)
-	{
-		// Get resource list from configuration
-		$this->loadResourceFromConfiguration($configuration);
-
-		$listResourcesKeys = array_keys($this->resources['listItem']);
-
-		if (!empty($items))
-		{
-			// Filter out all fields that are not in resource list and apply appropriate transform rules
-			foreach ($items as $itemValue)
-			{
-				$item = ArrayHelper::fromObject($itemValue);
-
-				foreach ($item as $key => $value)
-				{
-					if (!in_array($key, $listResourcesKeys))
-					{
-						unset($item[$key]);
-						continue;
-					}
-					else
-					{
-						$item[$this->assignGlobalValueToResource($key)] = $this->assignValueToResource(
-							$this->resources['listItem'][$key], $item
-						);
-					}
-				}
-
-				$embedItem = new Resource('item', $item);
-				$embedItem = $this->setDataValueToResource($embedItem, $this->resources, $itemValue, 'listItem');
-				$this->resource->setEmbedded('item', $embedItem);
-			}
-		}
-	}
-
-	/**
-	 * Loads Resource list from configuration file for specific method or task
-	 *
-	 * @param   Resource  $resourceDocument  Resource document for binding the resource
-	 * @param   array     $resources         Configuration for displaying object
-	 * @param   mixed     $data              Data to bind to the resources
-	 * @param   string    $resourceSpecific  Resource specific string that separates resources
+	 * @param   Resource  $resource  Resource document for binding the resource.
+	 * @param   array     $profile   Configuration for displaying object.
+	 * @param   mixed     $data      Data to bind to the resource.
+	 * @param   string    $scope     Scope specified by the resourceSpecific attribute in the profile.
 	 *
 	 * @return  Resource
 	 */
-	public function setDataValueToResource(Resource $resourceDocument, $resources, $data, $resourceSpecific = 'rcwsGlobal')
+	public function setDataValueToResource(Resource $resource, array $profile, $data, $scope = 'rcwsGlobal')
 	{
-		if (!empty($resources[$resourceSpecific]))
+		// No properties to add to the Resource from this scope.
+		if (empty($profile[$scope]))
 		{
-			// Add links from the resource
-			foreach ($resources[$resourceSpecific] as $resource)
-			{
-				if (!empty($resource['displayGroup']))
-				{
-					if ($resource['displayGroup'] == '_links')
-					{
-						$linkRel = !empty($resource['linkRel']) ? $resource['linkRel'] : $this->assignGlobalValueToResource($resource['displayName']);
-
-						// We will force curries as link array
-						$linkPlural = $linkRel == 'curies';
-
-						$resourceDocument->setLink(
-							new Link(
-								$this->assignValueToResource($resource, $data),
-								$linkRel,
-								$resource['linkTitle'],
-								$this->assignGlobalValueToResource($resource['linkName']),
-								$resource['hrefLang'],
-								XmlHelper::isAttributeTrue($resource, 'linkTemplated')
-							), $linkSingular = false, $linkPlural
-						);
-					}
-					else
-					{
-						$resourceDocument->setDataGrouped(
-							$resource['displayGroup'], $this->assignGlobalValueToResource($resource['displayName']), $this->assignValueToResource($resource, $data)
-						);
-					}
-				}
-				else
-				{
-					$resourceDocument->setData($this->assignGlobalValueToResource($resource['displayName']), $this->assignValueToResource($resource, $data));
-				}
-			}
+			return $resource;
 		}
 
-		return $resourceDocument;
-	}
-
-	/**
-	 * Loads Resource list from configuration file for specific method or task
-	 *
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
-	 *
-	 * @return array
-	 */
-	public function loadResourceFromConfiguration($configuration)
-	{
-		if (isset($configuration->resources->resource))
+		// Add properties to the Resource from the data provided.
+		foreach ($profile[$scope] as $profileItem)
 		{
-			foreach ($configuration->resources->resource as $resourceXML)
+			// If no displayGroup was specified, then the data is added to the Resource as a top-level property.
+			if (empty($profileItem['displayGroup']))
 			{
-				$resource = XmlHelper::getXMLElementAttributes($resourceXML);
+				$resource->setData(
+					$this->assignGlobalValueToResource($profileItem['displayName']),
+					$this->assignValueToResource($profileItem, $data)
+				);
 
-				// Filters out specified displayGroup values
-				if ($this->options->get('filterOutResourcesGroups') != ''
-					&& in_array($resource['displayGroup'], $this->options->get('filterOutResourcesGroups')))
-				{
-					continue;
-				}
-
-				// Filters out if the optional resourceSpecific filter is not the one defined
-				if ($this->options->get('filterResourcesSpecific') != ''
-					&& $resource['resourceSpecific'] != $this->options->get('filterResourcesSpecific'))
-				{
-					continue;
-				}
-
-				// Filters out if the optional displayName filter is not the one defined
-				if ($this->options->get('filterDisplayName') != ''
-					&& $resource['displayName'] != $this->options->get('filterDisplayName'))
-				{
-					continue;
-				}
-
-				if (!empty($resourceXML->description))
-				{
-					$resource['description'] = $resourceXML->description;
-				}
-
-				$resource = Resource::defaultResourceField($resource);
-				$resourceName = $resource['displayName'];
-				$resourceSpecific = $resource['resourceSpecific'];
-
-				$this->resources[$resourceSpecific][$resourceName] = $resource;
+				continue;
 			}
+
+			// Deal with links separately.
+			if ($profileItem['displayGroup'] == '_links')
+			{
+				$linkRel = !empty($profileItem['linkRel']) ? $profileItem['linkRel'] : $this->assignGlobalValueToResource($profileItem['displayName']);
+
+				// We will force curies as link array.
+				$linkPlural = $linkRel == 'curies';
+
+				// Create a link resource.
+				$linkResource = new ResourceLink(
+					$this->assignValueToResource($profileItem, $data),				// href
+					$linkRel,														// rel
+					$profileItem['linkTitle'],										// title
+					$this->assignGlobalValueToResource($profileItem['linkName']),	// name
+					$profileItem['hrefLang'],										// hreflang
+					XmlHelper::isAttributeTrue($profileItem, 'linkTemplated')		// templated
+				);
+
+				// Add link to this resource.
+				$resource->setLink($linkResource, false, $linkPlural);
+
+				continue;
+			}
+
+			// Add data to a top-level group (other than _links).
+			$resource->setDataGrouped(
+				$profileItem['displayGroup'],
+				$this->assignGlobalValueToResource($profileItem['displayName']),
+				$this->assignValueToResource($profileItem, $data)
+			);
 		}
 
-		return $this->resources;
+		return $resource;
 	}
 
 	/**
@@ -1110,38 +501,6 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Set document content for Item view
-	 *
-	 * @param   object|array       $item           Item content
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
-	 *
-	 * @throws  \Exception
-	 * @return  void
-	 */
-	public function setForRenderItem($item, $configuration)
-	{
-		// Get resource list from configuration
-		$this->loadResourceFromConfiguration($configuration);
-
-		if (!empty($item) && (is_array($item) || is_object($item)))
-		{
-			// Filter out all fields that are not in resource list and apply appropriate transform rules
-			foreach ($item as $key => $value)
-			{
-				$value = !empty($this->resources['rcwsGlobal'][$key]) ? $this->assignValueToResource($this->resources['rcwsGlobal'][$key], $item) : $value;
-				$this->setData($this->assignGlobalValueToResource($key), $value);
-			}
-		}
-		else
-		{
-			// 404 => 'Not found'
-			$this->setStatusCode(404);
-
-			throw new \Exception($this->text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_NO_CONTENT'), 404);
-		}
-	}
-
-	/**
 	 * Method to fill response with requested data
 	 *
 	 * @param   array  $data  Data to set to Hal document if needed
@@ -1149,6 +508,7 @@ class Webservice extends WebserviceBase
 	 * @return  string  Api call output
 	 *
 	 * @since   1.2
+	 * @deprecated
 	 */
 	public function getBody($data = array())
 	{
@@ -1181,7 +541,7 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Sets data for resource binding
+	 * Saves data into the global data buffer.
 	 *
 	 * @param   string  $key   Rel element
 	 * @param   mixed   $data  Data for the resource
@@ -1221,57 +581,6 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Process posted data from json or object to array
-	 *
-	 * @param   array              $data           Raw Posted data
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
-	 *
-	 * @return  mixed  Array with posted data.
-	 *
-	 * @since   1.2
-	 */
-	public function processPostData($data, $configuration)
-	{
-		if (is_object($data))
-		{
-			$data = ArrayHelper::fromObject($data);
-		}
-
-		if (!is_array($data))
-		{
-			$data = (array) $data;
-		}
-
-		if (!empty($data) && !empty($configuration->fields))
-		{
-			$dataFields = array();
-
-			foreach ($configuration->fields->field as $field)
-			{
-				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
-				$fieldAttributes['transform'] = !is_null($fieldAttributes['transform']) ? $fieldAttributes['transform'] : 'string';
-				$fieldAttributes['defaultValue'] = isset($fieldAttributes['defaultValue']) && !is_null($fieldAttributes['defaultValue']) ?
-					$fieldAttributes['defaultValue'] : '';
-				$data[$fieldAttributes['name']] = isset($data[$fieldAttributes['name']]) && !is_null($data[$fieldAttributes['name']]) ?
-					$data[$fieldAttributes['name']] : $fieldAttributes['defaultValue'];
-				$data[$fieldAttributes['name']] = $this->transformField($fieldAttributes['transform'], $data[$fieldAttributes['name']], false);
-				$dataFields[$fieldAttributes['name']] = $data[$fieldAttributes['name']];
-			}
-
-			if (XmlHelper::isAttributeTrue($configuration, 'strictFields'))
-			{
-				$data = $dataFields;
-			}
-		}
-
-		// Common functions are not checking this field so we will
-		$data['params'] = isset($data['params']) ? $data['params'] : null;
-		$data['associations'] = isset($data['associations']) ? $data['associations'] : array();
-
-		return $data;
-	}
-
-	/**
 	 * Validates posted data
 	 *
 	 * @param   object             $model          Model
@@ -1286,9 +595,19 @@ class Webservice extends WebserviceBase
 	{
 		$data = (array) $data;
 
-		// We are checking required fields set in webservice XMLs
-		if (!$this->checkRequiredFields($data, $configuration))
+		// Get required fields without values.
+		$requiredFields = $this->profile->checkRequiredFields($data);
+
+		// Queue an error for each required field without a value.
+		if (!empty($requiredFields))
 		{
+			foreach ($requiredFields as $fieldName)
+			{
+				$this->app->enqueueMessage(
+					$this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', $fieldName), 'error'
+				);
+			}
+
 			return false;
 		}
 
@@ -1347,39 +666,6 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Validates posted data
-	 *
-	 * @param   array              $data           Raw Posted data
-	 * @param   \SimpleXMLElement  $configuration  Configuration for displaying object
-	 *
-	 * @return  mixed  Array with posted data or false.
-	 *
-	 * @since   1.3
-	 */
-	public function checkRequiredFields($data, $configuration)
-	{
-		if (!empty($configuration->fields))
-		{
-			foreach ($configuration->fields->field as $field)
-			{
-				if (XmlHelper::isAttributeTrue($field, 'isRequiredField'))
-				{
-					if (is_null($data[(string) $field['name']]) || $data[(string) $field['name']] == '')
-					{
-						$this->app->enqueueMessage(
-							$this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', (string) $field['name']), 'error'
-						);
-
-						return false;
-					}
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 * Checks if operation is allowed from the configuration file
 	 *
 	 * @return object This method may be chained.
@@ -1388,8 +674,15 @@ class Webservice extends WebserviceBase
 	 */
 	public function isOperationAllowed()
 	{
-		// Check if webservice is published
-		if (!ConfigurationHelper::isPublishedWebservice($this->client, $this->webserviceName, $this->webserviceVersion, $this->getContainer()->get('db')) && !empty($this->webserviceName))
+		// Check if webservice is published.
+		$isPublished = ConfigurationHelper::isPublishedWebservice(
+			$this->client,
+			$this->webserviceName,
+			$this->webserviceVersion,
+			$this->getContainer()->get('db')
+		);
+
+		if (!isPublished && !empty($this->webserviceName))
 		{
 			throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_IS_UNPUBLISHED', $this->webserviceName));
 		}
@@ -1412,7 +705,7 @@ class Webservice extends WebserviceBase
 		// Check if operation is available and check if it needs authorization
 		if ($this->operation == 'task')
 		{
-			$task = $this->options->get('task', '');
+			$task = $this->getOptions()->get('task', '');
 			$scope .= '.' . $task;
 
 			if (!isset($allowedOperations->task->{$task}))
@@ -1441,9 +734,11 @@ class Webservice extends WebserviceBase
 			}
 			else
 			{
-				$primaryKeys = array();
-				$isReadItem = $this->apiFillPrimaryKeys($primaryKeys);
-				$readType = $isReadItem ? 'item' : 'list';
+				// Get data from request.
+				$data = (array) $this->getOptions()->get('dataGet', array());
+
+				// Determine if the request if for an item or a list.
+				$readType = $this->profile->isItem($data) ? 'item' : 'list';
 
 				if (isset($allowedOperations->read->{$readType}['authorizationNeeded'])
 					&& strtolower($allowedOperations->read->{$readType}['authorizationNeeded']) == 'false')
@@ -1485,7 +780,7 @@ class Webservice extends WebserviceBase
 
 		$eventData = array(
 			'scopes' => $scopes,
-			'options' => $this->options,
+			'options' => $this->getOptions(),
 			'permissionCheck' => $this->permissionCheck,
 			'authorized' => false
 		);
@@ -1551,93 +846,6 @@ class Webservice extends WebserviceBase
 		}
 
 		return true;
-	}
-
-	/**
-	 * Gets instance of helper object class if exists
-	 *
-	 * @return  mixed It will return Api helper class or false if it does not exists
-	 *
-	 * @since   1.2
-	 */
-	public function getHelperObject()
-	{
-		if (!empty($this->apiHelperClass))
-		{
-			return $this->apiHelperClass;
-		}
-
-		$version = $this->options->get('webserviceVersion', '');
-		$helperFile = ConfigurationHelper::getWebserviceHelper($this->client, strtolower($this->webserviceName), $version, $this->webservicePath);
-
-		if (file_exists($helperFile))
-		{
-			require_once $helperFile;
-		}
-
-		$webserviceName = preg_replace('/[^A-Z0-9_\.]/i', '', $this->webserviceName);
-		$helperClassName = 'JApiHalHelper' . ucfirst($this->client) . ucfirst(strtolower($webserviceName));
-
-		if (class_exists($helperClassName))
-		{
-			$this->apiHelperClass = new $helperClassName;
-		}
-
-		return $this->apiHelperClass;
-	}
-
-	/**
-	 * Gets list of primary fields from operation configuration
-	 *
-	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
-	 *
-	 * @return  array
-	 *
-	 * @since   1.3
-	 */
-	public function getPrimaryFields($configuration)
-	{
-		$primaryFields = array();
-
-		if (!empty($configuration->fields))
-		{
-			foreach ($configuration->fields->field as $field)
-			{
-				$isPrimaryField = XmlHelper::isAttributeTrue($field, 'isPrimaryField');
-
-				if ($isPrimaryField)
-				{
-					$primaryFields[] = (string) $field["name"];
-				}
-			}
-		}
-
-		return $primaryFields;
-	}
-
-	/**
-	 * Gets list of all fields from operation configuration
-	 *
-	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
-	 *
-	 * @return  array
-	 *
-	 * @since   1.3
-	 */
-	public function getAllFields($configuration)
-	{
-		$fields = array();
-
-		if (!empty($configuration->fields))
-		{
-			foreach ($configuration->fields->field as $field)
-			{
-				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
-				$fields[] = $fieldAttributes;
-			}
-		}
-
-		return $fields;
 	}
 
 	/**
@@ -1727,199 +935,191 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Assign value to Resource
+	 * Assign value to Resource (really a property of a resource).
 	 *
-	 * @param   array   $resource   Resource list with options
-	 * @param   mixed   $value      Data values to set to resource format
-	 * @param   string  $attribute  Attribute from array to replace the data
+	 * Given a property (specified as an array of attributes taken from the profile) and some data,
+	 * determine the value to be assigned to that property.  Also uses global data if required.
 	 *
-	 * @return  string
+	 * Example:
+	 *   <resource displayName="id" transform="int" fieldFormat="{id}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 	 *
-	 * @since   1.2
-	 */
-	public function assignValueToResource($resource, $value, $attribute = 'fieldFormat')
-	{
-		$format = $resource[$attribute];
-		$transform = XmlHelper::attributeToString($resource, 'transform', '');
-
-		$stringsToReplace = array();
-		preg_match_all('/\{([^}]+)\}/', $format, $stringsToReplace);
-
-		if (!empty($stringsToReplace[1]))
-		{
-			foreach ($stringsToReplace[1] as $replacementKey)
-			{
-				if (is_object($value))
-				{
-					if (property_exists($value, $replacementKey))
-					{
-						// We are transforming only value
-						if ($format == '{' . $replacementKey . '}')
-						{
-							$format = $this->transformField($transform, $value->{$replacementKey});
-						}
-						// We are transforming only part of the string
-						else
-						{
-							$format = str_replace('{' . $replacementKey . '}', $this->transformField($transform, $value->{$replacementKey}), $format);
-						}
-					}
-				}
-				elseif (is_array($value))
-				{
-					if (isset($value[$replacementKey]))
-					{
-						// We are transforming only value
-						if ($format == '{' . $replacementKey . '}')
-						{
-							$format = $this->transformField($transform, $value[$replacementKey]);
-						}
-						// We are transforming only part of the string
-						else
-						{
-							$format = str_replace('{' . $replacementKey . '}', $this->transformField($transform, $value[$replacementKey]), $format);
-						}
-					}
-				}
-				else
-				{
-					// We are transforming only value
-					if ($format == '{' . $replacementKey . '}')
-					{
-						$format = $this->transformField($transform, $value);
-					}
-					// We are transforming only part of the string
-					else
-					{
-						$format = str_replace('{' . $replacementKey . '}', $this->transformField($transform, $value), $format);
-					}
-				}
-			}
-		}
-
-		// We replace global data as well
-		$format = $this->assignGlobalValueToResource($format);
-
-		if (!empty($stringsToReplace[1]))
-		{
-			// If we did not found data with that resource we will set it to 0, except for linkRel which is a documentation template
-			if ($format === $resource[$attribute] && $resource['linkRel'] != 'curies')
-			{
-				$format = null;
-			}
-		}
-
-		return $format;
-	}
-
-	/**
-	 * Assign value to Resource
+	 *   $resource contains
+	 *       ['displayName' => 'id', 'transform' => 'int', 'fieldFormat' => '{id}', 'displayGroup' => '', 'resourceSpecific' => 'rcwsGlobal']
+	 *   $data contains an array|object containing all available data from some internal resource object.
+	 *   $attribute contains 'fieldFormat'
 	 *
-	 * @param   string  $format  String to parse
+	 *   Then this method will take the 'fieldFormat' from $resource, which is '{id}' and looks for a property called 'id'
+	 *   in the $data.  It will then perform the substitution, using the 'transform' called 'int' to return the final value.
+	 *
+	 * @param   array  $resource  Array of resource property attribute key-value pairs.
+	 * @param   mixed  $data      Data key-value pairs available for substitution in the data template.
 	 *
 	 * @return  string
 	 *
-	 * @since   1.2
+	 * @since   __DEPLOY_VERSION__
 	 */
-	public function assignGlobalValueToResource($format)
+	public function assignValueToResource(array $resource, $data)
 	{
-		if (empty($format) || !is_string($format))
-		{
-			return $format;
-		}
+		// Get the template from the profile.
+		// This template defines the value to be returned.  eg. "{id}".
+		$output = $template = $resource['fieldFormat'];
 
+		$search = $replace = array();
+
+		// Look for substitution codes in the template.
 		$stringsToReplace = array();
-		preg_match_all('/\{([^}]+)\}/', $format, $stringsToReplace);
+		preg_match_all('/\{([^}]+)\}/', $template, $stringsToReplace);
 
-		if (!empty($stringsToReplace[1]))
+		// Build search and replace arrays.
+		foreach ($stringsToReplace[1] as $replacementKey)
 		{
-			foreach ($stringsToReplace[1] as $replacementKey)
+			// Look for the key in the data and get the value associated with it.
+			try
 			{
-				// Replace from global variables if present
-				if (isset($this->data[$replacementKey]))
-				{
-					// We are transforming only value
-					if ($format == '{' . $replacementKey . '}')
-					{
-						$format = $this->data[$replacementKey];
-					}
-					// We are transforming only part of the string
-					else
-					{
-						$format = str_replace('{' . $replacementKey . '}', $this->data[$replacementKey], $format);
-					}
-				}
+				$replacementValue = $this->getValueFromData($data, $replacementKey);
+			}
+			catch (KeyNotFoundException $e)
+			{
+				continue;
+			}
+
+			// If the key was found in the data, add to search and replace arrays.
+			if (!is_null($replacementValue))
+			{
+				$search[] = '{' . $replacementKey . '}';
+				$replace[] = $replacementValue;
 			}
 		}
 
-		return $format;
+		// Perform search and replace on the template.
+		$output = str_replace($search, $replace, $template);
+
+		// Look for substitutions from global data as well.
+		$output = $this->assignGlobalValueToResource($output);
+
+		// Transform internal format to external format.
+		$output = $this->profile->transformField($resource['transform'], $output, true);
+
+		return $output;
 	}
 
 	/**
-	 * Get the name of the transform class for a given field type.
+	 * Get a value from various types of data.
 	 *
-	 * First looks for the transform class in the /transform directory
-	 * in the same directory as the web service file.  Then looks
-	 * for it in the /api/transform directory.
+	 * The key is used to locate a value in objects or arrays, which may be nested.
+	 * For other data types (eg. string), the data is returned as its own value.
+	 * The key may be a dot-separated path so that data can be retrieved from a
+	 * hierarchy of array, object, JSON-encoded or simple data.
 	 *
-	 * @param   string  $fieldType  Field type.
+	 * @param   mixed   $data  Array, object, etc., containing the data.
+	 * @param   string  $key   Property of the data to be retrieved.
 	 *
-	 * @return string  Transform class name.
+	 * @return  Value associated with the key.
+	 *
+	 * @throws  KeyNotFoundException for objects or arrays when the key is not found.
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
-	private function getTransformClass($fieldType)
+	private function getValueFromData($data, $key)
 	{
-		$fieldType = !empty($fieldType) ? $fieldType : 'string';
+		// Copy the arguments so we don't accidentally cause side-effects.
+		$innerData = $data;
+		$innerKey = $key;
 
-		// Cache for the class names.
-		static $classNames = array();
+		// Get the parts of the key.
+		$parts = explode('.', $innerKey);
 
-		// If we already know the class name, just return it.
-		if (isset($classNames[$fieldType]))
+		// If the key is not simple, break it down.
+		if (count($parts) > 1)
 		{
-			return $classNames[$fieldType];
+			// Look for the first part.
+			$innerData = $this->getValueFromData($innerData, array_shift($parts));
+
+			// If we are given a string, try JSON-decoding it.
+			if (is_string($innerData))
+			{
+				$tmp = json_decode($innerData);
+
+				if (json_last_error() === JSON_ERROR_NONE)
+				{
+					$innerData = $tmp;
+				}
+			}
+
+			// Re-assemble the remainder of the key.
+			$innerKey = implode('.', $parts);
+
+			// If necessary, recurse further.
+			if (count($parts) > 1)
+			{
+				return $this->getValueFromData($innerData, $innerKey);
+			}
 		}
 
-		// Construct the name of the class to do the transform (default is \\Joomla\\Webservices\\Api\\Hal\\Transform\\TransformString).
-		$className = '\\Joomla\\Webservices\\Api\\Hal\\Transform\\Transform' . ucfirst($fieldType);
-
-		if (class_exists($className))
+		// Key is simple, data is an object.
+		if (is_object($innerData) && property_exists($innerData, $innerKey))
 		{
-			$classInstance = new $className;
-
-			// Cache it for later.
-			$classNames[$fieldType] = $classInstance;
-
-			return $classNames[$fieldType];
+			return $innerData->{$innerKey};
 		}
 
-		return $this->getTransformClass('string');
+		// Key is simple, data is an array.
+		if (is_array($innerData) && isset($innerData[$innerKey]))
+		{
+			return $innerData[$innerKey];
+		}
+
+		// Key is simple, but not found when data is object or array.
+		if (is_object($innerData) || is_array($innerData))
+		{
+			throw new KeyNotFoundException($innerKey);
+		}
+
+		// Key is simple, data is simple.
+		return $innerData;
 	}
 
 	/**
-	 * Transform a source field data value.
+	 * Determine the value of a resource property using data from the global data buffer.
 	 *
-	 * Calls the static toExternal method of a transform class.
+	 * The template contains substitution codes that determine which global data values
+	 * will comprise the property value.  Note that this does not transform data,
+	 * because global data has already been transformed.
 	 *
-	 * @param   string   $fieldType          Field type.
-	 * @param   string   $definition         Field definition.
-	 * @param   boolean  $directionExternal  Transform direction
+	 * @param   string  $template  Template to parse. (eg. "{id}").
 	 *
-	 * @return mixed Transformed data.
+	 * @return  string value of the resource property using the template.
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
-	public function transformField($fieldType, $definition, $directionExternal = true)
+	public function assignGlobalValueToResource($template)
 	{
-		// Get the transform class name.
-		$className = $this->getTransformClass($fieldType);
+		if (empty($template))
+		{
+			return $template;
+		}
 
-		// Execute the transform.
-		if ($className instanceof TransformInterface)
+		$output = $template;
+
+		$stringsToReplace = array();
+		preg_match_all('/\{([^}]+)\}/', $template, $stringsToReplace);
+
+		foreach ($stringsToReplace[1] as $replacementKey)
 		{
-			return $directionExternal ? $className::toExternal($definition) : $className::toInternal($definition);
+			// Look for the key in the data and get the value associated with it.
+			try
+			{
+				$replacementValue = $this->getValueFromData($this->data, $replacementKey);
+			}
+			catch (KeyNotFoundException $e)
+			{
+				continue;
+			}
+
+			$search = '{' . $replacementKey . '}';
+			$output = str_replace($search, $replacementValue, $template);
 		}
-		else
-		{
-			return $definition;
-		}
+
+		return $output;
 	}
 
 	/**
@@ -1932,7 +1132,8 @@ class Webservice extends WebserviceBase
 	 */
 	public function triggerFunction($functionName)
 	{
-		$apiHelperClass = $this->getHelperObject();
+		$version = $this->getOptions()->get('webserviceVersion', '');
+		$apiHelperClass = Factory::getHelper($version, $this->client, $this->webserviceName, $this->webservicePath);
 		$args = func_get_args();
 
 		// Remove function name from arguments
@@ -1949,13 +1150,9 @@ class Webservice extends WebserviceBase
 		// We will add this instance of the object as last argument for manipulation in plugin and helper
 		$temp[] = &$this;
 
+		// @TODO: The event name should not be tied to HAL.
 		$event = new Event('JApiHalBefore' . $functionName, $temp);
 		$result = $this->dispatcher->triggerEvent($event);
-
-		//if ($result)
-		//{
-		//	return $result;
-		//}
 
 		// Checks if that method exists in helper file and executes it
 		if (method_exists($apiHelperClass, $functionName))
@@ -1967,6 +1164,7 @@ class Webservice extends WebserviceBase
 			$result = call_user_func_array(array($this, $functionName), $temp);
 		}
 
+		// @TODO: The event name should not be tied to HAL.
 		$event = new EventImmutable('JApiHalAfter' . $functionName, $temp);
 		$this->dispatcher->triggerEvent($event);
 
@@ -2004,169 +1202,9 @@ class Webservice extends WebserviceBase
 	}
 
 	/**
-	 * Get all defined fields and transform them if needed to expected format. Then it puts it into array for function call
-	 *
-	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
-	 * @param   array              $data           List of posted data
-	 *
-	 * @return array List of parameters to pass to the function
-	 */
-	public function buildFunctionArgs($configuration, $data)
-	{
-		$args = array();
-		$result = null;
-
-		if (!empty($configuration['functionArgs']))
-		{
-			$functionArgs = explode(',', (string) $configuration['functionArgs']);
-
-			foreach ($functionArgs as $functionArg)
-			{
-				$parameter = explode('{', $functionArg);
-
-				// First field is the name of the data field and second is transformation
-				$parameter[0] = trim($parameter[0]);
-				$parameter[1] = !empty($parameter[1]) ? strtolower(trim(str_replace('}', '', $parameter[1]))) : 'string';
-				$parameterValue = null;
-
-				// If we set argument to value, then it will not be transformed, instead we will take field name as a value
-				if ($parameter[1] == 'value')
-				{
-					$parameterValue = $parameter[0];
-				}
-				else
-				{
-					if (isset($data[$parameter[0]]))
-					{
-						$parameterValue = $this->transformField($parameter[1], $data[$parameter[0]]);
-					}
-					else
-					{
-						$parameterValue = null;
-					}
-				}
-
-				$args[] = $parameterValue;
-			}
-		}
-		else
-		{
-			$args[] = $data;
-		}
-
-		return $args;
-	}
-
-	/**
-	 * We set filters and List parameters to the model object
-	 *
-	 * @param   object  &$model  Model object
-	 *
-	 * @return  array
-	 */
-	public function assignFiltersList(&$model)
-	{
-		if (method_exists($model, 'getState'))
-		{
-			// To initialize populateState
-			$model->getState();
-		}
-
-		// Set state for Filters and List
-		if (method_exists($model, 'setState'))
-		{
-			$dataGet = $this->options->get('dataGet', array());
-
-			if (is_object($dataGet))
-			{
-				$dataGet = ArrayHelper::fromObject($dataGet);
-			}
-
-			if (isset($dataGet['list']))
-			{
-				foreach ($dataGet['list'] as $key => $value)
-				{
-					$model->setState('list.' . $key, $value);
-				}
-			}
-
-			if (isset($dataGet['filter']))
-			{
-				foreach ($dataGet['filter'] as $key => $value)
-				{
-					$model->setState('filter.' . $key, $value);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Returns if all primary keys have set values
-	 * Easily get read type (item or list) for current read operation and fills primary keys
-	 *
-	 * @param   array              &$primaryKeys   List of primary keys
-	 * @param   \SimpleXMLElement  $configuration  Configuration group
-	 *
-	 * @return  bool  Returns true if read type is Item
-	 *
-	 * @since   1.2
-	 */
-	public function apiFillPrimaryKeys(&$primaryKeys, $configuration = null)
-	{
-		if (is_null($configuration))
-		{
-			$operations = $this->getConfig('operations');
-
-			if (!empty($operations->read->item))
-			{
-				$configuration = $operations->read->item;
-			}
-
-			$data = $this->triggerFunction('processPostData', $this->options->get('dataGet', array()), $configuration);
-		}
-		else
-		{
-			$data = $this->triggerFunction('processPostData', $this->options->get('data', array()), $configuration);
-		}
-
-		// Checking for primary keys
-		if (!empty($configuration))
-		{
-			$primaryKeysFromFields = ConfigurationHelper::getFieldsArray($configuration, true);
-
-			if (!empty($primaryKeysFromFields))
-			{
-				foreach ($primaryKeysFromFields as $primaryKey => $primaryKeyField)
-				{
-					if (isset($data[$primaryKey]) && $data[$primaryKey] != '')
-					{
-						$primaryKeys[$primaryKey] = $this->transformField($primaryKeyField['transform'], $data[$primaryKey], false);
-					}
-					else
-					{
-						$primaryKeys[$primaryKey] = null;
-					}
-				}
-
-				foreach ($primaryKeys as $primaryKey => $primaryKeyField)
-				{
-					if (is_null($primaryKeyField))
-					{
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Loads the integration for the webservice
 	 *
-	 * @param $name
+	 * @param   string  $name  Name of the integration.
 	 *
 	 * @return mixed
 	 */

@@ -1,0 +1,57 @@
+<?php
+/**
+ * CLI entry file for Joomla webservices application.
+ *
+ * @package    Webservices
+ * @copyright  Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+// Application constants
+define('JPATH_API',      dirname(__DIR__));
+define('JPATH_TEMPLATES', JPATH_API . '/layouts');
+define('JPATH_CMS',      JPATH_API);
+define('JPATH_ROOT',	JPATH_CMS);
+
+// Ensure we've initialized Composer
+if (!file_exists(JPATH_API . '/vendor/autoload.php'))
+{
+	echo 'Composer is not set up properly, please run "composer install".' . "\n";
+
+	exit;
+}
+
+require JPATH_API . '/vendor/autoload.php';
+
+// Wrap in a try/catch so we can display an error if need be
+try
+{
+	$container = (new Joomla\DI\Container)
+		->registerServiceProvider(new Joomla\Webservices\Service\ConfigurationProvider)
+		->registerServiceProvider(new Joomla\Webservices\Service\DatabaseProvider)
+		->registerServiceProvider(new Joomla\Language\Service\LanguageFactoryProvider)
+		->registerServiceProvider(new Joomla\Webservices\Service\EventProvider);
+
+	// Set error reporting based on config
+	$errorReporting = (int) $container->get('config')->get('errorReporting', 0);
+	error_reporting($errorReporting);
+}
+catch (\Exception $e)
+{
+	echo 'An error occurred while booting the application: ' . $e->getMessage() . "\n";
+
+	exit;
+}
+
+// Execute the application
+try
+{
+	(new Joomla\Webservices\CliApplication($container))->execute();
+}
+catch (\Exception $e)
+{
+	echo 'An error occurred while executing the application: ' . $e->getMessage() . "\n";
+
+	exit;
+}
+

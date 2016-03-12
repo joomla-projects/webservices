@@ -113,7 +113,7 @@ class Item extends \JModelAdmin
 			$return = $table->load($pk);
 
 			// Check for a table object error.
-			if ($return === false && $table->getError())
+			if ($return === false)
 			{
 				$this->setError($table->getError());
 
@@ -141,9 +141,9 @@ class Item extends \JModelAdmin
 	 * Each field error is stored in session and can be retrieved with getFieldError().
 	 * Once getFieldError() is called, the error is deleted from the session.
 	 *
-	 * @param   \JForm   $form   The form to validate against.
-	 * @param   array    $data   The data to validate.
-	 * @param   string   $group  The name of the field group to validate.
+	 * @param   \JForm  $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 */

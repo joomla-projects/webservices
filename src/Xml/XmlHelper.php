@@ -17,7 +17,12 @@ namespace Joomla\Webservices\Xml;
 class XmlHelper
 {
 	/**
-	 * Method to transform XML to array and get XML attributes
+	 * Method to get a string attribute from an XML element.
+	 * 
+	 * Example:
+	 *   $element is an XML element with <resource displayGroup="something">
+	 *   $key is "displayGroup"
+	 *   Then this method will return "something".
 	 *
 	 * @param   \SimpleXMLElement|Array  $element  XML object or array
 	 * @param   string                   $key      Key to check

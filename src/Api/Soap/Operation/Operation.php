@@ -54,7 +54,7 @@ class Operation
 	{
 		// We are setting the operation of the webservice to Read
 		$this->setOperation('read');
-		$dataGet = $this->webservice->options->get('dataGet', array());
+		$dataGet = $this->webservice->getOptions()->get('dataGet', array());
 
 		if (is_object($dataGet))
 		{
@@ -113,7 +113,7 @@ class Operation
 	{
 		// We are setting the operation of the webservice to Read
 		$this->setOperation('read');
-		$dataGet = $this->webservice->options->get('dataGet', array());
+		$dataGet = $this->webservice->getOptions()->get('dataGet', array());
 		$primaryKeysFromFields = ConfigurationHelper::getFieldsArray($this->webservice->configuration->operations->read->item, true);
 
 		// If there are no primary keys defined we will use id field as default
@@ -131,7 +131,7 @@ class Operation
 				$keyData = $data->$primaryKey;
 			}
 
-			$dataGet->$primaryKey = $this->webservice->transformField($primaryKeyField['transform'], $keyData, false);
+			$dataGet->$primaryKey = $this->webservice->profile->transformField($primaryKeyField['transform'], $keyData, false);
 		}
 
 		// Handle different language switch
@@ -313,7 +313,7 @@ class Operation
 	{
 		if ($operationName == 'task')
 		{
-			$task = $this->webservice->options->get('task', '');
+			$task = $this->webservice->getOptions()->get('task', '');
 
 			// If task is pointing to some other operation like apply, update or delete
 			if (!empty($task) && !empty($this->webservice->configuration->operations->task->{$task}['useOperation']))
@@ -336,6 +336,7 @@ class Operation
 	 * @param   string  $language  Language name
 	 *
 	 * @return  void
+	 *
 	 * @todo    Move into the integration handler
 	 */
 	protected function setLanguage($language)

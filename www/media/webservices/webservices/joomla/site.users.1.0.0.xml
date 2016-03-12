@@ -1,45 +1,121 @@
 <?xml version="1.0"?>
+<!-- client attribute is deprecated and will be dropped at some point. -->
 <apiservice client="site">
-  <name>User Webservice</name>
-  <author>redCOMPONENT</author>
-  <copyright>Copyright (C) 2008 - 2014 redCOMPONENT.com. All rights reserved.</copyright>
-  <description>Api HAL configuration for com_users.</description>
-  <config>
-    <name>users</name>
-    <version>1.0.0</version>
-    <authorizationAssetName>com_{webserviceName}</authorizationAssetName>
-  </config>
-  <operations>
-    <documentation authorizationNeeded="false" source="auto" url=""/>
-    <task>
-      <forgotUsername useOperation="" authorizationNeeded="false" authorization="" dataMode="helper" optionName="" modelClassName="" modelClassPath="" isAdminClass="false" functionName="" functionArgs="email{string}" validateData="none" validateDataFunction="validate" tableName="" strictFields="false">
-        <description><![CDATA[This task for user can retrieve username.]]></description>
-        <fields>
-          <field name="email" transform="string" defaultValue="" isRequiredField="true" isPrimaryField="false">
-            <description><![CDATA[Email of user.]]></description>
-          </field>
-        </fields>
-        <resources>
-          <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
-          <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
-          <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
-          <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-        </resources>
-      </forgotUsername>
-      <forgotPassword useOperation="" authorizationNeeded="false" authorization="" dataMode="helper" optionName="" modelClassName="" modelClassPath="" isAdminClass="false" functionName="" functionArgs="email{string}" validateData="none" validateDataFunction="validate" tableName="" strictFields="false">
-        <description><![CDATA[This task for user can retrieve password.]]></description>
-        <fields>
-          <field name="email" transform="string" defaultValue="" isRequiredField="true" isPrimaryField="false">
-            <description><![CDATA[Email of user.]]></description>
-          </field>
-        </fields>
-        <resources>
-          <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
-          <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
-          <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
-          <resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
-        </resources>
-      </forgotPassword>
-    </task>
-  </operations>
+	<name>Users Webservice</name>
+	<author>redCOMPONENT</author>
+	<copyright>Copyright (C) 2008 - 2014 redCOMPONENT.com. All rights reserved.</copyright>
+	<description>API profile and configuration for Joomla Users component.</description>
+	<config>
+		<!-- This will be used for automatic model and table instance in CRUD methods and for Api helper class -->
+		<name>users</name>
+		<version>1.0.0</version>
+		<authorizationAssetName>com_{webserviceName}</authorizationAssetName>
+	</config>
+	<operations>
+		<documentation authorizationNeeded="false" source="auto" url=""/>
+
+		<!-- authorization tag is used to test user authorization against Joomla ACL. Multiple checks can be performed if separated with comma
+			authorizationAssetName can be overridden if you set it here separated by colon (ex. core.admin:com_contact,core.manage:com_contact) authorizationNeeded="false"
+		-->
+		<read>
+			<!-- Api will automatically call getItems if functionName is not specified -->
+			<!-- Api will automatically call ExampleModelElements if modelClassName is not specified -->
+			<!-- dataMode can be model, helper or table. Default is model. If you use "table" then tableName attribute must be set.
+				If it is set to "helper" it will run operation on web service helper class -->
+			<list authorizationNeeded="false" strictFields="false" authorization="" dataMode="table" optionName="com_users" modelClassName="category" modelClassPath="" isAdminClass="true" functionName="" functionArgs="" validateData="none" validateDataFunction="validate" tableName="users">
+				<description><![CDATA[ This operation lists users. ]]></description>
+				<!-- Enable or disable fields to read. If left empty, all fields will be available -->
+				<!-- isFilterField defines specific fields as filter fields when using dataMode="table". When filtering fields must be in format filter[fieldName] -->
+				<!-- isPrimaryField defines specific fields as primary key fields when using dataMode="table". -->
+				<fields>
+					<field name="id" transform="integer" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="true"/>
+					<field name="name" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="true" isPrimaryField="false"/>
+					<field name="username" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
+					<field name="email" transform="string" defaultValue="" isRequiredField="false" isFilterField="false" isSearchableField="false" isPrimaryField="false"/>
+				</fields>
+
+				<!-- Resource definition -->
+				<!-- Resources can be grouped with "resourceSpecific" attribute, default value is "rcwsGlobal" -->
+				<resources>
+					<resource displayName="documentation" transform="string" fieldFormat="/{webserviceName}?format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="page" transform="integer" fieldFormat="{pagination.page}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="pageLimit" transform="integer" fieldFormat="{pagination.limit}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="limitstart" transform="integer" fieldFormat="{pagination.limitstart}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="totalItems" transform="integer" fieldFormat="{pagination.totalItems}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="totalPages" transform="integer" fieldFormat="{pagination.totalPages}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+
+					<!-- _links -->
+					<resource displayName="contents" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="self" transform="string" fieldFormat="/{webserviceName}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="first" transform="string" fieldFormat="/{webserviceName}?limitstart=0" displayGroup="_links" linkTitle="Pagination first" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="previous" transform="string" fieldFormat="/{webserviceName}?limitstart={pagination.previous}" displayGroup="_links" linkTitle="Pagination previous" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="next" transform="string" fieldFormat="/{webserviceName}?limitstart={pagination.next}" displayGroup="_links" linkTitle="Pagination next" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="last" transform="string" fieldFormat="/{webserviceName}?limitstart={pagination.last}" displayGroup="_links" linkTitle="Pagination last" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+
+					<!-- items -->
+					<resource displayName="fullname" transform="string" fieldFormat="{name}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="username" transform="string" fieldFormat="{username}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="email" transform="string" fieldFormat="{email}" displayGroup="" resourceSpecific="listItem"/>
+					<resource displayName="self" transform="string" fieldFormat="/{webserviceName}/{id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="listItem">
+						<description><![CDATA[Link to user item]]></description>
+					</resource>
+				</resources>
+			</list>
+
+			<!-- Api will automatically call getItem if functionName is not specified -->
+			<!-- Api will automatically call ExampleModelElement if modelClassName is not specified -->
+			<item authorizationNeeded="false" strictFields="false" authorization="" dataMode="table" optionName="com_users" modelClassName="user" modelClassPath="" isAdminClass="false" functionName="" functionArgs="" validateData="none" validateDataFunction="validate" tableName="users">
+				<description><![CDATA[ This operation displays one user. ]]></description>
+
+				<fields>
+					<field name="id" transform="integer" defaultValue="" isRequiredField="false" isPrimaryField="true"/>
+				</fields>
+
+				<resources>
+					<resource displayName="fullname" transform="string" fieldFormat="{name}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="username" transform="string" fieldFormat="{username}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="email" transform="string" fieldFormat="{email}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+
+					<!-- _links -->
+					<resource displayName="documentation" transform="string" fieldFormat="https://docs.joomla.org/User:Chris_Davenport/API/users/item" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="contents" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="self" transform="string" fieldFormat="/{webserviceName}/{id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="collection" transform="string" fieldFormat="/{webserviceName}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+				</resources>
+			</item>
+		</read>
+
+		<!-- @TODO This section should be changed to use REST resources. -->
+		<task>
+			<forgotUsername useOperation="" authorizationNeeded="false" authorization="" dataMode="helper" optionName="" modelClassName="" modelClassPath="" isAdminClass="false" functionName="" functionArgs="email{string}" validateData="none" validateDataFunction="validate" tableName="" strictFields="false">
+				<description><![CDATA[This task for user can retrieve username.]]></description>
+				<fields>
+					<field name="email" transform="string" defaultValue="" isRequiredField="true" isPrimaryField="false">
+						<description><![CDATA[Email of user.]]></description>
+					</field>
+				</fields>
+				<resources>
+					<resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="contents" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="collection" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+				</resources>
+			</forgotUsername>
+
+			<forgotPassword useOperation="" authorizationNeeded="false" authorization="" dataMode="helper" optionName="" modelClassName="" modelClassPath="" isAdminClass="false" functionName="" functionArgs="email{string}" validateData="none" validateDataFunction="validate" tableName="" strictFields="false">
+				<description><![CDATA[This task for user can retrieve password.]]></description>
+				<fields>
+					<field name="email" transform="string" defaultValue="" isRequiredField="true" isPrimaryField="false">
+						<description><![CDATA[Email of user.]]></description>
+					</field>
+				</fields>
+				<resources>
+					<resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="contents" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="collection" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
+					<resource displayName="result" transform="boolean" fieldFormat="{result}" displayGroup="" resourceSpecific="rcwsGlobal"/>
+				</resources>
+			</forgotPassword>
+		</task>
+	</operations>
 </apiservice>

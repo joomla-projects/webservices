@@ -19,7 +19,8 @@ use Joomla\Webservices\Webservices\Exception\ConfigurationException;
 use Joomla\Webservices\Xml\XmlHelper;
 
 /**
- * Interface to handle api calls
+ * A collection of static helper methods dealing with the reading
+ * and interpretation of webservice XML configuration files.
  *
  * @package     Redcore
  * @subpackage  Api
@@ -98,9 +99,9 @@ class ConfigurationHelper
 	/**
 	 * Loading of webservice XML file
 	 *
-	 * @param   string  $client             Client
-	 * @param   string  $webserviceName     Webservice name
-	 * @param   string  $version            Version of the webservice
+	 * @param   string  $client          Client
+	 * @param   string  $webserviceName  Webservice name
+	 * @param   string  $version         Version of the webservice
 	 *
 	 * @throws  \Exception
 	 * @return  array  List of objects
@@ -120,7 +121,7 @@ class ConfigurationHelper
 	/**
 	 * Loading of related XML files
 	 *
-	 * @return  array  List of objects
+	 * @return  void
 	 */
 	public static function loadWebservices()
 	{
@@ -214,30 +215,30 @@ class ConfigurationHelper
 	 */
 	public static function getWebserviceHelper($client, $webserviceName, $version = '', $path = '')
 	{
-		if (!empty($webserviceName))
+		if (empty($webserviceName))
 		{
-			$version = !empty($version) ? $version : '1.0.0';
-			$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesPath() . '/' . $path : WebserviceHelper::getWebservicesPath();
-
-			// Search for suffixed versions. Example: content.1.0.0.xml
-			$rawPath = $webserviceName . '.' . $version . '.php';
-			$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
-
-			$configurationFullPath = Path::find($webservicePath, $rawPath);
-
-			if ($configurationFullPath)
-			{
-				return $configurationFullPath;
-			}
-
-			// Fall back to standard version
-			$rawPath = $webserviceName . '.php';
-			$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
-
-			return Path::find($webservicePath, $rawPath);
+			return '';
 		}
 
-		return null;
+		$version = !empty($version) ? $version : '1.0.0';
+		$webservicePath = !empty($path) ? WebserviceHelper::getWebservicesPath() . '/' . $path : WebserviceHelper::getWebservicesPath();
+
+		// Search for suffixed versions. Example: content.1.0.0.xml
+		$rawPath = $webserviceName . '.' . $version . '.php';
+		$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
+
+		$configurationFullPath = Path::find($webservicePath, $rawPath);
+
+		if ($configurationFullPath)
+		{
+			return $configurationFullPath;
+		}
+
+		// Fall back to standard version
+		$rawPath = $webserviceName . '.php';
+		$rawPath = !empty($client) ? $client . '.' . $rawPath : $rawPath;
+
+		return Path::find($webservicePath, $rawPath);
 	}
 
 	/**
@@ -281,11 +282,11 @@ class ConfigurationHelper
 	}
 
 	/**
-	 * Get list of all webservices from webservices parameters
+	 * Get list of all installed and published webservices from database.
 	 *
-	 * @param   DatabaseDriver  $db  The database driver object
+	 * @param   DatabaseDriver  $db  The database driver object.
 	 *
-	 * @return  array  Array or table with columns columns
+	 * @return  array  Array of installed and published webservices.
 	 */
 	public static function getInstalledWebservices(DatabaseDriver $db)
 	{
@@ -296,10 +297,9 @@ class ConfigurationHelper
 			$query = $db->getQuery(true)
 				->select('*')
 				->from($db->quoteName('#__webservices'))
+				->where($db->quoteName('published') . ' = 1')
 				->order('created_date ASC');
-
-			$db->setQuery($query);
-			$webservices = $db->loadObjectList();
+			$webservices = $db->setQuery($query)->loadObjectList();
 
 			if (!empty($webservices))
 			{
@@ -328,12 +328,12 @@ class ConfigurationHelper
 		// Initialise Installed webservices
 		$webservices = self::getInstalledWebservices($db);
 
-		if (!empty($webservices[$client][$webserviceName][$version]))
+		if (empty($webservices[$client][$webserviceName][$version]))
 		{
-			return $webservices[$client][$webserviceName][$version];
+			return null;
 		}
 
-		return null;
+		return $webservices[$client][$webserviceName][$version];
 	}
 
 	/**
@@ -350,19 +350,19 @@ class ConfigurationHelper
 	{
 		$installedWebservices = self::getInstalledWebservices($db);
 
-		if (!empty($installedWebservices))
+		if (empty($installedWebservices))
 		{
-			if (empty($version))
-			{
-				$version = self::getNewestWebserviceVersion($client, $webserviceName, $db);
-			}
-
-			$webservice = $installedWebservices[$client][$webserviceName][$version];
-
-			return !empty($webservice['state']);
+			return false;
 		}
 
-		return false;
+		if (empty($version))
+		{
+			$version = self::getNewestWebserviceVersion($client, $webserviceName, $db);
+		}
+
+		$webservice = $installedWebservices[$client][$webserviceName][$version];
+
+		return !empty($webservice['published']);
 	}
 
 	/**
@@ -378,16 +378,16 @@ class ConfigurationHelper
 	{
 		$installedWebservices = self::getInstalledWebservices($db);
 
-		if (!empty($installedWebservices) && isset($installedWebservices[$client][$webserviceName]))
+		if (empty($installedWebservices) || !isset($installedWebservices[$client][$webserviceName]))
 		{
-			// First element is always newest
-			foreach ($installedWebservices[$client][$webserviceName] as $version => $webservice)
-			{
-				return $version;
-			}
+			return '1.0.0';
 		}
 
-		return '1.0.0';
+		// First element is always newest
+		foreach ($installedWebservices[$client][$webserviceName] as $version => $webservice)
+		{
+			return $version;
+		}
 	}
 
 	/**
@@ -411,7 +411,7 @@ class ConfigurationHelper
 	 *
 	 * @return  array
 	 */
-	public static function getWebserviceScopes(Text $text, $filterScopes = array(), DatabaseDriver $db)
+	public static function getWebserviceScopes(Text $text, $filterScopes, DatabaseDriver $db)
 	{
 		$options = array();
 		$installedWebservices = self::getInstalledWebservices($db);
@@ -492,7 +492,6 @@ class ConfigurationHelper
 
 		if (!empty($appendFormat))
 		{
-
 			$uri .= '&format=' . $appendFormat;
 		}
 
@@ -519,125 +518,28 @@ class ConfigurationHelper
 	}
 
 	/**
-	 * Returns header variables from globals
+	 * Returns an array of data from <field> elements defined in the <fields> section
+	 * of the configuration XML.
+	 *
+	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
 	 *
 	 * @return  array
-	 */
-	public static function getHeaderVariablesFromGlobals()
-	{
-		$headers = array();
-
-		foreach ($_SERVER as $key => $value)
-		{
-			if (strpos($key, 'HTTP_') === 0)
-			{
-				$headers[substr($key, 5)] = $value;
-			}
-			// CONTENT_* are not prefixed with HTTP_
-			elseif (in_array($key, array('CONTENT_LENGTH', 'CONTENT_MD5', 'CONTENT_TYPE')))
-			{
-				$headers[$key] = $value;
-			}
-		}
-
-		if (isset($_SERVER['PHP_AUTH_USER']))
-		{
-			$headers['PHP_AUTH_USER'] = $_SERVER['PHP_AUTH_USER'];
-			$headers['PHP_AUTH_PW'] = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
-		}
-		else
-		{
-			/*
-			 * php-cgi under Apache does not pass HTTP Basic user/pass to PHP by default
-			 * For this workaround to work, add this line to your .htaccess file:
-			 * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-			 *
-			 * A sample .htaccess file:
-			 * RewriteEngine On
-			 * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-			 * RewriteCond %{REQUEST_FILENAME} !-f
-			 * RewriteRule ^(.*)$ app.php [QSA,L]
-			 */
-
-			$authorizationHeader = null;
-
-			if (isset($_SERVER['HTTP_AUTHORIZATION']))
-			{
-				$authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'];
-			}
-			elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']))
-			{
-				$authorizationHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
-			}
-			elseif (function_exists('apache_request_headers'))
-			{
-				$requestHeaders = (array) apache_request_headers();
-
-				// Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
-				$requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-
-				if (isset($requestHeaders['Authorization']))
-				{
-					$authorizationHeader = trim($requestHeaders['Authorization']);
-				}
-			}
-
-			if (null !== $authorizationHeader)
-			{
-				$headers['AUTHORIZATION'] = $authorizationHeader;
-
-				// Decode AUTHORIZATION header into PHP_AUTH_USER and PHP_AUTH_PW when authorization header is basic
-				if (0 === stripos($authorizationHeader, 'basic'))
-				{
-					$exploded = explode(':', base64_decode(substr($authorizationHeader, 6)));
-
-					if (count($exploded) == 2)
-					{
-						list($headers['PHP_AUTH_USER'], $headers['PHP_AUTH_PW']) = $exploded;
-					}
-				}
-			}
-		}
-
-		// PHP_AUTH_USER/PHP_AUTH_PW
-		if (isset($headers['PHP_AUTH_USER']))
-		{
-			$headers['AUTHORIZATION'] = 'Basic ' . base64_encode($headers['PHP_AUTH_USER'] . ':' . $headers['PHP_AUTH_PW']);
-		}
-
-		return $headers;
-	}
-
-	/**
-	 * Returns an array of fields from Element Fields properties
 	 *
-	 * @param   \SimpleXMLElement  $xmlElement   Xml element
-	 * @param   boolean            $primaryKeys  Only extract primary keys
-	 *
-	 * @return  array
+	 * @since   1.3
 	 */
-	public static function getFieldsArray($xmlElement, $primaryKeys = false)
+	public static function getAllFields(\SimpleXMLElement $configuration)
 	{
 		$fields = array();
 
-		if (isset($xmlElement->fields->field))
+		// If there are no fields, return an empty array.
+		if (empty($configuration->fields))
 		{
-			foreach ($xmlElement->fields->field as $field)
-			{
-				$fieldAttributes = XmlHelper::getXMLElementAttributes($field);
-
-				if (($primaryKeys && XmlHelper::isAttributeTrue($field, 'isPrimaryField'))
-					|| !$primaryKeys)
-				{
-					$fields[$fieldAttributes['name']] = $fieldAttributes;
-				}
-			}
+			return $fields;
 		}
 
-		// If there are no primary keys defined we will use id field as default
-		if (empty($fields) && $primaryKeys)
+		foreach ($configuration->fields->field as $field)
 		{
-			$fields['id'] = array('name' => 'id', 'transform' => 'int');
+			$fields[] = XmlHelper::getXMLElementAttributes($field);
 		}
 
 		return $fields;
@@ -705,5 +607,35 @@ class ConfigurationHelper
 		}
 
 		return $filterFields;
+	}
+
+	/**
+	 * Gets list of primary fields from operation configuration
+	 *
+	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
+	 *
+	 * @return  array
+	 *
+	 * @since   1.3
+	 */
+	public static function getPrimaryFields(\SimpleXMLElement $configuration)
+	{
+		$primaryFields = array();
+
+		// If there are no primary fields, return an empty array.
+		if (empty($configuration->fields))
+		{
+			return $primaryFields;
+		}
+
+		foreach ($configuration->fields->field as $field)
+		{
+			if (XmlHelper::isAttributeTrue($field, 'isPrimaryField'))
+			{
+				$primaryFields[] = (string) $field['name'];
+			}
+		}
+
+		return $primaryFields;
 	}
 }

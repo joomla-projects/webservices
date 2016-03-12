@@ -49,7 +49,7 @@ catch (\Exception $e)
 // Execute the application
 try
 {
-	(new Joomla\Webservices\Application($container))->execute();
+	(new Joomla\Webservices\WebApplication($container))->execute();
 }
 catch (\Exception $e)
 {

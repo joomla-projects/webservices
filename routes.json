@@ -1,0 +1,50 @@
+[
+	{
+		"name": "contents",
+		"description": "API contents (home) page",
+		"style": "rest",
+		"routes": {
+			"/": ["GET"]
+		}
+	},
+	{
+		"name": "categories",
+		"description": "Categories collection and individual categories",
+		"style": "rest",
+		"routes": {
+			"/categories": ["GET","POST"],
+			"/categories/:id/:resource": ["GET"],
+			"/categories/:id": ["GET","PUT","PATCH","DELETE"]
+		},
+		"regex": {
+			"id": "\\d+",
+			"resource": "contacts"
+		}
+	},
+	{
+		"name": "contacts",
+		"description": "Contacts collection and individual contacts",
+		"style": "rest",
+		"routes": {
+			"/contacts": ["GET","POST"],
+			"/contacts/:id/:resource": ["GET"],
+			"/contacts/:id": ["GET","PUT","PATCH","DELETE"]
+		},
+		"regex": {
+			"id": "\\d+",
+			"resource": "categories|users"
+		}
+	},
+	{
+		"name": "users",
+		"description": "Users collection and individual users",
+		"style": "rest",
+		"routes": {
+			"/users": ["GET","POST"],
+			"/users/:id": ["GET","PUT","PATCH","DELETE"]
+		},
+		"regex": {
+			"id": "\\d+"
+		}
+	}
+]

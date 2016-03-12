@@ -29,6 +29,12 @@ use Joomla\Registry\Registry;
 class Soap extends ApiBase  implements DispatcherAwareInterface
 {
 	/**
+	 * @var    string  Name of the Api
+	 * @since  1.2
+	 */
+	public $apiName = 'soap';
+
+	/**
 	 * @var    string  Operation that will be preformed with this Api call
 	 * @since  1.2
 	 */
@@ -77,8 +83,8 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 	/**
 	 * Method to instantiate the file-based api call.
 	 *
-	 * @param   Container  $container  The DIC object
-	 * @param   Registry   $options    Optional custom options to load
+	 * @param   Container  $container  The DIC object.
+	 * @param   Registry   $options    Optional custom options to load.
 	 *
 	 * @throws  \Exception
 	 * @since   1.4
@@ -86,8 +92,6 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 	public function __construct(Container $container, Registry $options)
 	{
 		parent::__construct($container, $options);
-
-		$this->setApi($this->options->get('api', 'soap'));
 
 		$this->setDispatcher($container->get('Joomla\\Event\\Dispatcher'));
 
@@ -397,11 +401,6 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 
 		$event = new Event('JApiSoapBefore' . $functionName, $temp);
 		$result = $this->dispatcher->triggerEvent($event);
-
-		//if ($result)
-		//{
-		//	return $result;
-		//}
 
 		// Checks if that method exists in helper file and executes it
 		$result = call_user_func_array(array($this, $functionName), $temp);

@@ -7,10 +7,10 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Webservices\Renderer;
+namespace Joomla\Webservices\Renderer\Application;
 
+use Joomla\Webservices\Renderer\Renderer;
 use Joomla\Webservices\Api\Soap\Soap as Api;
-use Joomla\DI\Container;
 
 /**
  * ApiDocumentSoap class, provides an easy interface to parse and display XML output
@@ -19,7 +19,7 @@ use Joomla\DI\Container;
  * @subpackage  Document
  * @since       1.4
  */
-class Soap extends Base
+class Soapxml extends Renderer
 {
 	/**
 	 * Document name
@@ -56,15 +56,15 @@ class Soap extends Base
 	/**
 	 * Class constructor
 	 *
-	 * @param   Container  $container  The DIC object
-	 * @param   array   $options   Associative array of options
-	 * @param   string  $mimeType  Document type
+	 * @param   object  $application  The application.
+	 * @param   array   $options      Associative array of options.
+	 * @param   string  $mimeType     Document type.
 	 *
 	 * @since  1.4
 	 */
-	public function __construct(Container $container, $options = array(), $mimeType = 'soap+xml')
+	public function __construct($application, $options = array(), $mimeType = 'soap+xml')
 	{
-		parent::__construct($container, $options);
+		parent::__construct($application, $options);
 
 		$this->documentFormat = $options['documentFormat'];
 
@@ -112,7 +112,7 @@ class Soap extends Base
 		$this->app->setHeader('Cache-Control', 'private', false);
 		$this->app->setHeader('Content-type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
 
-		$this->app->sendHeaders();
+		// $this->app->sendHeaders();
 
 		// Get the Soap string from the buffer.
 		$content = $this->getBuffer();
