@@ -15,7 +15,6 @@ use Joomla\Input\Input;
 use Joomla\Filter\InputFilter;
 use Joomla\Registry\Registry;
 use Joomla\Router\Router;
-use Joomla\Session\Session;
 
 use Joomla\Authentication\Authentication;
 
@@ -42,14 +41,6 @@ use Negotiation\Negotiator;
 class WebApplication extends AbstractWebApplication implements ContainerAwareInterface
 {
 	use ContainerAwareTrait;
-
-	/**
-	 * The session object
-	 *
-	 * @var    Session
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $session;
 
 	/**
 	 * The application message queue.

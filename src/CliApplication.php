@@ -14,7 +14,6 @@ use Joomla\Application\Cli\CliOutput;
 use Joomla\Input\Cli as Input;
 use Joomla\Filter\InputFilter;
 use Joomla\Registry\Registry;
-use Joomla\Session\Session;
 
 use Joomla\Authentication\Authentication;
 
@@ -40,14 +39,6 @@ use Negotiation\Negotiator;
 class CliApplication extends AbstractCliApplication implements ContainerAwareInterface
 {
 	use ContainerAwareTrait;
-
-	/**
-	 * The session object
-	 *
-	 * @var    Session
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $session;
 
 	/**
 	 * The application message queue.
