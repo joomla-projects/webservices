@@ -22,9 +22,9 @@ class Create extends Webservice
 {
 	/**
 	 * Execute the Api operation.
-	 * 
+	 *
 	 * @param   Profile  $profile  A profile which shapes the resource.
-	 * 
+	 *
 	 * @return  Resource  A populated Resource object.
 	 *
 	 * @since   __DEPLOY_VERSION__
@@ -64,12 +64,12 @@ class Create extends Webservice
 	public function apiCreate()
 	{
 		// Get resource profile from configuration.
-        $profile = $this->profile->getResources($this->getOptions());
+		$profile = $this->profile->getResources($this->getOptions());
 
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
 
-        $data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
+		$data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
 
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
 

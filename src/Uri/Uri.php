@@ -121,6 +121,13 @@ class Uri extends BaseUri
 		return self::$instances[$uri];
 	}
 
+	/**
+	 * Set base URL.
+	 *
+	 * @param   array  $base  Array of base URL segments.
+	 *
+	 * @return  This object for method chaining.
+	 */
 	public function setBase(array $base)
 	{
 		self::$base = $base;

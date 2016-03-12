@@ -66,7 +66,8 @@ class SoapHelper
 	 * @param   array              $fields            Array of fields to add
 	 * @param   \SimpleXMLElement  &$typeSchema       typeSchema to add the new elements to
 	 * @param   string             $typeName          Name of the complexType to create (if $elementName is included, this is ignored)
-	 * @param   boolean            $validateOptional  Optional parameter to validate if the fields are optional.  Otherwise they're always set as required
+	 * @param   boolean            $validateOptional  Optional parameter to validate if the fields are optional.
+	 *                                                Otherwise they're always set as required
 	 * @param   string             $elementName       Name of the optional element to create
 	 *
 	 * @return  void

@@ -175,8 +175,7 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 			// Load the interaction style (api) class, execute it, then render the result.
 			Factory::getApi($this->container, $style, new Registry($options))
 				->execute($input)
-				->render()
-				;
+				->render();
 		}
 		catch (\Exception $e)
 		{
@@ -186,12 +185,6 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 
 			// Set the server response code.
 			$this->header('Status: ' . $code, true, $code);
-
-			// @TODO Move this code to the SOAP code.
-//			if (strtolower($apiStyle) == 'soap')
-//			{
-//				$this->setBody(SoapHelper::createSoapFaultResponse($e->getMessage()));
-//			}
 
 			// Check for defined constants (required prior to PHP 5.4.0).
 			if (!defined('JSON_UNESCAPED_SLASHES'))
@@ -207,34 +200,36 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 						'code' => $code,
 						'type' => get_class($e),
 						'trace' => $e->getTrace(),
-					),
-				JSON_UNESCAPED_SLASHES)
+					), JSON_UNESCAPED_SLASHES
+				)
 			);
 		}
 	}
 
 	/**
 	 * Content type negotiation.
-	 * 
+	 *
 	 * If no match can be found a RuntimeException is thrown.
-	 * 
+	 *
 	 * @param   string  $accept      An "Accept" string formatted as per RFC7231.
 	 * @param   array   $priorities  Array of content types accepted in priority order.
-	 * 
+	 *
 	 * @return  string  Best match content type.
+	 *
 	 * @throws  RuntimeException
-	 * 
+	 *
 	 * @see https://tools.ietf.org/html/rfc7231#section-5.3.2
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
 	private function negotiateContentType($accept = '', $priorities = array())
 	{
-		$mediaType = (new Negotiator())->getBest($accept, $priorities);
+		$mediaType = (new Negotiator)->getBest($accept, $priorities);
 
 		if (is_null($mediaType))
 		{
-			throw new \RuntimeException('406 Not acceptable');		// @TODO Better error handling
+			// @TODO Better error handling.
+			throw new \RuntimeException('406 Not acceptable');
 		}
 
 		return $mediaType->getValue();
@@ -243,7 +238,7 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 	/**
 	 * Login authentication function.
 	 *
-	 * @param   \Joomla\Authentication\AuthenticationStrategyInterface[]  $strategies
+	 * @param   \Joomla\Authentication\AuthenticationStrategyInterface[]  $strategies  Array of authentication strategies.
 	 *
 	 * @return  boolean  True on success.
 	 *
@@ -251,7 +246,7 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 	 */
 	public function login($strategies)
 	{
-		$authenticate = new Authentication();
+		$authenticate = new Authentication;
 
 		foreach ($strategies as $name => $strategy)
 		{
@@ -264,7 +259,7 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 	/**
 	 * Logout authentication function.
 	 *
-	 * @param   integer  $userid   The user to load - Can be an integer or string - If string, it is converted to ID automatically
+	 * @param   integer  $userid  The user to load - Can be an integer or string - If string, it is converted to ID automatically.
 	 *
 	 * @return  boolean  True on success
 	 *
@@ -307,22 +302,6 @@ class WebApplication extends AbstractWebApplication implements ContainerAwareInt
 	public function getMessageQueue()
 	{
 		return $this->messageQueue;
-	}
-
-	/**
-	 * Redirect to another URL overriden to ensure all messages are enqueued into the session
-	 *
-	 * @param   string   $url    The URL to redirect to. Can only be http/https URL
-	 * @param   boolean  $moved  True if the page is 301 Permanently Moved, otherwise 303 See Other is assumed.
-	 *
-	 * @return  void
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function redirect($url, $moved = false)
-	{
-		// Hand over processing to the parent now
-		parent::redirect($url, $moved);
 	}
 
 	/**

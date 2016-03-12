@@ -29,15 +29,15 @@ class Halxml extends Renderer
 {
 	/**
 	 * Resource name.
-	 * 
+	 *
 	 * @var    string
 	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $resourceName = '';
-	
+
 	/**
 	 * XML document object.
-	 * 
+	 *
 	 * @var    \DOMDocument
 	 * @since  __DEPLOY_VERSION__
 	 */
@@ -45,7 +45,7 @@ class Halxml extends Renderer
 
 	/**
 	 * XML document root node.
-	 * 
+	 *
 	 * @var   \DOMElement
 	 * @since  __DEPLOY_VERSION__
 	 */
@@ -127,11 +127,11 @@ class Halxml extends Renderer
 					// Create a rel attribute.
 					$rel = $doc->createAttribute('rel');
 					$rel->appendChild($doc->createTextNode($root ? 'self' : $this->resourceName));
-			
+
 					// Create an href attribute.
 					$href = $doc->createAttribute('href');
 					$href->appendChild($doc->createTextNode($link->getHref()));
-			
+
 					// Add the attributes to item resource node.
 					$xml->appendChild($rel);
 					$xml->appendChild($href);
@@ -154,8 +154,7 @@ class Halxml extends Renderer
 		// Iterate through the data properties and add them to the top-level array.
 		foreach ($resource->getData() as $name => $property)
 		{
-			// @TODO Check if skipping arrays is the correct behaviour.
-			//		 It was added because sometimes there is a _messages array.
+			// @TODO Check if skipping arrays is the correct behaviour.  It was added because sometimes there is a _messages array.
 			if (is_array($property))
 			{
 				continue;
@@ -293,11 +292,11 @@ class Halxml extends Renderer
 					// Create a rel attribute.
 					$rel = $doc->createAttribute('rel');
 					$rel->appendChild($doc->createTextNode('self'));
-			
+
 					// Create an href attribute.
 					$href = $doc->createAttribute('href');
 					$href->appendChild($doc->createTextNode($link->getHref()));
-			
+
 					// Add the attributes to item resource node.
 					$xml->appendChild($rel);
 					$xml->appendChild($href);
@@ -320,8 +319,7 @@ class Halxml extends Renderer
 		// Iterate through the data properties and add them to the top-level array.
 		foreach ($resource->getData() as $name => $property)
 		{
-			// @TODO Check if skipping arrays is the correct behaviour.
-			//		 It was added because sometimes there is a _messages array.
+			// @TODO Check if skipping arrays is the correct behaviour.  It was added because sometimes there is a _messages array.
 			if (is_array($property))
 			{
 				continue;

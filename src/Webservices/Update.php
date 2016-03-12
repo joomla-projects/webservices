@@ -21,7 +21,7 @@ class Update extends Webservice
 {
 	/**
 	 * Execute the Api operation.
-	 * 
+	 *
 	 * @param   Resource  $resource  A Resource object to be populated.
 	 *
 	 * @return  Resource  The populated Resource object.
@@ -59,11 +59,11 @@ class Update extends Webservice
 	public function apiUpdate()
 	{
 		// Get resource list from configuration.
-        $this->profile->getResources($this->getOptions());
+		$this->profile->getResources($this->getOptions());
 
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'save');
-        $data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
+		$data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
 
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
 
@@ -78,7 +78,7 @@ class Update extends Webservice
 		}
 
 		// Prepare parameters for the function
-        $args = $this->profile->buildFunctionArgs($data);
+		$args = $this->profile->buildFunctionArgs($data);
 		$result = null;
 
 		// Checks if that method exists in model class and executes it

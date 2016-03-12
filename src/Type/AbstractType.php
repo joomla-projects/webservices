@@ -2,6 +2,16 @@
 /**
  * Type value object class.
  *
+ * @package    Webservices
+ * @copyright  Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+namespace Joomla\Webservices\Type;
+
+/**
+ * Type value object class.
+ *
  * Implemented as an immutable object with a pair of named constructors.
  * You should always create a new object of the required type by either
  * calling the static fromInternal method to create an object from an
@@ -9,6 +19,8 @@
  * from an external value.  Validation is done in these constructors
  * during object instantiation and since the object is immutable it is
  * always valid and no separate validation methods are required.
+ *
+ * @since  __DEPLOY_VERSION__
  */
 
 namespace Joomla\Webservices\Type;

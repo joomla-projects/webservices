@@ -165,9 +165,9 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 
 	/**
 	 * Execute the Api operation.
-	 * 
+	 *
 	 * @param   Profile  $profile  A profile which will shape the resource.
-	 * 
+	 *
 	 * @return  Resource  A populated Resource object.
 	 *
 	 * @throws  \Exception
@@ -190,7 +190,12 @@ abstract class WebserviceBase implements ContainerAwareInterface, DispatcherAwar
 
 		if ($this->isInvalid())
 		{
-			throw new \Exception($this->getContainer()->get('Joomla\\Language\\LanguageFactory')->getText()->sprintf('LIB_WEBSERVICES_API_STATUS_CODE_INVALID', $statusCode));
+			throw new \Exception(
+				$this->getContainer()
+				->get('Joomla\\Language\\LanguageFactory')
+				->getText()
+				->sprintf('LIB_WEBSERVICES_API_STATUS_CODE_INVALID', $statusCode)
+				);
 		}
 
 		return $this;

@@ -24,7 +24,8 @@ use Joomla\Authentication\AuthenticationStrategyInterface;
 /**
  * Integration class for Joomla! CMS 3.x
  *
- * @package Joomla\Webservices\Integrations\Joomla
+ * @package  Joomla\Webservices\Integrations\Joomla
+ * @since    __DEPLOY_VERSION__
  */
 class Joomla implements ContainerAwareInterface, IntegrationInterface
 {
@@ -142,6 +143,7 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		if ($dataMode == 'helper')
 		{
 			$version = $this->webservice->getOptions()->get('webserviceVersion', '');
+
 			return Factory::getHelper($version, $this->webservice->client, $this->webservice->webserviceName, $this->webservice->webservicePath);
 		}
 
@@ -236,7 +238,7 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 		$baseJoomlaModelClass = '\\Joomla\\Webservices\\Integrations\\Joomla\\Model\\';
 		$apiDynamicModelClassName = '';
 
-		switch($this->webservice->operation)
+		switch ($this->webservice->operation)
 		{
 			case 'create':
 				$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst('item');
@@ -244,11 +246,11 @@ class Joomla implements ContainerAwareInterface, IntegrationInterface
 				break;
 
 			case 'read':
-                // Get data from request.
-                $data = (array) $this->webservice->getOptions()->get('dataGet', array());
+				// Get data from request.
+				$data = (array) $this->webservice->getOptions()->get('dataGet', array());
 
-                // Determine if the request if for an item or a list.
-                $displayTarget = $this->webservice->profile->isItem($data) ? 'item' : 'jlist';
+				// Determine if the request if for an item or a list.
+				$displayTarget = $this->webservice->profile->isItem($data) ? 'item' : 'jlist';
 
 				$apiDynamicModelClassName = $baseJoomlaModelClass . ucfirst($displayTarget);
 

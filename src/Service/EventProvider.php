@@ -13,9 +13,20 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\Dispatcher;
 
-
+/**
+ * Event dispatcher service provider.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 class EventProvider implements ServiceProviderInterface
 {
+	/**
+	 * Return an event dispatcher.
+	 *
+	 * @param   Container  $container  Dependency injection container.
+	 *
+	 * @return  Dispatcher object.
+	 */
 	public function register(Container $container)
 	{
 		$container->share(

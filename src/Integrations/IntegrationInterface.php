@@ -11,12 +11,17 @@ namespace Joomla\Webservices\Integrations;
 
 use Joomla\Authentication\AuthenticationStrategyInterface;
 
+/**
+ * Interface for integrations with third-party assets.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 interface IntegrationInterface
 {
 	/**
 	 * Gets an authorisation object for a given user id
 	 *
-	 * @param   $id  integer  The user id
+	 * @param   integer  $id  The user id
 	 *
 	 * @return  AuthorisationInterface
 	 */

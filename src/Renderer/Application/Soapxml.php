@@ -112,7 +112,7 @@ class Soapxml extends Renderer
 		$this->app->setHeader('Cache-Control', 'private', false);
 		$this->app->setHeader('Content-type', $this->getMimeEncoding() . '; charset=' . $this->getCharset(), true);
 
-//		$this->app->sendHeaders();
+		// $this->app->sendHeaders();
 
 		// Get the Soap string from the buffer.
 		$content = $this->getBuffer();

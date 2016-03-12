@@ -99,9 +99,9 @@ class ConfigurationHelper
 	/**
 	 * Loading of webservice XML file
 	 *
-	 * @param   string  $client             Client
-	 * @param   string  $webserviceName     Webservice name
-	 * @param   string  $version            Version of the webservice
+	 * @param   string  $client          Client
+	 * @param   string  $webserviceName  Webservice name
+	 * @param   string  $version         Version of the webservice
 	 *
 	 * @throws  \Exception
 	 * @return  array  List of objects
@@ -297,7 +297,7 @@ class ConfigurationHelper
 			$query = $db->getQuery(true)
 				->select('*')
 				->from($db->quoteName('#__webservices'))
-                ->where($db->quoteName('published') . ' = 1')
+				->where($db->quoteName('published') . ' = 1')
 				->order('created_date ASC');
 			$webservices = $db->setQuery($query)->loadObjectList();
 
@@ -411,7 +411,7 @@ class ConfigurationHelper
 	 *
 	 * @return  array
 	 */
-	public static function getWebserviceScopes(Text $text, $filterScopes = array(), DatabaseDriver $db)
+	public static function getWebserviceScopes(Text $text, $filterScopes, DatabaseDriver $db)
 	{
 		$options = array();
 		$installedWebservices = self::getInstalledWebservices($db);
@@ -492,7 +492,6 @@ class ConfigurationHelper
 
 		if (!empty($appendFormat))
 		{
-
 			$uri .= '&format=' . $appendFormat;
 		}
 
@@ -521,7 +520,7 @@ class ConfigurationHelper
 	/**
 	 * Returns an array of data from <field> elements defined in the <fields> section
 	 * of the configuration XML.
-	 * 
+	 *
 	 * @param   \SimpleXMLElement  $configuration  Configuration for current action
 	 *
 	 * @return  array

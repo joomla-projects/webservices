@@ -13,6 +13,11 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Registry\Registry;
 
+/**
+ * Renderer service provider.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 class RendererProvider implements ServiceProviderInterface
 {
 	/**
@@ -39,14 +44,14 @@ class RendererProvider implements ServiceProviderInterface
 
 	/**
 	 * Provide a renderer object.
-	 * 
+	 *
 	 * A unique renderer is associated with a given content type.  To add your own renderer
 	 * class, given a content type of "type/subtype", the class name should be "Subtype" in
 	 * the namespace "Type".  See the existing code for examples.
-	 * 
-	 * @param   object     $application  The Application object.
-	 * @param   string     $contentType  Content type (eg. "application/hal+json").
-	 * @param   Registry   $options      Array of options to be passed to the renderer.
+	 *
+	 * @param   object    $application  The Application object.
+	 * @param   string    $contentType  Content type (eg. "application/hal+json").
+	 * @param   Registry  $options      Array of options to be passed to the renderer.
 	 */
 	public function __construct($application, $contentType, Registry $options)
 	{
@@ -57,7 +62,9 @@ class RendererProvider implements ServiceProviderInterface
 
 	/**
 	 * Return a Renderer for the content type.
-	 * 
+	 *
+	 * @param   Container  $container  Dependency injection container.
+	 *
 	 * @return  Renderer object.
 	 */
 	public function register(Container $container)
@@ -81,7 +88,7 @@ class RendererProvider implements ServiceProviderInterface
 				{
 					throw new \RuntimeException($container->get('text')->sprintf('LIB_WEBSERVICES_API_UNABLE_TO_LOAD_RENDERER', $rendererClass));
 				}
-		
+
 				try
 				{
 					$renderer = new $rendererClass($application, $options);

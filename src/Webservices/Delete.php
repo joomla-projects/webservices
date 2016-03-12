@@ -22,9 +22,9 @@ class Delete extends Webservice
 {
 	/**
 	 * Execute the Api operation.
-	 * 
+	 *
 	 * @param   Profile  $profile  A profile which shapes the resource.
-	 * 
+	 *
 	 * @return  Resource  A populated Resource object.
 	 *
 	 * @since   __DEPLOY_VERSION__
@@ -64,15 +64,15 @@ class Delete extends Webservice
 	public function apiDelete()
 	{
 		// Get resource list from configuration.
-        $this->profile->getResources($this->getOptions());
+		$this->profile->getResources($this->getOptions());
 
 		// Delete function requires references and not values like we use in call_user_func_array so we use List delete function
 		$model = $this->triggerFunction('loadModel', $this->elementName, $this->operationConfiguration);
 		$functionName = XmlHelper::attributeToString($this->operationConfiguration, 'functionName', 'delete');
 
-        // Get data from request and validate it.
-        // Note that we actually get the data from the request URI, but we process/validate it as if the data came from the request body.
-        $data = $this->profile->bindData((array) $this->getOptions()->get('dataGet', array()));
+		// Get data from request and validate it.
+		// Note that we actually get the data from the request URI, but we process/validate it as if the data came from the request body.
+		$data = $this->profile->bindData((array) $this->getOptions()->get('dataGet', array()));
 		$data = $this->triggerFunction('validatePostData', $model, $data, $this->operationConfiguration);
 
 		if ($data === false)
@@ -86,12 +86,12 @@ class Delete extends Webservice
 		}
 
 		$result = null;
-        $args = $this->profile->buildFunctionArgs($data);
+		$args = $this->profile->buildFunctionArgs($data);
 
 		// Prepare parameters for the function
 		if (strtolower(XmlHelper::attributeToString($this->operationConfiguration, 'dataMode', 'model')) == 'table')
 		{
-            $primaryKeys = $this->profile->bindDataToPrimaryKeys($data, $this->operationConfiguration->getName());
+			$primaryKeys = $this->profile->bindDataToPrimaryKeys($data, $this->operationConfiguration->getName());
 
 			if (!empty($primaryKeys))
 			{

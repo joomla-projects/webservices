@@ -1,10 +1,18 @@
 <?php
 /**
- * Interface for Renderer classes.
+ * @package    Webservices
+ *
+ * @copyright  Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Joomla\Webservices\Renderer;
 
+/**
+ * Interface for Renderer classes.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 interface RendererInterface
 {
 	/**
@@ -15,7 +23,7 @@ interface RendererInterface
 	 *
 	 * @return  string
 	 */
-//	public function build(Resource $resource, $serialisation);
+	// public function build(Resource $resource, $serialisation);
 
 	/**
 	 * Render a representation of a resource.
@@ -24,7 +32,7 @@ interface RendererInterface
 	 *
 	 * @return  string
 	 */
-//	public function render(Resource $resource);
+	// public function render(Resource $resource);
 
 	/**
 	 * Parse a serialisation into a ResourceItem object.
@@ -34,7 +42,7 @@ interface RendererInterface
 	 *
 	 * @return  void
 	 */
-//	public function parseResourceItem(ResourceItem $resource, $serialisation);
+	// public function parseResourceItem(ResourceItem $resource, $serialisation);
 
 	/**
 	 * Render a representation of a ResourceCurie object.
@@ -43,7 +51,7 @@ interface RendererInterface
 	 *
 	 * @return  A representation of the object.
 	 */
-//	public function renderResourceCurie(ResourceCurie $resource);
+	// public function renderResourceCurie(ResourceCurie $resource);
 
 	/**
 	 * Render a representation of a ResourceData object.
@@ -52,7 +60,7 @@ interface RendererInterface
 	 *
 	 * @return  A representation of the object.
 	 */
-//	public function renderResourceData(ResourceData $resource);
+	// public function renderResourceData(ResourceData $resource);
 
 	/**
 	 * Render a representation of a ResourceEmbedded object.
@@ -61,7 +69,7 @@ interface RendererInterface
 	 *
 	 * @return  A representation of the object.
 	 */
-//	public function renderResourceEmbedded(ResourceEmbedded $resource);
+	// public function renderResourceEmbedded(ResourceEmbedded $resource);
 
 	/**
 	 * Render a representation of a ResourceItem object.
@@ -70,7 +78,7 @@ interface RendererInterface
 	 *
 	 * @return  A representation of the object.
 	 */
-//	public function renderResourceItem(ResourceItem $resource);
+	// public function renderResourceItem(ResourceItem $resource);
 
 	/**
 	 * Render a representation of a ResourceLink object.
@@ -79,7 +87,7 @@ interface RendererInterface
 	 *
 	 * @return  A representation of the object.
 	 */
-//	public function renderResourceLink(ResourceLink $resource);
+	// public function renderResourceLink(ResourceLink $resource);
 
 	/**
 	 * Render a representation of a ResourceLinks object.
@@ -88,7 +96,7 @@ interface RendererInterface
 	 *
 	 * @return  A representation of the object.
 	 */
-//	public function renderResourceLinks(ResourceLinks $resource);
+	// public function renderResourceLinks(ResourceLinks $resource);
 
 	/**
 	 * Render a representation of a ResourceMetadata object.
@@ -97,5 +105,5 @@ interface RendererInterface
 	 *
 	 * @return  A representation of the object.
 	 */
-//	public function renderResourceMetadata(ResourceMetadata $resource);
+	// public function renderResourceMetadata(ResourceMetadata $resource);
 }

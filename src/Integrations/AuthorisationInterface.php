@@ -9,6 +9,11 @@
 
 namespace Joomla\Webservices\Integrations;
 
+/**
+ * Interface for user objects.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 interface AuthorisationInterface
 {
 	/**

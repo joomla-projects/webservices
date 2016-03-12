@@ -2,11 +2,20 @@
 /**
  * State value object class.
  *
- * Implemented as an immutable object with a pair of named constructors.
+ * @package    Webservices
+ * @copyright  Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Joomla\Webservices\Type;
 
+/**
+ * State value object class.
+ *
+ * Implemented as an immutable object with a pair of named constructors.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 final class TypeState extends AbstractType
 {
 	/**
@@ -15,6 +24,7 @@ final class TypeState extends AbstractType
 	 * @param   string  $internalValue  Internal value.
 	 *
 	 * @return  TypeState object.
+	 *
 	 * @throws  \BadMethodCallException
 	 */
 	public static function fromInternal($internalValue)
@@ -54,6 +64,7 @@ final class TypeState extends AbstractType
 	 * @param   string  $externalValue  External value.
 	 *
 	 * @return  TypeState object.
+	 *
 	 * @throws  \BadMethodCallException
 	 */
 	public static function fromExternal($externalValue)

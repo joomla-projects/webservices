@@ -15,9 +15,20 @@ use Joomla\Session\Session;
 use Joomla\Session\Handler\FilesystemHandler;
 use Joomla\Session\Storage\NativeStorage;
 
-
+/**
+ * Session service provider.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 class SessionProvider implements ServiceProviderInterface
 {
+	/**
+	 * Return a session object.
+	 *
+	 * @param   Container  $container  Dependency injection container.
+	 *
+	 * @return  Session object.
+	 */
 	public function register(Container $container)
 	{
 		$container->alias("session", "Joomla\\Session\\Session")

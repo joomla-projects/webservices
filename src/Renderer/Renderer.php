@@ -105,7 +105,7 @@ abstract class Renderer implements RendererInterface
 	 * @var    array
 	 * @since  11.1
 	 */
-	public $_metaTags = array();
+	public $metaTags = array();
 
 	/**
 	 * The rendering engine
@@ -113,7 +113,7 @@ abstract class Renderer implements RendererInterface
 	 * @var    object
 	 * @since  11.1
 	 */
-	public $_engine = null;
+	public $engine = null;
 
 	/**
 	 * The document type
@@ -258,11 +258,11 @@ abstract class Renderer implements RendererInterface
 		{
 			if ($httpEquiv == true)
 			{
-				$result = @$this->_metaTags['http-equiv'][$name];
+				$result = @$this->metaTags['http-equiv'][$name];
 			}
 			else
 			{
-				$result = @$this->_metaTags['standard'][$name];
+				$result = @$this->metaTags['standard'][$name];
 			}
 		}
 
@@ -294,11 +294,11 @@ abstract class Renderer implements RendererInterface
 		{
 			if ($http_equiv == true)
 			{
-				$this->_metaTags['http-equiv'][$name] = $content;
+				$this->metaTags['http-equiv'][$name] = $content;
 			}
 			else
 			{
-				$this->_metaTags['standard'][$name] = $content;
+				$this->metaTags['standard'][$name] = $content;
 			}
 		}
 
@@ -602,7 +602,7 @@ abstract class Renderer implements RendererInterface
 
 	/**
 	 * Get API interaction style.
-	 * 
+	 *
 	 * @return  string
 	 */
 	public function getInteractionStyle()
@@ -612,7 +612,7 @@ abstract class Renderer implements RendererInterface
 
 	/**
 	 * Render the document.
-	 * 
+	 *
 	 * This defers to resource-specific render methods.
 	 *
 	 * @param   Resource  $resource  A populated resource object.

@@ -230,14 +230,14 @@ class Rest extends ApiBase
 		$options = clone $this->getOptions();
 		$resourceName = $options->get('optionName');
 
-        // Decode the URN which is the id of the resource we're linking from.
-        $urn = TypeUrn::fromInternal($data['id']);
+		// Decode the URN which is the id of the resource we're linking from.
+		$urn = TypeUrn::fromInternal($data['id']);
 
-        // Check that the URN is of the expected type.
-        if ($urn->getType() != $resourceName)
-        {
-            throw new RuntimeException('URN is not of the expected type \'' . $resourceName . '\': ' . $data['id']);
-        }
+		// Check that the URN is of the expected type.
+		if ($urn->getType() != $resourceName)
+		{
+			throw new RuntimeException('URN is not of the expected type \'' . $resourceName . '\': ' . $data['id']);
+		}
 
 		// Set the options up for retrieving the linked resource.
 		$options->set('optionName', $linkedResourceName);

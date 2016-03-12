@@ -11,10 +11,11 @@ namespace Joomla\Webservices\Resource;
 
 /**
  * Object to represent a hypermedia link.
- * 
+ *
  * Consider adopting the proposed PSR-13 Links standard.
- * @see https://github.com/php-fig/fig-standards/blob/master/proposed/links.md
- * @see https://github.com/php-fig/fig-standards/blob/master/proposed/links-meta.md
+ *
+ * @see    https://github.com/php-fig/fig-standards/blob/master/proposed/links.md
+ * @see    https://github.com/php-fig/fig-standards/blob/master/proposed/links-meta.md
  *
  * @since  1.2
  */

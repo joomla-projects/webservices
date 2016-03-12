@@ -402,11 +402,6 @@ class Soap extends ApiBase  implements DispatcherAwareInterface
 		$event = new Event('JApiSoapBefore' . $functionName, $temp);
 		$result = $this->dispatcher->triggerEvent($event);
 
-		//if ($result)
-		//{
-		//	return $result;
-		//}
-
 		// Checks if that method exists in helper file and executes it
 		$result = call_user_func_array(array($this, $functionName), $temp);
 

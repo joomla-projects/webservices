@@ -320,6 +320,7 @@ abstract class Webservice extends WebserviceBase
 
 		return $this;
 	}
+
 	/**
 	 * Execute the Api Task operation.
 	 *
@@ -338,7 +339,7 @@ abstract class Webservice extends WebserviceBase
 			// Load resources directly from task group
 			if (!empty($this->operationConfiguration->{$task}->resources))
 			{
-                $this->profile->getResources($this->getOptions());
+				$this->profile->getResources($this->getOptions());
 			}
 
 			$taskConfiguration = !empty($this->operationConfiguration->{$task}) ?
@@ -346,7 +347,7 @@ abstract class Webservice extends WebserviceBase
 
 			$model = $this->triggerFunction('loadModel', $this->elementName, $taskConfiguration);
 			$functionName = XmlHelper::attributeToString($taskConfiguration, 'functionName', $task);
-            $data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
+			$data = $this->profile->bindData((array) $this->getOptions()->get('data', array()));
 
 			$data = $this->triggerFunction('validatePostData', $model, $data, $taskConfiguration);
 
@@ -361,7 +362,7 @@ abstract class Webservice extends WebserviceBase
 			}
 
 			// Prepare parameters for the function
-            $args = $this->profile->buildFunctionArgs($data);
+			$args = $this->profile->buildFunctionArgs($data);
 			$result = null;
 
 			// Checks if that method exists in model class and executes it
@@ -594,18 +595,18 @@ abstract class Webservice extends WebserviceBase
 	{
 		$data = (array) $data;
 
-        // Get required fields without values.
-        $requiredFields = $this->profile->checkRequiredFields($data);
+		// Get required fields without values.
+		$requiredFields = $this->profile->checkRequiredFields($data);
 
 		// Queue an error for each required field without a value.
 		if (!empty($requiredFields))
 		{
-		    foreach ($requiredFields as $fieldName)
-            {
-                $this->app->enqueueMessage(
-                    $this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', $fieldName), 'error'
-                );
-            }
+			foreach ($requiredFields as $fieldName)
+			{
+				$this->app->enqueueMessage(
+					$this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_ERROR_REQUIRED_FIELD', $fieldName), 'error'
+				);
+			}
 
 			return false;
 		}
@@ -673,8 +674,15 @@ abstract class Webservice extends WebserviceBase
 	 */
 	public function isOperationAllowed()
 	{
-		// Check if webservice is published
-		if (!ConfigurationHelper::isPublishedWebservice($this->client, $this->webserviceName, $this->webserviceVersion, $this->getContainer()->get('db')) && !empty($this->webserviceName))
+		// Check if webservice is published.
+		$isPublished = ConfigurationHelper::isPublishedWebservice(
+			$this->client,
+			$this->webserviceName,
+			$this->webserviceVersion,
+			$this->getContainer()->get('db')
+		);
+
+		if (!isPublished && !empty($this->webserviceName))
 		{
 			throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_IS_UNPUBLISHED', $this->webserviceName));
 		}
@@ -726,11 +734,11 @@ abstract class Webservice extends WebserviceBase
 			}
 			else
 			{
-                // Get data from request.
-                $data = (array) $this->getOptions()->get('dataGet', array());
+				// Get data from request.
+				$data = (array) $this->getOptions()->get('dataGet', array());
 
-                // Determine if the request if for an item or a list.
-                $readType = $this->profile->isItem($data) ? 'item' : 'list';
+				// Determine if the request if for an item or a list.
+				$readType = $this->profile->isItem($data) ? 'item' : 'list';
 
 				if (isset($allowedOperations->read->{$readType}['authorizationNeeded'])
 					&& strtolower($allowedOperations->read->{$readType}['authorizationNeeded']) == 'false')
@@ -935,7 +943,8 @@ abstract class Webservice extends WebserviceBase
 	 * Example:
 	 *   <resource displayName="id" transform="int" fieldFormat="{id}" displayGroup="" resourceSpecific="rcwsGlobal"/>
 	 *
-	 *   $resource contains ['displayName' => 'id', 'transform' => 'int', 'fieldFormat' => '{id}', 'displayGroup' => '', 'resourceSpecific' => 'rcwsGlobal']
+	 *   $resource contains
+	 *       ['displayName' => 'id', 'transform' => 'int', 'fieldFormat' => '{id}', 'displayGroup' => '', 'resourceSpecific' => 'rcwsGlobal']
 	 *   $data contains an array|object containing all available data from some internal resource object.
 	 *   $attribute contains 'fieldFormat'
 	 *
@@ -955,7 +964,7 @@ abstract class Webservice extends WebserviceBase
 		// This template defines the value to be returned.  eg. "{id}".
 		$output = $template = $resource['fieldFormat'];
 
-        $search = $replace = array();
+		$search = $replace = array();
 
 		// Look for substitution codes in the template.
 		$stringsToReplace = array();
@@ -965,108 +974,109 @@ abstract class Webservice extends WebserviceBase
 		foreach ($stringsToReplace[1] as $replacementKey)
 		{
 			// Look for the key in the data and get the value associated with it.
-            try
-            {
-                $replacementValue = $this->getValueFromData($data, $replacementKey);
-            }
-            catch (KeyNotFoundException $e)
-            {
-                continue;
-            }
+			try
+			{
+				$replacementValue = $this->getValueFromData($data, $replacementKey);
+			}
+			catch (KeyNotFoundException $e)
+			{
+				continue;
+			}
 
 			// If the key was found in the data, add to search and replace arrays.
 			if (!is_null($replacementValue))
 			{
 				$search[] = '{' . $replacementKey . '}';
-                $replace[] = $replacementValue;
+				$replace[] = $replacementValue;
 			}
 		}
 
-        // Perform search and replace on the template.
-        $output = str_replace($search, $replace, $template);
+		// Perform search and replace on the template.
+		$output = str_replace($search, $replace, $template);
 
 		// Look for substitutions from global data as well.
 		$output = $this->assignGlobalValueToResource($output);
 
-        // Transform internal format to external format.
-        $output = $this->profile->transformField($resource['transform'], $output, true);
+		// Transform internal format to external format.
+		$output = $this->profile->transformField($resource['transform'], $output, true);
 
 		return $output;
 	}
 
-    /**
-     * Get a value from various types of data.
-     *
-     * The key is used to locate a value in objects or arrays, which may be nested.
-     * For other data types (eg. string), the data is returned as its own value.
-     * The key may be a dot-separated path so that data can be retrieved from a
-     * hierarchy of array, object, JSON-encoded or simple data.
-     *
-     * @param   mixed   $data  Array, object, etc., containing the data.
-     * @param   string  $key   Property of the data to be retrieved.
-     *
-     * @return  Value associated with the key.
-     * @throws  KeyNotFoundException for objects or arrays when the key is not found.
-     *
-     * @since   __DEPLOY_VERSION__
-     */
-    private function getValueFromData($data, $key)
-    {
-        // Copy the arguments so we don't accidentally cause side-effects.
-        $innerData = $data;
-        $innerKey = $key;
+	/**
+	 * Get a value from various types of data.
+	 *
+	 * The key is used to locate a value in objects or arrays, which may be nested.
+	 * For other data types (eg. string), the data is returned as its own value.
+	 * The key may be a dot-separated path so that data can be retrieved from a
+	 * hierarchy of array, object, JSON-encoded or simple data.
+	 *
+	 * @param   mixed   $data  Array, object, etc., containing the data.
+	 * @param   string  $key   Property of the data to be retrieved.
+	 *
+	 * @return  Value associated with the key.
+	 *
+	 * @throws  KeyNotFoundException for objects or arrays when the key is not found.
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	private function getValueFromData($data, $key)
+	{
+		// Copy the arguments so we don't accidentally cause side-effects.
+		$innerData = $data;
+		$innerKey = $key;
 
-        // Get the parts of the key.
-        $parts = explode('.', $innerKey);
+		// Get the parts of the key.
+		$parts = explode('.', $innerKey);
 
-        // If the key is not simple, break it down.
-        if (count($parts) > 1)
-        {
-            // Look for the first part.
-            $innerData = $this->getValueFromData($innerData, array_shift($parts));
+		// If the key is not simple, break it down.
+		if (count($parts) > 1)
+		{
+			// Look for the first part.
+			$innerData = $this->getValueFromData($innerData, array_shift($parts));
 
-            // If we are given a string, try JSON-decoding it.
-            if (is_string($innerData))
-            {
-                $tmp = json_decode($innerData);
+			// If we are given a string, try JSON-decoding it.
+			if (is_string($innerData))
+			{
+				$tmp = json_decode($innerData);
 
-                if (json_last_error() === JSON_ERROR_NONE)
-                {
-                    $innerData = $tmp;
-                }
-            }
+				if (json_last_error() === JSON_ERROR_NONE)
+				{
+					$innerData = $tmp;
+				}
+			}
 
-            // Re-assemble the remainder of the key.
-            $innerKey = implode('.', $parts);
+			// Re-assemble the remainder of the key.
+			$innerKey = implode('.', $parts);
 
-            // If necessary, recurse further.
-            if (count($parts) > 1)
-            {
-                return $this->getValueFromData($innerData, $innerKey);
-            }
-        }
+			// If necessary, recurse further.
+			if (count($parts) > 1)
+			{
+				return $this->getValueFromData($innerData, $innerKey);
+			}
+		}
 
-        // Key is simple, data is an object.
-        if (is_object($innerData) && property_exists($innerData, $innerKey))
-        {
-            return $innerData->{$innerKey};
-        }
+		// Key is simple, data is an object.
+		if (is_object($innerData) && property_exists($innerData, $innerKey))
+		{
+			return $innerData->{$innerKey};
+		}
 
-        // Key is simple, data is an array.
-        if (is_array($innerData) && isset($innerData[$innerKey]))
-        {
-            return $innerData[$innerKey];
-        }
+		// Key is simple, data is an array.
+		if (is_array($innerData) && isset($innerData[$innerKey]))
+		{
+			return $innerData[$innerKey];
+		}
 
-        // Key is simple, but not found when data is object or array.
-        if (is_object($innerData) || is_array($innerData))
-        {
-            throw new KeyNotFoundException($innerKey);
-        }
+		// Key is simple, but not found when data is object or array.
+		if (is_object($innerData) || is_array($innerData))
+		{
+			throw new KeyNotFoundException($innerKey);
+		}
 
-        // Key is simple, data is simple.
-        return $innerData;
-    }
+		// Key is simple, data is simple.
+		return $innerData;
+	}
 
 	/**
 	 * Determine the value of a resource property using data from the global data buffer.
@@ -1075,7 +1085,7 @@ abstract class Webservice extends WebserviceBase
 	 * will comprise the property value.  Note that this does not transform data,
 	 * because global data has already been transformed.
 	 *
-	 * @param   string  $format  Template to parse. (eg. "{id}").
+	 * @param   string  $template  Template to parse. (eg. "{id}").
 	 *
 	 * @return  string value of the resource property using the template.
 	 *
@@ -1095,15 +1105,15 @@ abstract class Webservice extends WebserviceBase
 
 		foreach ($stringsToReplace[1] as $replacementKey)
 		{
-            // Look for the key in the data and get the value associated with it.
-            try
-            {
-                $replacementValue = $this->getValueFromData($this->data, $replacementKey);
-            }
-            catch (KeyNotFoundException $e)
-            {
-                continue;
-            }
+			// Look for the key in the data and get the value associated with it.
+			try
+			{
+				$replacementValue = $this->getValueFromData($this->data, $replacementKey);
+			}
+			catch (KeyNotFoundException $e)
+			{
+				continue;
+			}
 
 			$search = '{' . $replacementKey . '}';
 			$output = str_replace($search, $replacementValue, $template);
@@ -1143,11 +1153,6 @@ abstract class Webservice extends WebserviceBase
 		// @TODO: The event name should not be tied to HAL.
 		$event = new Event('JApiHalBefore' . $functionName, $temp);
 		$result = $this->dispatcher->triggerEvent($event);
-
-		//if ($result)
-		//{
-		//	return $result;
-		//}
 
 		// Checks if that method exists in helper file and executes it
 		if (method_exists($apiHelperClass, $functionName))
@@ -1199,7 +1204,7 @@ abstract class Webservice extends WebserviceBase
 	/**
 	 * Loads the integration for the webservice
 	 *
-	 * @param $name
+	 * @param   string  $name  Name of the integration.
 	 *
 	 * @return mixed
 	 */

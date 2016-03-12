@@ -23,16 +23,16 @@ class Factory
 {
 	/**
 	 * Gets an instance of the main API class.
-	 * 
+	 *
 	 * The API class deals with interaction style and could be considered
 	 * roughly equivalent to a controller in an MVC design.
-	 * 
+	 *
 	 * @param   Container  $container  Dependency injection container.
 	 * @param   string     $style      Interaction style (eg. 'rest' or 'soap').
 	 * @param   Registry   $options    Options to be passed to the API object.
-	 * 
+	 *
 	 * @return  ApiInterface
-	 * 
+	 *
 	 * @throws  \RuntimeException
 	 */
 	public static function getApi(Container $container, $style, Registry $options)
@@ -65,7 +65,7 @@ class Factory
 	 * @param   string  $client   Webservice client ('administrator' or 'site').
 	 * @param   string  $name     Webservice name.
 	 * @param   string  $path     Webservice path.
-	 * 
+	 *
 	 * @return  mixed It will return Api helper class or false if it does not exist.
 	 *
 	 * @since   1.2
@@ -102,13 +102,13 @@ class Factory
 
 	/**
 	 * Get a profile object.
-	 * 
+	 *
 	 * @param   DatabaseDriver  $db            Database driver.
 	 * @param   string          $clientName    Client name (eg. 'administrator' or 'site').
 	 * @param   string          $resourceName  Name of resource for which the profile is sought.
 	 * @param   string          $version       Version of the resource profile sought.
 	 * @param   string          $operation     Operation name (eg. 'read', 'update').
-	 * 
+	 *
 	 * @return  Profile
 	 */
 	public static function getProfile(DatabaseDriver $db, $clientName, $resourceName, $version, $operation)
@@ -133,9 +133,9 @@ class Factory
 
 	/**
 	 * Get a router preloaded with routes.
-	 * 
+	 *
 	 * @param   Registry  $options  Options to be passed to the API object.
-	 * 
+	 *
 	 * @return  Router
 	 */
 	public static function getRouter(Registry $options)
@@ -187,11 +187,11 @@ class Factory
 
 	/**
 	 * Get a webservice object.
-	 * 
+	 *
 	 * @param   Container  $container      Dependency injection container.
 	 * @param   string     $operationName  Operation name (eg. 'create', 'read').
 	 * @param   Registry   $options        Array of options to be passed to the webservice.
-	 * 
+	 *
 	 * @return  Webservice object.
 	 */
 	public static function getWebservice(Container $container, $operationName, Registry $options)

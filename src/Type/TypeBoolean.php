@@ -2,11 +2,20 @@
 /**
  * Boolean value object class.
  *
- * Implemented as an immutable object with a pair of named constructors.
+ * @package    Webservices
+ * @copyright  Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Joomla\Webservices\Type;
 
+/**
+ * Boolean value object class.
+ *
+ * Implemented as an immutable object with a pair of named constructors.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 final class TypeBoolean extends AbstractType
 {
 	/**
@@ -15,6 +24,7 @@ final class TypeBoolean extends AbstractType
 	 * @param   mixed  $internalValue  Internal value.
 	 *
 	 * @return  TypeBoolean object.
+	 *
 	 * @throws  \BadMethodCallException
 	 */
 	public static function fromInternal($internalValue)
@@ -50,6 +60,7 @@ final class TypeBoolean extends AbstractType
 	 * @param   mixed  $externalValue  External value.
 	 *
 	 * @return  TypeBoolean object.
+	 *
 	 * @throws  \BadMethodCallException
 	 */
 	public static function fromExternal($externalValue)

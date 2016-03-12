@@ -107,12 +107,6 @@ class Haljson extends Renderer
 	{
 		$properties = array();
 
-		// Iterate through the metadata properties and add them to the top-level array.
-//		foreach ($resource->getMetadata() as $name => $property)
-//		{
-//			$properties[$name] = $property;
-//		}
-
 		// Iterate through the links and add them to the _links element.
 		foreach ($resource->getLinks() as $rel => $link)
 		{
@@ -171,12 +165,6 @@ class Haljson extends Renderer
 	{
 		$properties = array();
 		$data = $resource->getData();
-
-		// Iterate through the metadata properties and add them to the top-level array.
-//		foreach ($resource->getMetadata() as $name => $property)
-//		{
-//			$properties[$name] = $property;
-//		}
 
 		// Iterate through the links and add them to the _links element.
 		foreach ($resource->getLinks() as $rel => $link)

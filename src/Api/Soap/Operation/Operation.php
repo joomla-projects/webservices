@@ -336,6 +336,7 @@ class Operation
 	 * @param   string  $language  Language name
 	 *
 	 * @return  void
+	 *
 	 * @todo    Move into the integration handler
 	 */
 	protected function setLanguage($language)

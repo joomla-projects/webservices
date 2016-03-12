@@ -72,7 +72,7 @@ class Read extends Webservice
 	{
 		// If default page needs authorisation then make sure that we have it.
 		if ($this->app->get('webservices.webservices_default_page_authorization', 0) == 1
-		 && !$this->app->login($this->getIntegrationObject()->getStrategies()))
+			&& !$this->app->login($this->getIntegrationObject()->getStrategies()))
 		{
 			// @TODO Return an error resource?
 			return false;
@@ -125,14 +125,14 @@ class Read extends Webservice
 	 */
 	public function apiRead()
 	{
-	    // Get data from request.
-        $data = (array) $this->getOptions()->get('dataGet', array());
+		// Get data from request.
+		$data = (array) $this->getOptions()->get('dataGet', array());
 
-        // Determine if the request if for an item or a list.
-        $displayTarget = $this->profile->isItem($data) ? 'item' : 'list';
+		// Determine if the request if for an item or a list.
+		$displayTarget = $this->profile->isItem($data) ? 'item' : 'list';
 
 		// Get data bound to primary keys.
-        $primaryKeys = $this->profile->bindDataToPrimaryKeys($data, $displayTarget);
+		$primaryKeys = $this->profile->bindDataToPrimaryKeys($data, $displayTarget);
 
 		// Get the part of the profile that deals with the item or the list.
 		$subprofile = $this->profile->getSubprofile($displayTarget);
@@ -175,17 +175,17 @@ class Read extends Webservice
 		{
 			$pagination = $model->getPagination();
 			$paginationPages = $pagination->getPaginationPages();
-            $pageData = array(
-                'previous'  => isset($paginationPages['previous']['data']->base) ? $paginationPages['previous']['data']->base : $pagination->limitstart,
-                'next'      => isset($paginationPages['next']['data']->base) ? $paginationPages['next']['data']->base : $pagination->limitstart,
-                'limit'     => $pagination->limit,
-                'limitstart' => $pagination->limitstart,
-                'totalItems' => $pagination->total,
-                'totalPages' => max($pagination->pagesTotal, 1),
-                'page'      => max($pagination->pagesCurrent, 1),
-                'last'      => ((max($pagination->pagesTotal, 1) - 1) * $pagination->limit),
-            );
-            $this->setData('pagination', $pageData);
+			$pageData = array(
+				'previous'  => isset($paginationPages['previous']['data']->base) ? $paginationPages['previous']['data']->base : $pagination->limitstart,
+				'next'      => isset($paginationPages['next']['data']->base) ? $paginationPages['next']['data']->base : $pagination->limitstart,
+				'limit'     => $pagination->limit,
+				'limitstart' => $pagination->limitstart,
+				'totalItems' => $pagination->total,
+				'totalPages' => max($pagination->pagesTotal, 1),
+				'page'      => max($pagination->pagesCurrent, 1),
+				'last'      => ((max($pagination->pagesTotal, 1) - 1) * $pagination->limit),
+			);
+			$this->setData('pagination', $pageData);
 		}
 
 		$resource = $this->triggerFunction('bindDataToResourceList', $items, $subprofile);
@@ -311,7 +311,7 @@ class Read extends Webservice
 		$resource = new ResourceItem($this->profile);
 
 		// Get resource profile from configuration.
-        $profile = $this->profile->getResources($this->getOptions(), 'item');
+		$profile = $this->profile->getResources($this->getOptions(), 'item');
 
 		// Bind top-level properties into the Resource.
 		$this->setDataValueToResource($resource, $profile, $item, 'rcwsGlobal');
@@ -322,8 +322,8 @@ class Read extends Webservice
 	/**
 	 * Set document content for List view.
 	 *
-	 * @param   array              $items        List of items.
-	 * @param   \SimpleXMLElement  $subprofile   Profile for the read item.
+	 * @param   array              $items       List of items.
+	 * @param   \SimpleXMLElement  $subprofile  Profile for the read item.
 	 *
 	 * @return  Resource  A populated resource object.
 	 *
@@ -335,7 +335,7 @@ class Read extends Webservice
 		$resource = new ResourceList($this->profile);
 
 		// Get resource profile from configuration.
-        $profile = $this->profile->getResources($this->getOptions(), 'list');
+		$profile = $this->profile->getResources($this->getOptions(), 'list');
 
 		// Bind top-level properties into the Resource.
 		$this->setDataValueToResource($resource, $profile, $this->data, 'rcwsGlobal');

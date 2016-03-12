@@ -14,15 +14,15 @@ use Joomla\Webservices\Resource\ResourceItem;
 
 /**
  * Pure JSON renderer.
- * 
+ *
  * This overrides the HAL + JSON renderer at the moment.
  * The only thing it does differently is that it sends
  * links as HTTP headers instead of including them in
  * the (HAL) content.
- * @see https://tools.ietf.org/html/rfc5988
  *
  * @package     Redcore
  * @subpackage  Document
+ * @see         https://tools.ietf.org/html/rfc5988
  * @since       __DEPLOY_VERSION__
  */
 class Json extends Haljson
@@ -48,13 +48,13 @@ class Json extends Haljson
 
 	/**
 	 * Render a representation of a ResourceLink object.
-	 * 
+	 *
 	 * Adds an HTTP Link header to the application header buffer.
 	 *
 	 * @param   Resource  $resource  A resource item object.
 	 *
 	 * @return  void
-	 * 
+	 *
 	 * @see https://tools.ietf.org/html/rfc5988
 	 */
 	public function renderResourceLink(Resource $resource)
@@ -62,8 +62,7 @@ class Json extends Haljson
 		$linkText = '<' . $resource->getHref() . '>;'
 			. ' rel="' . $resource->getRel() . '"'
 			. ($resource->getTitle() != '' ? ' title="' . $resource->getTitle() . '"' : '')
-			. ($resource->getTemplated() ? ' templated="true"' : '')
-			;
+			. ($resource->getTemplated() ? ' templated="true"' : '');
 
 		$this->app->setHeader('Link', $linkText, false);
 	}
