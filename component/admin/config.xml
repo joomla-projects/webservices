@@ -10,8 +10,85 @@
 			type="text"
 			label="COM_WEBSERVICES_LABEL_ROOTPATH"
 			description="COM_WEBSERVICES_LABEL_ROOTPATH_DESC"
-			default="/path/to/root"
+			default="/libraries/webservices"
 		/>
+
+		<field
+			name="enable_webservices"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="1"
+			label="COM_WEBSERVICES_LABEL_ENABLED"
+			description="COM_WEBSERVICES_LABEL_ENABLED_DESC">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+
+		<field
+			name="webservices_default_page_authorization"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="1"
+			label="COM_WEBSERVICES_LABEL_DEFAULT_AUTH"
+			description="COM_WEBSERVICES_LABEL_DEFAULT_AUTH_DESC">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+
+		<field
+			name="webservices_permission_check"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="1"
+			label="COM_WEBSERVICES_LABEL_PERMISSION_CHECK"
+			description="COM_WEBSERVICES_LABEL_PERMISSION_CHECK_DESC">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+
+		<field
+			name="enable_soap"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="1"
+			label="COM_WEBSERVICES_LABEL_SOAP"
+			description="COM_WEBSERVICES_LABEL_SOAP_DESC">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+
+		<field
+			name="content_types"
+			type="list"
+			size="4"
+			label="COM_WEBSERVICES_LABEL_CONTENTTYPE_LABEL"
+			description="COM_WEBSERVICES_LABEL_CONTENTTYPE__DESC"
+			multiple="true">
+			<option value="application/hal+json">COM_WEBSERVICES_LABEL_CONTENTTYPE_HALJSON</option>
+			<option value="application/hal+xml">COM_WEBSERVICES_LABEL_CONTENTTYPE_HALXML</option>
+			<option value="application/json">COM_WEBSERVICES_LABEL_CONTENTTYPE_JSON</option>
+			<option value="application/soap+xml">COM_WEBSERVICES_LABEL_CONTENTTYPE_SOAPXML</option>
+			<option value="application/xml">COM_WEBSERVICES_LABEL_CONTENTTYPE_XML</option>
+		</field>
+
+		<field
+			name="routes"
+			type="text"
+			label="COM_WEBSERVICES_LABEL_ROUTES"
+			description="COM_WEBSERVICES_LABEL_ROUTES_DESC"
+			default="/routes.json"
+		/>
+
+		<field
+			name="debug_webservices"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="0"
+			label="COM_WEBSERVICES_LABEL_DEBUG"
+			description="COM_WEBSERVICES_LABEL_DEBUG_DESC">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 
 	</fieldset>
 

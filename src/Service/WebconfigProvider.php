@@ -3,7 +3,7 @@
 * Configuration Service Provider for Joomla Webservices.
 *
 * @package    Webservices
-* @copyright  Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+* @copyright  Copyright (C) 2004 - 2016 Open Source Matters, Inc. All rights reserved.
 * @license    GNU General Public License version 2 or later; see LICENSE.txt
 */
 
@@ -56,12 +56,23 @@ class WebconfigProvider implements ServiceProviderInterface
 		// Get the Joomla! configuration parameters
 		$config = new \JConfig();
 
+		// Get component parameters
+		$params = \JComponentHelper::getParams('com_webservices');
+
 		// Set the correct database values for config object
 		$configObject->database->driver = $config->dbtype;
 		$configObject->database->host = $config->host;
 		$configObject->database->user = $config->user;
 		$configObject->database->password = $config->password;
 		$configObject->database->prefix = $config->dbprefix;
+
+		// Set the correct database values for config object
+		$configObject->webservices->enable_webservices = $params->get('enable_webservices');
+		$configObject->webservices->webservices_default_page_authorization = $params->get('webswebservices_default_page_authorizationervices');
+		$configObject->webservices->webservices_permission_check = $params->get('webservices_permission_check');
+		$configObject->webservices->debug_webservices = $params->get('webdebug_webservicesservices');
+		$configObject->webservices->enable_soap = $params->get('enable_soap');
+		$configObject->webservices->content_types = $params->get('content_types');
 
 		$this->config = (new Registry)->loadObject($configObject);
 		$this->config->set('language.basedir', JPATH_API . '/src');
