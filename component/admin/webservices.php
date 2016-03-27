@@ -14,8 +14,17 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_webservices'))
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
-$applicationPath = realpath(JPATH_ROOT);
+jimport('joomla.filesystem.file');
+
+$applicationPath = realpath(JPATH_ROOT . '/libraries/webservices');
 $composerPath = $applicationPath . '/vendor/autoload.php';
+
+// Check if composer is installed.
+if (!JFile::exists($composerPath))
+{
+	return JError::raiseWarning(404, JText::_('JERROR_COMPOSER_NOT_INSTALLED'));
+}
+
 define ('JPATH_API', $applicationPath);
 require_once($composerPath);
 

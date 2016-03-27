@@ -2,7 +2,7 @@
 /**
  * Webservices component for Joomla! CMS
  *
- * @copyright  Copyright (C) 2004 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2004 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later
  */
 
@@ -30,7 +30,7 @@ abstract class Helper
 		try
 		{
 			$container = (new \Joomla\DI\Container)
-				->registerServiceProvider(new \Joomla\Webservices\Service\ConfigurationProvider)
+				->registerServiceProvider(new \Joomla\Webservices\Service\WebconfigProvider)
 				->registerServiceProvider(new \Joomla\Webservices\Service\DatabaseProvider);
 		}
 		catch (\Exception $e)
@@ -38,14 +38,17 @@ abstract class Helper
 			throw new \RuntimeException(\JText::sprintf('COM_WEBSERVICES_WEBSERVICE_ERROR_DATABASE_CONNECTION', $e->getMessage()), 500, $e);
 		}
 
-		$config = $container->get("config")['database'];
+		// Get the Joomla! configuration parameters
+		$config = new \JConfig();
 
-		$options = array('driver' => $config->driver,
+		// Set the correct database values for config object
+		$options = array(
+			'driver' => $config->dbtype,
 			'host' => $config->host,
 			'user' => $config->user,
 			'password' => $config->password,
-			'database' => $config->database,
-			'prefix' => $config->prefix
+			'database' => $config->db,
+			'prefix' => $config->dbprefix
 		);
 
 		try
