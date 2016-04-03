@@ -25,7 +25,7 @@ class ResourceLink extends Resource
 	 * For labeling the destination of a link with a human-readable identifier.
 	 * @var string
 	 */
-	protected $_title;
+	protected $title;
 
 	/**
 	 * For identifying how the target URI relates to the 'Subject Resource'.
@@ -33,7 +33,7 @@ class ResourceLink extends Resource
 	 *
 	 * @var string
 	 */
-	protected $_rel;
+	protected $rel;
 
 	/**
 	 * - <b>As a resource:</b>
@@ -47,7 +47,7 @@ class ResourceLink extends Resource
 	 *
 	 * @var string
 	 */
-	protected $_href;
+	protected $href;
 
 	/**
 	 *
@@ -57,21 +57,21 @@ class ResourceLink extends Resource
 	 * only as a 'secondary key' to a given @rel value.
 	 * @var string
 	 */
-	protected $_name;
+	protected $name;
 
 	/**
 	 * For indicating what the language of the result of dereference the
 	 * link should be.
 	 * @var string
 	 */
-	protected $_hreflang;
+	protected $hreflang;
 
 	/**
 	 * Whether this link is "templated"
 	 * @var boolean
 	 * @link https://tools.ietf.org/html/rfc6570
 	 */
-	protected $_templated;
+	protected $templated;
 
 	/**
 	 * Constructor.
@@ -100,7 +100,7 @@ class ResourceLink extends Resource
 	 */
 	public function getRel ()
 	{
-		return $this->_rel;
+		return $this->rel;
 	}
 
 	/**
@@ -110,7 +110,7 @@ class ResourceLink extends Resource
 	 */
 	public function getHref ()
 	{
-		return $this->_href;
+		return $this->href;
 	}
 
 	/**
@@ -120,7 +120,7 @@ class ResourceLink extends Resource
 	 */
 	public function getName()
 	{
-		return $this->_name;
+		return $this->name;
 	}
 
 	/**
@@ -130,7 +130,7 @@ class ResourceLink extends Resource
 	 */
 	public function getTitle ()
 	{
-		return $this->_title;
+		return $this->title;
 	}
 
 	/**
@@ -140,7 +140,7 @@ class ResourceLink extends Resource
 	 */
 	public function getHreflang ()
 	{
-		return $this->_hreflang;
+		return $this->hreflang;
 	}
 
 	/**
@@ -150,7 +150,7 @@ class ResourceLink extends Resource
 	 */
 	public function getTemplated()
 	{
-		return $this->_templated;
+		return $this->templated;
 	}
 
 	/**
@@ -162,7 +162,7 @@ class ResourceLink extends Resource
 	 */
 	public function setRel ($rel)
 	{
-		$this->_rel = $rel;
+		$this->rel = $rel;
 
 		return $this;
 	}
@@ -176,7 +176,7 @@ class ResourceLink extends Resource
 	 */
 	public function setHref ($href)
 	{
-		$this->_href = $href;
+		$this->href = $href;
 
 		return $this;
 	}
@@ -190,7 +190,7 @@ class ResourceLink extends Resource
 	 */
 	public function setName($name)
 	{
-		$this->_name = $name;
+		$this->name = $name;
 
 		return $this;
 	}
@@ -204,7 +204,7 @@ class ResourceLink extends Resource
 	 */
 	public function setTitle ($title)
 	{
-		$this->_title = $title;
+		$this->title = $title;
 
 		return $this;
 	}
@@ -218,7 +218,7 @@ class ResourceLink extends Resource
 	 */
 	public function setHreflang ($hreflang)
 	{
-		$this->_hreflang = $hreflang;
+		$this->hreflang = $hreflang;
 
 		return $this;
 	}
@@ -232,7 +232,7 @@ class ResourceLink extends Resource
 	 */
 	public function setTemplated($templated)
 	{
-		$this->_templated = $templated;
+		$this->templated = $templated;
 
 		return $this;
 	}
