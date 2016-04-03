@@ -2,7 +2,7 @@
 /**
  * Webservices component for Joomla! CMS
  *
- * @copyright  Copyright (C) 2004 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2004 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later
  */
 
@@ -14,8 +14,18 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_webservices'))
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
-$applicationPath = realpath(JPATH_ROOT);
+jimport('joomla.filesystem.file');
+
+$applicationPath = realpath(JPATH_ROOT . '/libraries/webservices');
 $composerPath = $applicationPath . '/vendor/autoload.php';
+
+// Check if composer is installed.
+if (!JFile::exists($composerPath))
+{
+	JFactory::getApplication()->enqueueMessage(JText::_('COM_WEBSERVICES_WEBSERVICE_COMPOSER_ERROR'), 'error');
+	JFactory::getApplication()->redirect(JRoute::_(JUri::base(), false));
+}
+
 define ('JPATH_API', $applicationPath);
 require_once($composerPath);
 
