@@ -119,7 +119,7 @@ resource using the "catid" field in the Categories resource to filter the linked
 	hrefLang=""
 	linkTemplated="false"
 	linkRel="j:contacts"
-	resourceSpecific="rcwsGlobal"
+	resourceSpecific="global"
 />
 ```
 

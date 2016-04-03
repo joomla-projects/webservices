@@ -314,7 +314,7 @@ class Read extends Webservice
 		$profile = $this->profile->getResources($this->getOptions(), 'item');
 
 		// Bind top-level properties into the Resource.
-		$this->setDataValueToResource($resource, $profile, $item, 'rcwsGlobal');
+		$this->setDataValueToResource($resource, $profile, $item, 'global');
 
 		return $resource;
 	}
@@ -338,7 +338,7 @@ class Read extends Webservice
 		$profile = $this->profile->getResources($this->getOptions(), 'list');
 
 		// Bind top-level properties into the Resource.
-		$this->setDataValueToResource($resource, $profile, $this->data, 'rcwsGlobal');
+		$this->setDataValueToResource($resource, $profile, $this->data, 'global');
 
 		// Embed secondary resource items into the list resource.
 		foreach ($items as $itemValue)

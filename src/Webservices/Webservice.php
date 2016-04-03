@@ -390,7 +390,7 @@ abstract class Webservice extends WebserviceBase
 	 * Binds data to a Resource using a profile for a specific method or task.
 	 *
 	 * The $profile array comes from the Profile XML and may have been filtered.
-	 * The binding can be restricted to a particular scope.  The default scope is rcwsGlobal.
+	 * The binding can be restricted to a particular scope.  The default scope is global.
 	 *
 	 * @param   Resource  $resource  Resource document for binding the resource.
 	 * @param   array     $profile   Configuration for displaying object.
@@ -399,7 +399,7 @@ abstract class Webservice extends WebserviceBase
 	 *
 	 * @return  Resource
 	 */
-	public function setDataValueToResource(Resource $resource, array $profile, $data, $scope = 'rcwsGlobal')
+	public function setDataValueToResource(Resource $resource, array $profile, $data, $scope = 'global')
 	{
 		// No properties to add to the Resource from this scope.
 		if (empty($profile[$scope]))

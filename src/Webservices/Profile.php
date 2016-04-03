@@ -174,7 +174,7 @@ class Profile
 	 *
 	 * @return  array
 	 */
-	public function defaultResourceField($resource = array(), $resourceSpecific = 'rcwsGlobal')
+	public function defaultResourceField($resource = array(), $resourceSpecific = 'global')
 	{
 		$defaultResource = array(
 			'resourceSpecific' => !empty($resource['resourceSpecific']) ? $resource['resourceSpecific'] : $resourceSpecific,
