@@ -682,7 +682,7 @@ abstract class Webservice extends WebserviceBase
 			$this->getContainer()->get('db')
 		);
 
-		if (!isPublished && !empty($this->webserviceName))
+		if (!$isPublished && !empty($this->webserviceName))
 		{
 			throw new \Exception($this->text->sprintf('LIB_WEBSERVICES_API_HAL_WEBSERVICE_IS_UNPUBLISHED', $this->webserviceName));
 		}
