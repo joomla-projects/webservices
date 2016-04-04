@@ -38,7 +38,7 @@
 				</fields>
 
 				<!-- Resource definition -->
-				<!-- Resources can be grouped with "resourceSpecific" attribute, default value is "rcwsGlobal" -->
+				<!-- Resources can be grouped with "resourceSpecific" attribute, default value is "global" -->
 				<resources>
 					<resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
 					<resource displayName="page" transform="integer" fieldFormat="{pagination.page}" displayGroup="" resourceSpecific="rcwsGlobal"/>

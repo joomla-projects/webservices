@@ -588,7 +588,7 @@ class WebserviceModel extends FormModel
 			{
 				$resourceArray = $this->bindElementToArray($resource);
 				$displayName = (string) $resourceArray['displayName'];
-				$resourceSpecific = !empty($resourceArray['resourceSpecific']) ? (string) $resourceArray['resourceSpecific'] : 'rcwsGlobal';
+				$resourceSpecific = !empty($resourceArray['resourceSpecific']) ? (string) $resourceArray['resourceSpecific'] : 'global';
 
 				$this->resources[$name][$resourceSpecific][$displayName] = $resourceArray;
 			}

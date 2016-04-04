@@ -220,7 +220,7 @@ class AjaxController extends DisplayController
 				'displayName' => $item->name,
 				'linkTitle' => $item->title,
 				'transform' => 'string',
-				'resourceSpecific' => 'rcwsGlobal',
+				'resourceSpecific' => 'global',
 				'displayGroup' => '_links',
 				'linkTemplated' => 'true',
 				'fieldFormat' => $link,

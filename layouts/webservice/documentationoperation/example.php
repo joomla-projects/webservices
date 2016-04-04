@@ -187,7 +187,7 @@ endif;
 							$resourcesForDisplay[$resValue['displayGroup']][$resName] = $resValue;
 						endforeach;
 
-						$outputOuter = $resourceGroupName == 'rcwsGlobal' ? '' : '<div><strong>' . ucfirst($resourceGroupName) . ' {</strong></div>';
+						$outputOuter = $resourceGroupName == 'global' ? '' : '<div><strong>' . ucfirst($resourceGroupName) . ' {</strong></div>';
 						$outputGroup = array();
 						foreach ($resourcesForDisplay as $currentDisplayGroup => $resourceDisplayGroup) :
 							$outputGroupRow = $currentDisplayGroup == '' ? '' : '<div><strong>' . $currentDisplayGroup . ' {</strong></div>';
@@ -202,7 +202,7 @@ endif;
 						endforeach;
 						$outputOuter .= implode(', <br />', $outputGroup);
 						$outputOuter .= $resourceGroupName == '_embedded{ item: [' ? '<br /><strong>}]</strong>' : '';
-						$outputOuter .= $resourceGroupName == 'rcwsGlobal' ? '' : '<br /><strong>}</strong>';
+						$outputOuter .= $resourceGroupName == 'global' ? '' : '<br /><strong>}</strong>';
 						$output[] = $outputOuter;
 					endforeach;
 

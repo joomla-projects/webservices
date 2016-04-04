@@ -187,7 +187,7 @@ class SoapHelper
 				$displayName = XmlHelper::attributeToString($resource, 'displayName');
 				$resourceSpecific = XmlHelper::attributeToString($resource, 'resourceSpecific');
 
-				if ($displayName == 'result' && $resourceSpecific == 'rcwsGlobal')
+				if ($displayName == 'result' && $resourceSpecific == 'global')
 				{
 					$resource->addAttribute('name', $resource['displayName']);
 

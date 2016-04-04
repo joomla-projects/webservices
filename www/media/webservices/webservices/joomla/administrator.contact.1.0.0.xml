@@ -32,7 +32,7 @@
                 <description><![CDATA[ Fields listed will be transformed before saving or default value can be assigned. ]]></description>
             </fields>
             <resources>
-                <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="rcwsGlobal"/>
+                <resource displayName="documentation" transform="string" fieldFormat="{webserviceUrlPath}&amp;format=doc#{rel}" displayGroup="_links" linkTitle="Documentation" linkName="{webserviceName}" hrefLang="" linkTemplated="true" linkRel="curies" resourceSpecific="global"/>
                 <resource displayName="base" transform="string" fieldFormat="/" displayGroup="_links" linkTitle="Default page" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
                 <resource displayName="{webserviceName}:list" transform="string" fieldFormat="{webserviceUrlPath}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>
                 <resource displayName="{webserviceName}:self" transform="string" fieldFormat="{webserviceUrlPath}&amp;id={id}" displayGroup="_links" linkTitle="" linkName="" hrefLang="" linkTemplated="false" linkRel="" resourceSpecific="rcwsGlobal"/>

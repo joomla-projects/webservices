@@ -58,7 +58,7 @@ $text = $displayData['text'];
 					usort($resourceGroup, array($view, "sortResourcesByDisplayGroup"));
 					$currentDisplayGroup = '--';
 				?>
-				<h4><?php echo $resourceGroupName == 'rcwsGlobal' ? $text->translate('JDEFAULT') : ucfirst($resourceGroupName); ?>
+				<h4><?php echo $resourceGroupName == 'global' ? $text->translate('JDEFAULT') : ucfirst($resourceGroupName); ?>
 					 <?php echo $text->translate('LIB_WEBSERVICES_API_HAL_WEBSERVICE_DOCUMENTATION_RESOURCES'); ?></h4>
 
 				<div class="container-fluid">
